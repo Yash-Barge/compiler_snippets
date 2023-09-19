@@ -1,7 +1,7 @@
 #import <stdio.h>
 #import "data_structs/stack.h"
 
-int main(void) {
+void stack_tests(void) {
     struct stack *s = Stack.new();
 
     Stack.push(s, 69);
@@ -14,6 +14,12 @@ int main(void) {
 
     Stack.free(&s);
     printf("s: %p\n", s);
+
+    return;
+}
+
+int main(void) {
+    stack_tests();
 
     return 0;
 }
