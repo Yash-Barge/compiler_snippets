@@ -1,0 +1,22 @@
+# Below is done to ignore extensionless files (output of compilation)
+
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Unignore makefiles
+!**/makefile
+
+# MacOS file explorer attribute file
+**/.DS_Store
+
+# Object files
+**/*.o
+
+# Out files
+**/*.out
