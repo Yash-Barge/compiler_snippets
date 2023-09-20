@@ -20,3 +20,6 @@
 
 # Out files
 **/*.out
+
+# Exe files
+**/*.exe

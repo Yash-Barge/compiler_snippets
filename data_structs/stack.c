@@ -56,6 +56,8 @@ int stack_top(struct stack *s) {
 
 void stack_free(struct stack **p_s) {
     assert(p_s != NULL);
+    assert(*p_s != NULL);
+    
     struct stack *s = *p_s;
 
     while (!stack_is_empty(s))
