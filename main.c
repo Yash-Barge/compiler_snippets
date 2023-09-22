@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "data_structs/stack.h"
 #include "data_structs/vector.h"
+#include "data_structs/queue.h"
 
 void stack_tests(void) {
     printf("\nStack tests:\n");
@@ -53,9 +54,43 @@ void vector_tests(void) {
 }
 
 
+void queue_tests(void) {
+    printf("\nQueue tests:\n");
+    struct queue *q = Queue.new();
+
+    Queue.push(q, 1);
+    Queue.push(q, 2);
+    Queue.push(q, 3);
+    Queue.push(q, 4);
+    Queue.push(q, 5);
+
+    printf("Front of Queue = %d\n", Queue.front(q));
+
+    Queue.pop(q);
+    Queue.pop(q);
+    Queue.pop(q);
+    
+    printf("Front of Queue = %d\n", Queue.front(q));
+
+    printf("Is Queue Empty : %d\n", Queue.is_empty(q));
+
+    Queue.pop(q);
+    Queue.pop(q);
+
+    printf("Is Queue Empty : %d\n", Queue.is_empty(q));
+
+    printf("\nEnd of queue tests\n");
+
+    Queue.free(&q);
+
+    return;
+}
+
+
 int main(void) {
     stack_tests();
     vector_tests();
+    queue_tests();
 
     return 0;
 }
