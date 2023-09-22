@@ -1,6 +1,8 @@
 #include <stdio.h>
+
 #include "data_structs/stack.h"
 #include "data_structs/vector.h"
+#include "lib/errors.h"
 
 void stack_tests(void) {
     printf("\nStack tests:\n");
@@ -55,7 +57,9 @@ void vector_tests(void) {
 
 int main(void) {
     stack_tests();
+    error("Hello! %d\n", 69);
     vector_tests();
+
 
     return 0;
 }
