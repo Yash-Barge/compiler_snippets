@@ -12,7 +12,7 @@ struct vector_lib {
     void (*const push_front)(struct vector *, int);
     int (*const pop_front)(struct vector *);
     void (*const print)(struct vector *);
-    void (*const free)(struct vector *);
+    void (*const free)(struct vector **);
 };
 
 extern const struct vector_lib Vector;
