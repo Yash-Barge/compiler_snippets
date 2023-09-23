@@ -23,3 +23,6 @@
 
 # Exe files
 **/*.exe
+
+# Stackdump
+**/*.stackdump

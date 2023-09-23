@@ -41,6 +41,8 @@ void vector_tests(void) {
     Vector.push_front(vec, 8);
     Vector.push_front(vec, 9);
 
+    Vector.sort(vec, 0);
+
     Vector.print(vec);
 
     Vector.pop_back(vec);

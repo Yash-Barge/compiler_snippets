@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #include "vector.h"
 
@@ -24,6 +25,11 @@ void grow_vector(struct vector *vec) {
 
     return;
 } 
+
+int vi_size(struct vector* vec){
+    assert(vec != NULL);
+    return vec->size;
+}
 
 void vi_insert(struct vector *vec, int index, int data) {
     assert(vec != NULL);
@@ -82,6 +88,59 @@ void vi_print(struct vector *vec) {
     return;
 }
 
+void insertion_sort(int vec[], int size, int inc){
+    int iter1, iter2, val;
+    for(iter1=1; iter1<size; iter1++){
+        val = vec[iter1];
+        iter2 = iter1 - 1;
+
+        while(iter2 >= 0 && vec[iter2] > val){
+            vec[iter2 + 1] = vec[iter2];
+            iter2--;
+        }
+        vec[iter2 + 1] = val;
+    }   
+
+    if(inc == 0){
+        for(int i=0; i<(size)/2; i++){
+            int temp = vec[i];
+            vec[i] = vec[size-i-1];
+            vec[size-i-1] = temp;
+        }
+    } 
+
+    return;
+}
+
+int comp(const void* a, const void* b){
+    return (*(int*)a - *(int*)b);
+}
+
+void quick_sort(int vec[], int size, int inc){
+    qsort(vec, size, sizeof(int), comp);
+
+    if(inc == 0){
+        for(int i=0; i<(size)/2; i++){
+            int temp = vec[i];
+            vec[i] = vec[size-i-1];
+            vec[size-i-1] = temp;
+        }
+    } 
+
+    return;
+}
+
+void vi_sort(struct vector* vec, int inc){
+    assert(vec != NULL);
+    if(vec->size <= 8){
+        insertion_sort(vec->vector, vec->size, inc);
+    }
+    else{
+        quick_sort(vec->vector, vec->size, inc);
+    }
+    return;
+}
+
 void vi_free(struct vector **p_vec) {
     assert(p_vec != NULL);
     assert(*p_vec != NULL);
@@ -94,4 +153,4 @@ void vi_free(struct vector **p_vec) {
     return;
 }
 
-const struct vector_lib Vector = { .new = new_vi, .insert = vi_insert, .erase = vi_erase, .push_back = vi_push_back, .push_front = vi_push_front, .pop_back = vi_pop_back, .pop_front = vi_pop_front, .print = vi_print, .free = vi_free };
+const struct vector_lib Vector = { .new = new_vi, .size = vi_size, .insert = vi_insert, .erase = vi_erase, .push_back = vi_push_back, .push_front = vi_push_front, .pop_back = vi_pop_back, .pop_front = vi_pop_front, .print = vi_print, .sort = vi_sort, .free = vi_free };
