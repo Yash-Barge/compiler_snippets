@@ -1,5 +1,4 @@
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#pragma once
 
 struct hashmap;
 
@@ -12,5 +11,3 @@ struct hashmap_lib {
 };
 
 extern const struct hashmap_lib Hashmap;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 struct vector;
 
@@ -18,5 +17,3 @@ struct vector_lib {
 };
 
 extern const struct vector_lib Vector;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#pragma once
 
 struct queue;
 
@@ -13,5 +12,3 @@ struct queue_lib {
 };
 
 extern const struct queue_lib Queue;
-
-#endif

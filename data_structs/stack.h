@@ -1,5 +1,4 @@
-#ifndef STACK_H
-#define STACK_H
+#pragma once
 
 struct stack;
 
@@ -13,5 +12,3 @@ struct stack_lib {
 };
 
 extern const struct stack_lib Stack;
-
-#endif

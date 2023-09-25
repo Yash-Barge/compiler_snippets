@@ -1,7 +1,4 @@
-#ifndef ERRORS_H
-#define ERRORS_H
+#pragma once
 
 void warn(const char *fmt, ...);
 void error(const char *fmt, ...);
-
-#endif
