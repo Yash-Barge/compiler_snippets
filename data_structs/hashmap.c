@@ -62,11 +62,12 @@ void ll_free(struct head* h){
 }
 
 int hash_function(int key){
-    return (1ll * key * 23) % 11;
+    return (1LL * key * 23) % 11;
 }
 
 struct hashmap* hashmap_new(){
     struct hashmap* hmap = malloc(sizeof(struct hashmap));
+    hmap->map = malloc(sizeof(struct map *) * 11);
     int hashmap_size = 11; // CHANGE IF HASH FUNCTION CHANGES
     for(int i=0; i<hashmap_size; i++){
         hmap->map[i] = new_head_hash();
@@ -119,12 +120,21 @@ void hashmap_erase(struct hashmap* hm, int key){
     return;
 }
 
-void hashmap_free(struct hashmap* hm){
+void hashmap_free(struct hashmap **p_hm){
+    assert(p_hm != NULL);
+    assert(*p_hm != NULL);
+
+    struct hashmap *hm = *p_hm;
+
     int hashmap_size = 11; // CHANGE IF HASH FUNCTION CHANGES   
     for(int i=0; i<hashmap_size; i++){
         ll_free(hm->map[i]);
     }
+    free(hm->map);
     free(hm);
+
+    *p_hm = NULL;
+
     return;
 }
 

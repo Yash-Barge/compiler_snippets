@@ -8,7 +8,7 @@ struct hashmap_lib {
     void (*const insert)(struct hashmap *, int);
     void (*const  erase)(struct hashmap *, int);
     int (*const search)(struct hashmap *, int);
-    void (*const free)(struct hashmap *);
+    void (*const free)(struct hashmap **);
 };
 
 extern const struct hashmap_lib Hashmap;

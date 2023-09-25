@@ -111,13 +111,15 @@ void hashmap_tests(void){
     Hashmap.erase(hm, 211);
     Hashmap.erase(hm, 43);
     Hashmap.erase(hm, 87);
+    Hashmap.erase(hm, 212);
+
     printf("Search for Value 211 (After Deleting) = %d\n", Hashmap.search(hm, 211));
     printf("Search for Value 43 (After Deleting) = %d\n", Hashmap.search(hm, 43));
     printf("Search for Value 87 (After Deleting) = %d\n", Hashmap.search(hm, 87));
     
     printf("\nEnd of Hashmap tests\n");
 
-    Hashmap.free(hm);
+    Hashmap.free(&hm);
 
     return;
     
