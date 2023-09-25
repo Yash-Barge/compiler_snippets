@@ -4,6 +4,8 @@
 #include "data_structs/stack.h"
 #include "data_structs/vector.h"
 #include "data_structs/queue.h"
+#include "data_structs/hashmap.h"
+
 #include "lib/errors.h"
 
 void stack_tests(void) {
@@ -90,8 +92,39 @@ void queue_tests(void) {
     return;
 }
 
+void hashmap_tests(void){
+    printf("\nHashmap tests:\n");
+    struct hashmap *hm = Hashmap.new();
+
+    Hashmap.insert(hm, 3);
+    Hashmap.insert(hm, 4);
+    Hashmap.insert(hm, 56);
+    Hashmap.insert(hm, 211);
+    Hashmap.insert(hm, 87);
+    Hashmap.insert(hm, 22);
+    Hashmap.insert(hm, 43);
+
+    printf("Search for Value 43 = %d\n", Hashmap.search(hm, 43));
+    printf("Search for Value 211 = %d\n", Hashmap.search(hm, 211));
+    printf("Search for Value 212 = %d\n", Hashmap.search(hm, 212));
+
+    Hashmap.erase(hm, 211);
+    Hashmap.erase(hm, 43);
+    Hashmap.erase(hm, 87);
+    printf("Search for Value 211 (After Deleting) = %d\n", Hashmap.search(hm, 211));
+    printf("Search for Value 43 (After Deleting) = %d\n", Hashmap.search(hm, 43));
+    printf("Search for Value 87 (After Deleting) = %d\n", Hashmap.search(hm, 87));
+    
+    printf("\nEnd of Hashmap tests\n");
+
+    Hashmap.free(hm);
+
+    return;
+    
+}
+
 void cmd_line_handler(int argc, char **argv) {
-    enum flags { STACK, VECTOR, QUEUE, FLAG_COUNT };
+    enum flags { STACK, VECTOR, QUEUE, HASHMAP, FLAG_COUNT };
     int flag_arr[FLAG_COUNT] = {0};
 
     for (int i = 1; i < argc; i++) {
@@ -104,11 +137,13 @@ void cmd_line_handler(int argc, char **argv) {
             flag_arr[VECTOR] = 1;
         else if (!strcmp(argv[i], "-Tqueue"))
             flag_arr[QUEUE] = 1;
+        else if (!strcmp(argv[i], "-Thashmap"))
+            flag_arr[HASHMAP] = 1;
         else
             warn("Unrecognized argument '%s'\n", argv[i]);
     }
 
-    void (*fun_arr[])() = { stack_tests, vector_tests, queue_tests };
+    void (*fun_arr[])() = { stack_tests, vector_tests, queue_tests, hashmap_tests };
 
     for (int i = 0; i < FLAG_COUNT; i++)
         if (flag_arr[i])
