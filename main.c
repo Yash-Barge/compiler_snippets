@@ -94,7 +94,7 @@ void queue_tests(void) {
 
 void hashmap_tests(void){
     printf("\nHashmap tests:\n");
-    struct hashmap *hm = Hashmap.new();
+    struct hashmap *hm = Hashmap.new(11);
 
     Hashmap.insert(hm, 3);
     Hashmap.insert(hm, 4);
