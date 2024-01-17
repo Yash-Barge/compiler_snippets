@@ -1,0 +1,40 @@
+_recordDemo1 input parameter list [record #book d5cc34, record #book d2cd]
+output parameter list[record #book d3];
+    record #new
+        type int : value;
+        type real: cost;
+    endrecord;
+
+    d3<--- d5cc34 + d2cd;
+    return [d3];
+end
+
+_main
+    record #book
+        type int : edition;
+        type real: price;
+    endrecord;
+
+    type record #book b2;
+    type record #book c2;
+    type record #book d2;
+    type record #new b7bc34;
+    b2.edition <--- 3;
+    b2.price <--- 24.95;
+    c2.edition <--- 2;
+    c2.price <--- 98.80;
+    % following is a valid statement as the types of d2, b2 and c2 are same d2<--- b2+ c2;
+    % Note that d2<--- b2 + b7bc34; is not type correct as the language follows name equivalence.
+    % Note that the types of b2 and b7bc34 are not same.
+    [d2]<--- call _recordDemo with parameters[b2,c2];
+    write(d2);
+
+    % Yash: additional tests
+    % if (b2.price == c2.price &&& c2.price != d2.price) then
+    %     b2.price <--- d2.price;
+    % ! =
+    != != ! ! ! = !!=!=!=!
+    ======= ==== = === = % another comment test
+    >= >= >>>>=> > = >=
+end
+% 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
