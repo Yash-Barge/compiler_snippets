@@ -81,7 +81,7 @@ bool end_of_regex(long long freq){
     return true;
 } 
 
-bool check(char* regex, char* expr){
+int check(char* regex, char* expr){
     char** parts = divide_regex(regex);
     int expr_ptr = 0;
     int id = 0;
@@ -91,6 +91,11 @@ bool check(char* regex, char* expr){
     while(true){
         printf("%c -> ", expr[expr_ptr]);
         
+        if(end_of_regex(freq) && expr == ""){
+            printf("Empty string part of language.\n");
+            return 1;
+        }
+
         if(id == sizeof(parts)) break;
         else if(freq == 0 && expr_ptr != strlen(expr) - 1) {
             printf("in cond 1\n");
@@ -105,7 +110,11 @@ bool check(char* regex, char* expr){
             return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && end_of_regex(freq/10)) {
-            break;
+            if(search(parts[id], expr[expr_ptr])) break;
+            else {
+                printf("Invalid\n");
+                return 0;
+            }
         }
         else if(freq%10 == 1 && search(parts[id], expr[expr_ptr])){
             printf("in cond 3\n");
@@ -140,8 +149,15 @@ bool check(char* regex, char* expr){
 
 int main(void) {
 
-    char* regex = "[2-7][2-7][2-7][2-7]";
-    check(regex, "222");
+    char *regex = "[a-z]*";
+
+    check(regex, "testing");
+    check(regex, "yo!");
+    check(regex, "");
+    check(regex, "hell0");
+
+    // char* regex = "[2-7][2-7][2-7][2-7]";
+    // check(regex, "222");
 
 
     // char* regex = "[b-d][2-7][b-d]*[2-7]*";
