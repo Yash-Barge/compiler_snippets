@@ -21,30 +21,22 @@ char* make_range(char* reg){
     }
     if(reg[2] == 'l'){
         // [alp] condition
-        char* range = malloc(53 * sizeof(char));
-        for(int i=0; i<26; i++){
-            range[i] = (char)('a' + i);
-        }
-        for(int i=0; i<26; i++){
-            range[26+i] = (char)('A' + i);
-        }
+        char* range = malloc(3 * sizeof(char));
+        range[0] = 'a';
+        range[1] = 'Z';
         range[52] = '\0';
         return range;
     }
-    int start = reg[1];
-    int end = reg[3];
-    char* range = malloc((end - start + 2) * sizeof(char)); // todo - check for null character
     
-    if(start > end) {
+    char* range = malloc(3 * sizeof(char)); // todo - check for null character
+    
+    if(reg[1] > reg[3]) {
         printf("Start of range can't be more than end");
         return NULL;
     }
-    
-    for(int i=start; i<=end; i++){
-        range[i-start] = (char)(reg[1] + i - start);
-    }
-
-    range[end - start + 1] = '\0';
+    range[0] = reg[1];
+    range[1] = reg[3];
+    range[2] = '\0';
     return range;
 }
 
@@ -130,10 +122,10 @@ char** divide_regex(char* regex){
 */
 
 bool search(char* range, char ele){
-    if(range[0] == 'a' && range[51] == 'Z'){
+    if(range[0] == 'a' && range[1] == 'Z'){
         return ((ele <= 'Z' && ele >= 'A') || (ele <= 'z' && ele >= 'a'));
     }
-    return ((ele <= range[strlen(range) - 1]) && (ele >= range[0]));
+    return ((ele <= range[1]) && (ele >= range[0]));
 }
 
 /*
