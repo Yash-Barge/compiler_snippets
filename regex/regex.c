@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+
 #include "regex.h"
 
 char* make_range(char* reg){ 
@@ -67,8 +69,8 @@ char** divide_regex(char* regex){
     return parts;
 }
  
-bool search(char* regex, char ele){
-    return ((ele <= regex[strlen(regex) - 1]) && (ele >= regex[0]));
+bool search(char* range, char ele){
+    return ((ele <= range[strlen(range) - 1]) && (ele >= range[0]));
 }
 
 bool end_of_regex(long long freq){
@@ -82,16 +84,25 @@ bool end_of_regex(long long freq){
 bool check(char* regex, char* expr){
     char** parts = divide_regex(regex);
     int expr_ptr = 0;
+    int id = 0;
 
     long long freq = find_freq(regex);
 
-    for(int id=0; id<sizeof(parts); ){
+    while(true){
         printf("%c -> ", expr[expr_ptr]);
         
-        if(expr_ptr == strlen(expr) - 1 && !end_of_regex(freq/10)) {
+        if(id == sizeof(parts)) break;
+        else if(freq == 0 && expr_ptr != strlen(expr) - 1) {
+            printf("in cond 1\n");
+            printf("At end of regex, but expression is still left.\n");
+            printf("Invalid.\n");
+            return 0;
+        }
+        else if(expr_ptr == strlen(expr) - 1 && !end_of_regex(freq/10)) {
             printf("in cond 2\n");
             printf("At end of expression, but regex has more terms.\n");
-            return false;
+            printf("Invalid.\n");
+            return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && end_of_regex(freq/10)) {
             break;
@@ -105,7 +116,7 @@ bool check(char* regex, char* expr){
         else if(freq%10 == 1 && !search(parts[id], expr[expr_ptr])){
             printf("in cond 4\n");
             printf("Failed because of absence of necessary part of regex.\n");
-            return false;
+            return 0;
         }
         else if(freq%10 == 2 && search(parts[id], expr[expr_ptr])){
             printf("in cond 5\n");
@@ -117,27 +128,33 @@ bool check(char* regex, char* expr){
             freq/=10;
         }
     }
-    printf("Valid\n");
-    return true;
+
+    if(end_of_regex(freq)) {
+        printf("Valid\n");
+        return 1;
+    }
+    printf("Invalid\n");
+    return 0;
+
 }
 
 int main(void) {
-    char* regex = "[b-d][2-7][b-d]*[2-7]*";
-    bool check1 = check(regex, "b2565");
-    printf("\n\n\n");
-    bool check2 = check(regex, "b2bccd");
-    printf("\n\n\n");
-    bool check3 = check(regex, "b2bccddc7667");
-    printf("\n\n\n");
-    bool check4 = check(regex, "b2");
-    printf("\n\n\n");
-    bool check5 = check(regex, "2");
-    printf("\n\n\n");
-    bool check6 = check(regex, "b");
-    // char** range = divide_regex("[b-f][3-6]*[1-9]+");
-    // for(int i=0; i<(sizeof(range)); i++){
-    //     printf("%d\t%s\n", i, range[i]);
-    // }
+
+    char* regex = "[2-7][2-7][2-7][2-7]";
+    check(regex, "222");
+
+
+    // char* regex = "[b-d][2-7][b-d]*[2-7]*";
+    // bool check1 = check(regex, "b2565");
+    // printf("\n\n\n");
+    // bool check2 = check(regex, "b2bccd");
+    // printf("\n\n\n");
+    // bool check3 = check(regex, "b2bccddc7667");
+    // printf("\n\n\n");
+    // printf("\n\n\n");
+    // bool check5 = check(regex, "2");
+    // printf("\n\n\n");
+    // bool check6 = check(regex, "b");
 }
 
 
