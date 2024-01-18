@@ -26,3 +26,6 @@
 
 # Stackdump
 **/*.stackdump
+
+# VSCode stuff
+**/.vscode
