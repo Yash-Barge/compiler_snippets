@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-
-
 #include "regex.h"
 
 /*
@@ -16,14 +14,30 @@
 */
 
 char* make_range(char* reg){ 
-    // reg of form [x-y]* or [x-y]+ or [x-y]
+    // reg of form [x-y]* or [x-y] or [alp]
+    if(reg[2] != 'l' && reg[2] != '-') {
+        printf("INVALID REGEX.\n");
+        return NULL;
+    }
+    if(reg[2] == 'l'){
+        // [alp] condition
+        char* range = malloc(53 * sizeof(char));
+        for(int i=0; i<26; i++){
+            range[i] = (char)('a' + i);
+        }
+        for(int i=0; i<26; i++){
+            range[26+i] = (char)('A' + i);
+        }
+        range[52] = '\0';
+        return range;
+    }
     int start = reg[1];
     int end = reg[3];
     char* range = malloc((end - start + 2) * sizeof(char)); // todo - check for null character
     
     if(start > end) {
         printf("Start of range can't be more than end");
-        return "-1";
+        return NULL;
     }
     
     for(int i=start; i<=end; i++){
@@ -116,6 +130,9 @@ char** divide_regex(char* regex){
 */
 
 bool search(char* range, char ele){
+    if(range[0] == 'a' && range[51] == 'Z'){
+        return ((ele <= 'Z' && ele >= 'A') || (ele <= 'z' && ele >= 'a'));
+    }
     return ((ele <= range[strlen(range) - 1]) && (ele >= range[0]));
 }
 
@@ -158,6 +175,7 @@ int check(char* regex, char* expr){
         
         if(end_of_regex(freq) && expr == ""){
             printf("Empty string part of language.\n");
+            printf("Valid.\n");
             return 1;
         }
 
@@ -214,12 +232,14 @@ int check(char* regex, char* expr){
 
 int main(void) {
 
-    char *regex = "[a-z]*";
+    char *regex = "[alp]*[1-9]*";
 
-    check(regex, "testing");
-    check(regex, "yo!");
+    check(regex, "testing123");
+    check(regex, "yo");
     check(regex, "");
-    check(regex, "hell0");
+    check(regex, "12345");
+    check(regex, "12345abcd");
+    
 
     // char* regex = "[2-7][2-7][2-7][2-7]";
     // check(regex, "222");

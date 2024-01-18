@@ -1,3 +1,3 @@
 #pragma once
 
-bool check(char* regex, char* expr);
+int check(char* regex, char* expr);
