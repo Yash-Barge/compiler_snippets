@@ -86,6 +86,40 @@ const char *const token_list[] = {
     "~"
 };
 
+// Used for tokens identified by regex
+enum ENUM_ID {
+    TK_FIELDID,
+    TK_ID,
+    TK_NUM,
+    TK_FUNID,
+    TK_RUID,
+    TK_RNUM
+};
+
+char* regular_expressions[] = {
+    "[alp][alp]*",
+    "[b-d][2-7][b-d]*[2-7]*",
+    "[0-9][0-9]*",
+    "[_-_][alp][alp]*[0-9]*",
+    "[#-#][alp][alp]",
+    "[0-9][0-9]*[.-.][0-9][0-9]",
+    "[0-9][0-9]*[.-.][0-9][0-9][E-E][+-+][0-9][0-9]",
+    "[0-9][0-9]*[.-.][0-9][0-9][E-E][---][0-9][0-9]",
+    "[0-9][0-9]*[.-.][0-9][0-9][E-E][0-9][0-9]",
+};
+
+/**
+ * @param expr expression that is to be checked 
+ * @return int returns integer index of ENUM_ID of which it is a part, else returns -1
+ */
+int typeof_identifier(char* expr){
+    for(int i=0; i<5; i++){
+        if(check(regular_expressions[i], expr)) return i;
+    }
+    if(check(regular_expressions[5], expr) || check(regular_expressions[6], expr) || check(regular_expressions[7], expr) || check(regular_expressions[8], expr)) return 5;
+    return -1;
+}
+
 // Used to index into token_list
 enum ENUM_TOK {
     TOKEN_INVALID = -1,
