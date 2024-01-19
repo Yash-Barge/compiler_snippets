@@ -172,7 +172,7 @@ int check(char* regex, char* expr){
     long long freq = find_freq(regex);
 
     while(true){
-        if(end_of_regex(freq) && expr == ""){
+        if(end_of_regex(freq) && (strcmp(expr, "") == 0)){
             // Empty string part of language.
             freeParts(parts, parts_length);
             return 1;
@@ -217,37 +217,37 @@ int check(char* regex, char* expr){
     return end_of_regex(freq);
 }
 
-int main(void) {
+// int main(void) {
 
-    // char *regex = "[alp]*[1-9]*";
+//     // char *regex = "[alp]*[1-9]*";
 
-    // check(regex, "testing123");
-    // check(regex, "yo");
-    // check(regex, "");
-    // check(regex, "12345");
-    // check(regex, "12345abcd");
-    // check(regex, "12345a");
+//     // check(regex, "testing123");
+//     // check(regex, "yo");
+//     // check(regex, "");
+//     // check(regex, "12345");
+//     // check(regex, "12345abcd");
+//     // check(regex, "12345a");
 
-    char *regex = "[alp][0-9][alp]";
+//     char *regex = "[alp][0-9][alp]";
 
-    printf("%s\n", check(regex, "a93") ? "Valid" : "Invalid");
-    printf("%s\n", check(regex, "zzz") ? "Valid" : "Invalid");
-    printf("%s\n", check(regex, "zzz325") ? "Valid" : "Invalid");
-    printf("%s\n", check(regex, "K9a") ? "Valid" : "Invalid");
+//     printf("%s\n", check(regex, "a93") ? "Valid" : "Invalid");
+//     printf("%s\n", check(regex, "zzz") ? "Valid" : "Invalid");
+//     printf("%s\n", check(regex, "zzz325") ? "Valid" : "Invalid");
+//     printf("%s\n", check(regex, "K9a") ? "Valid" : "Invalid");
     
-    // char* regex = "[2-7][2-7][2-7][2-7]";
-    // check(regex, "222");
+//     // char* regex = "[2-7][2-7][2-7][2-7]";
+//     // check(regex, "222");
 
 
-    // char* regex = "[b-d][2-7][b-d]*[2-7]*";
-    // bool check1 = check(regex, "b2565");
-    // printf("\n\n\n");
-    // bool check2 = check(regex, "b2bccd");
-    // printf("\n\n\n");
-    // bool check3 = check(regex, "b2bccddc7667");
-    // printf("\n\n\n");
-    // printf("\n\n\n");
-    // bool check5 = check(regex, "2");
-    // printf("\n\n\n");
-    // bool check6 = check(regex, "b");
-}
+//     // char* regex = "[b-d][2-7][b-d]*[2-7]*";
+//     // bool check1 = check(regex, "b2565");
+//     // printf("\n\n\n");
+//     // bool check2 = check(regex, "b2bccd");
+//     // printf("\n\n\n");
+//     // bool check3 = check(regex, "b2bccddc7667");
+//     // printf("\n\n\n");
+//     // printf("\n\n\n");
+//     // bool check5 = check(regex, "2");
+//     // printf("\n\n\n");
+//     // bool check6 = check(regex, "b");
+// }

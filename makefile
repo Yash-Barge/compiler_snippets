@@ -1,5 +1,5 @@
 CC =  gcc
-CFLAGS = -Wall -Wextra -Werror -O2
+# CFLAGS = -Wall -Wextra -Werror -O2
 
 prog: main.o stack.o vector.o queue.o hashmap.o errors.o
 	$(CC) $(CFLAGS) -o prog main.o stack.o vector.o queue.o hashmap.o errors.o

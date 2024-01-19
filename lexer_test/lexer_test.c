@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "regex/regex.h"
+
 #define TEMP(str) printf("%s, index=%d\n", str, tk_from_string(str))
 #define IS_WHITESPACE(character) (character == ' ' || (character >= 9 && character <= 13))
 #define IS_ALPHA(character) ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z'))
