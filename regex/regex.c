@@ -81,8 +81,6 @@ void substr(char *regex, int start, char *output) {
 
 
 /**
- * @brief 
- * 
  * @param regex The regular expression, that has to be divided into it's components
  * @param size the number of components
  * @return char** An array of character pointers of the individual components of the regex
