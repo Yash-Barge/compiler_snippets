@@ -4,11 +4,30 @@
 
 #define TEMP(str) printf("%s, index=%d\n", str, tk_from_string(str))
 #define IS_WHITESPACE(character) (character == ' ' || (character >= 9 && character <= 13))
-#define IS_ALPHANUMERIC(character) ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9'))
+#define IS_ALPHA(character) ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z'))
+#define IS_NUMERIC(character) (character >= '0' && character <= '9')
+#define IS_ALPHANUMERIC(character) (IS_ALPHA(character) || IS_NUMERIC(character))
 #define ASSIGN_STRING(var, str) \
     do { \
         var = malloc(sizeof(char) * (strlen(str) + 1)); \
         strcpy(var, str); \
+    } while (0)
+#define SWAP_POINTER(x, y) \
+    do { \
+        void *temp = x; \
+        x = y; \
+        y = temp; \
+    } while (0)
+#define NEXT_BUFFER(buf1, buf2, buf_cap, src, ind, f_ind) \
+    do { \
+        SWAP_POINTER(buf1, buf2); \
+        char *temp = fgets(buf2, buf_cap, src); \
+        if (temp == NULL) { \
+            free(buf2); \
+            buf2 = NULL; \
+        } \
+        ind = 0; \
+        f_ind = 0; \
     } while (0)
 
 // Lexicographically sorted, specifically to use binary search
@@ -201,14 +220,21 @@ consume_next_token_redo:
     int forward_index = *index;
 
     // For function, union and record names
-    if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && (buffer[forward_index] == '_' || buffer[forward_index] == '#'))
+    if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && (buffer[forward_index] == '_' || buffer[forward_index] == '#')) {
         forward_index++;
-
-    while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHANUMERIC(buffer[forward_index]))
-        forward_index++;
-
+        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHA(buffer[forward_index]))
+            forward_index++;
+    // Variable names
+    } else if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHA(buffer[forward_index])) {
+        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHANUMERIC(buffer[forward_index]))
+            forward_index++;
+    // Integers
+    } else if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_NUMERIC(buffer[forward_index])) {
+        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_NUMERIC(buffer[forward_index]))
+            forward_index++;
+    // Floats???
     // Non-alphanumeric characters (excluding '_' and "#" at the start of tokens)
-    if (forward_index == (*index)) {
+    } else {
         if (buffer[forward_index] == '\0')
             return NULL;
 
@@ -318,9 +344,104 @@ consume_next_token_redo:
     return tok;
 }
 
+// char *consume_next_token(FILE *new_source) {
+//     const int BUFFER_CAPACITY = 128;
+
+//     static char *buffer_1 = NULL;
+//     static char *buffer_2 = NULL;
+
+//     static FILE *source = NULL;
+//     static int line_count = 1;
+//     static int index = 0;
+
+//     char *tok = NULL;
+
+//     if (new_source != NULL) {
+//         source = new_source;
+//         line_count = 1;
+//         index = 0;
+
+//         if (buffer_1 == NULL)
+//             buffer_1 = malloc(sizeof(char) * BUFFER_CAPACITY);
+//         if (buffer_2 == NULL)
+//             buffer_2 = malloc(sizeof(char) * BUFFER_CAPACITY);
+
+//         char *temp_1 = fgets(buffer_1, BUFFER_CAPACITY, source);
+//         char *temp_2 = fgets(buffer_2, BUFFER_CAPACITY, source);
+
+//         if (temp_1 == NULL) {
+//             free(buffer_1);
+//             buffer_1 = NULL;
+//             free(buffer_2);
+//             buffer_2 = NULL;
+//         } else if (temp_2 == NULL) {
+//             free(buffer_2);
+//             buffer_2 = NULL;
+//         }
+
+//         return NULL;
+//     } else if (source == NULL) {
+//         return NULL;
+//     }
+
+// consume_next_token_redo:
+
+//     if (buffer_1 == NULL)
+//         return NULL;
+
+//     if (IS_WHITESPACE(buffer_1[index])) {
+//         consume_whitespace(buffer_1, BUFFER_CAPACITY, &index, &line_count);
+//     }
+
+//     if (buffer_1[index] == '\0') {
+//         NEXT_BUFFER(buffer_1, buffer_2, BUFFER_CAPACITY, source, index, index); // index done twice, as macro accepts 2 forward_index as 2nd index
+
+//         goto consume_next_token_redo;
+//     }
+
+//     // Comment removal
+//     if (buffer_1[index] == '%') {
+//         while (buffer_1[index] != '\n') {
+//             if (buffer_1[index] == '\0') {
+//                 if (buffer_2 == NULL) {
+//                     free(buffer_1);
+//                     buffer_1 = NULL;
+//                     return NULL;
+//                 }
+
+//                 NEXT_BUFFER(buffer_1, buffer_2, BUFFER_CAPACITY, source, index, index); // index done twice, as macro accepts 2 forward_index as 2nd index
+//             }
+//             index++;
+//         }
+
+//         goto consume_next_token_redo;
+//     }
+    
+//     int forward_index = index;
+
+//     // // For function, union and record names
+//     // if (buffer_1[forward_index] == '_' || buffer_1[forward_index] == '#')
+//     //     forward_index++;
+
+//     // while (buffer_1[forward_index] != '\0' && !IS_WHITESPACE(buffer_1[forward_index]) && IS_ALPHANUMERIC(buffer_1[forward_index]))
+//     //     forward_index++;
+
+//     // tok = malloc(sizeof(char) * (forward_index - index + 1));
+
+//     // for (int i = index; i < forward_index; i++)
+//     //     tok[i - index] = buffer_1[i];
+
+//     // tok[forward_index - index] = '\0';
+
+//     // index = forward_index;
+
+//     return tok;
+// }
+
 char **get_token_list(char *source_path) {
     const int temp_list_size = 1024;
     char **temp_list = malloc(sizeof(char *) * temp_list_size);
+    int list_index = 0;
 
     FILE *source = fopen(source_path, "r");
 
@@ -331,7 +452,7 @@ char **get_token_list(char *source_path) {
 
     const int buffer_capacity = 12;
     char buffer[buffer_capacity];
-    int line_number = 1, list_index = 0;
+    int line_number = 1;
 
     while (fgets(buffer, buffer_capacity, source)) {
         int i = 0;
@@ -341,6 +462,11 @@ char **get_token_list(char *source_path) {
                 temp_list[list_index++] = seq;
         }
     }
+
+    // char *seq = NULL;
+
+    // while (seq = consume_next_token(source))
+    //     temp_list[list_index++] = seq;
 
     fclose(source);
 
