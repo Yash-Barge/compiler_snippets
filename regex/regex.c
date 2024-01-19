@@ -5,14 +5,12 @@
 
 #include "regex.h"
 
-/*
-    char* make_range() -
-        Input parameters = 
-            - char* regex -> the regular expression
-        Output = 
-            - char* range -> String of all characters accepted by the regular expression, in increasing ASCII value order
-*/
 
+
+/**
+ * @param reg One singular regular expression 
+ * @return char* A character array of size 3, 0th element being the start, 1st element being the end and 3rd character being '\0'
+ */
 char* make_range(char* reg){ 
     // reg of form [x-y]* or [x-y] or [alp]
     if(reg[2] != 'l' && reg[2] != '-') {
@@ -24,33 +22,34 @@ char* make_range(char* reg){
         char* range = malloc(3 * sizeof(char));
         range[0] = 'a';
         range[1] = 'Z';
-        range[52] = '\0';
+        range[2] = '\0';
         return range;
     }
     
-    char* range = malloc(3 * sizeof(char)); // todo - check for null character
     
     if(reg[1] > reg[3]) {
-        printf("Start of range can't be more than end");
+        printf("Start of range can't be more than end.\n");
         return NULL;
     }
+
+    char* range = malloc(3 * sizeof(char));
+
     range[0] = reg[1];
     range[1] = reg[3];
     range[2] = '\0';
     return range;
 }
 
-/*
-    long long find_freq() - 
-        Input parameters =
-            - char* regex -> the regular expression
-        Output = 
-            - long long freq -> a long long number denoting the frequecy of the parts of the regex, in reverse order (leftmost part of regex is the LSB of freq).
-                                if regex = [a-z][a-z][1-5]*[a-z], freq = 1211 (1 for parts without *, 2 for parts with *) 
 
-*/
 
+/**
+ * @param regex the regular expression 
+ * @return long long the frequency of parts of the regex, in reverse order (leftmost part of regex = LSB of freq)
+ */
 long long find_freq(char* regex) {
+
+    // if regex = [a-z][a-z][1-5]*[a-z], freq = 1211 (1 for parts without *, 2 for parts with *) 
+    
     long long freq = 0;
     for(int i=0; i<strlen(regex); i++){
         if(regex[i] == ']' && regex[i+1] == '[') freq = freq*10 + 1; // [x-y]
@@ -66,34 +65,32 @@ long long find_freq(char* regex) {
     return rev_freq;
 }
 
-/*
-    char* substr() - 
-        Input parameters =
-            - char* regex -> the regular expression
-            - int start -> the starting index
-        Output = 
-            - char* subs -> the substring of the regex, starting from index start, and taking 5 characters
-                            if regex = [2-5][6-7]*[a-z] and start = 5, subs = [6-7]
+/**
+ * @param regex The regular expression
+ * @param start The starting index
+ * @param output Pass in char array of at least buffer size 6. The substring of the regex, starting from index start, and taking 5 characters.
 */
-
-char* substr(char* regex, int start) {
-    char* subs = malloc(6 * sizeof(char));
+void substr(char *regex, int start, char *output) {
     for(int i=0; i<5; i++){
-        subs[i] = regex[start + i];
+        output[i] = regex[start + i];
     }
-    return subs;
+    output[5] = '\0';
+    return;
 }
 
-/*
-    char** divide_regex() - 
-        Input parameters =
-            - char* regex -> the regular expression
-        Output = 
-            - char** parts -> an array of the different parts of the regex
-                              if regex = [a-z][0-9]*[p-q]*, parts[0] = [a-z], parts[1] = [0-9], parts[2] = [p-q]
-*/
 
-char** divide_regex(char* regex){
+
+/**
+ * @brief 
+ * 
+ * @param regex The regular expression, that has to be divided into it's components
+ * @param size the number of components
+ * @return char** An array of character pointers of the individual components of the regex
+ */
+char** divide_regex(char* regex, int *size){
+
+    //if regex = [a-z][0-9]*[p-q]*, parts[0] = [a-z], parts[1] = [0-9], parts[2] = [p-q]
+
     int num_of_parts = 0;
     for(int i=0; i<strlen(regex); i++){
         if(regex[i] == ']') num_of_parts++;
@@ -102,25 +99,26 @@ char** divide_regex(char* regex){
     int ptr = 0;    
     for(int i=0; i<num_of_parts;){
         if(regex[ptr] == '['){
-            char* subs = substr(regex, ptr);
-            char* ran = make_range(subs);
+            char substr_out[6];
+            substr(regex, ptr, substr_out);
+            char* ran = make_range(substr_out);
             parts[i] = ran;
             i++;
         }
         ptr++;
     }
+    *size = num_of_parts;
     return parts;
 }
- 
-/*
-    bool search() - 
-        Input parameters =
-            - char* regex -> the regular expression
-            - char ele -> the character that has to be checked if it is present in the range
-        Output = 
-            - bool present -> true if the character is present in that range
-*/
 
+
+
+/**
+ * @param range the range of characters as generated from make_range() 
+ * @param ele character that has to be checked, whether it belongs in that range or not
+ * @return true if the character is present in that range
+ * @return false if the character is not present in that range
+ */
 bool search(char* range, char ele){
     if(range[0] == 'a' && range[1] == 'Z'){
         return ((ele <= 'Z' && ele >= 'A') || (ele <= 'z' && ele >= 'a'));
@@ -128,17 +126,31 @@ bool search(char* range, char ele){
     return ((ele <= range[1]) && (ele >= range[0]));
 }
 
-/*
-    bool end_of_regex() - 
-        Input parameters =
-            - long long freq -> the frequency number (calculated by find_freq)
-        Output = 
-            - bool at_end -> returns true if we CAN be at the end of the regex
-                             if regex = [a-z], and we have read one char, we are at the end
-                             if regex = [0-9]*, and we have read no chars, we can be at the end
-*/
 
+
+/** 
+ * @param parts Divided regex that needs to be freed
+ * @param num_of_parts Number of elements in the divided regex 
+ */
+void freeParts(char** parts, int num_of_parts){
+    for(int i=0; i<num_of_parts; i++){
+        free(parts[i]);
+    }
+    free(parts);
+}
+
+
+
+/**
+ * @param freq The frequency of elements, as generated from find_freq()
+ * @return true if the freq number can denote a theoretical end of the regex
+ * @return false if the freq number can not be the theoretical end of the regex
+ */
 bool end_of_regex(long long freq){
+    /*
+        if regex = [a-z], and we have read one char, we are at the end
+        if regex = [0-9]*, and we have read no chars, we can be at the end
+    */
     while (freq){
         if(freq % 10 == 1) return false;
         freq /= 10;
@@ -146,93 +158,85 @@ bool end_of_regex(long long freq){
     return true;
 } 
 
-/*
-    int check() - 
-        Input parameters =
-            - char* regex -> the regular expression
-            - char* expr -> the expression that we want to check, whether it can be generated by the above regex
-        Output = 
-            - int out -> 0 if it cannot be generated, 1 if it can
-*/
 
+
+/**
+ * @param regex The input regex, against which expr is to be checked 
+ * @param expr The expression, that has to be checked if it can be made from the regex
+ * @return 0 if expression can't be generated from the regex, else returns 1
+ */
 int check(char* regex, char* expr){
-    char** parts = divide_regex(regex);
+    int parts_length;
+    char** parts = divide_regex(regex, &parts_length);
     int expr_ptr = 0;
     int id = 0;
 
     long long freq = find_freq(regex);
 
     while(true){
-        printf("%c -> ", expr[expr_ptr]);
-        
         if(end_of_regex(freq) && expr == ""){
-            printf("Empty string part of language.\n");
-            printf("Valid.\n");
+            // Empty string part of language.
+            freeParts(parts, parts_length);
             return 1;
         }
-
-        if(id == sizeof(parts)) break;
-        else if(freq == 0 && expr_ptr != strlen(expr) - 1) {
-            printf("in cond 1\n");
-            printf("At end of regex, but expression is still left.\n");
-            printf("Invalid.\n");
+        if(freq == 0 && expr_ptr != strlen(expr) - 1) {
+            // At end of regex, but expression is still left.
+            freeParts(parts, parts_length);
             return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && !end_of_regex(freq/10)) {
-            printf("in cond 2\n");
-            printf("At end of expression, but regex has more terms.\n");
-            printf("Invalid.\n");
+            // At end of expression, but regex has more terms.
+            freeParts(parts, parts_length);
             return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && end_of_regex(freq/10)) {
             if(search(parts[id], expr[expr_ptr])) break;
             else {
-                printf("Invalid\n");
+                // printf("Invalid\n");
+                freeParts(parts, parts_length);
                 return 0;
             }
         }
         else if(freq%10 == 1 && search(parts[id], expr[expr_ptr])){
-            printf("in cond 3\n");
             id++;
             expr_ptr++;
             freq/=10;
         }
         else if(freq%10 == 1 && !search(parts[id], expr[expr_ptr])){
-            printf("in cond 4\n");
-            printf("Failed because of absence of necessary part of regex.\n");
+            // Fail because of absence of necessary part of regex. ([0-9][alp]* with input abc, then [0-9] is necessary part of regex)
+            freeParts(parts, parts_length);
             return 0;
         }
         else if(freq%10 == 2 && search(parts[id], expr[expr_ptr])){
-            printf("in cond 5\n");
             expr_ptr++;
         }
         else if(freq%10 == 2 && !search(parts[id], expr[expr_ptr])){
-            printf("in cond 6\n");
             id++;
             freq/=10;
         }
     }
-
-    if(end_of_regex(freq)) {
-        printf("Valid\n");
-        return 1;
-    }
-    printf("Invalid\n");
-    return 0;
-
+    freeParts(parts, parts_length);
+    return end_of_regex(freq);
 }
 
 int main(void) {
 
-    char *regex = "[alp]*[1-9]*";
+    // char *regex = "[alp]*[1-9]*";
 
-    check(regex, "testing123");
-    check(regex, "yo");
-    check(regex, "");
-    check(regex, "12345");
-    check(regex, "12345abcd");
+    // check(regex, "testing123");
+    // check(regex, "yo");
+    // check(regex, "");
+    // check(regex, "12345");
+    // check(regex, "12345abcd");
+    // check(regex, "12345a");
+
+    char *regex = "[alp][0-9][alp]";
+
+    printf("%s\n", check(regex, "a93") ? "Valid" : "Invalid");
+    printf("%s\n", check(regex, "zzz") ? "Valid" : "Invalid");
+    printf("%s\n", check(regex, "zzz325") ? "Valid" : "Invalid");
+    printf("%s\n", check(regex, "K9a") ? "Valid" : "Invalid");
     
-
     // char* regex = "[2-7][2-7][2-7][2-7]";
     // check(regex, "222");
 
