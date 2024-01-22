@@ -258,7 +258,7 @@ char **get_token_list(char *source_path) {
                     SWAP_POINTER(buffer1, buffer2);
                     SWAP_INT(buffer1_length, buffer2_length);
 
-                    if (!buffer1_length)
+                    if (!buffer1_length) // EOF
                         break;
 
                     FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
@@ -294,7 +294,7 @@ char **get_token_list(char *source_path) {
                         SWAP_POINTER(buffer1, buffer2);
                         SWAP_INT(buffer1_length, buffer2_length);
 
-                        if (!buffer1_length)
+                        if (!buffer1_length) // EOF
                             goto tok_completed;
 
                         FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
@@ -310,7 +310,7 @@ char **get_token_list(char *source_path) {
                     SWAP_POINTER(buffer1, buffer2);
                     SWAP_INT(buffer1_length, buffer2_length);
 
-                    if (!buffer1_length)
+                    if (!buffer1_length) // EOF
                         goto tok_completed;
 
                     FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
@@ -329,7 +329,7 @@ char **get_token_list(char *source_path) {
             }
         }
 
-        if (!buffer1_length)
+        if (!buffer1_length) // EOF
             break;
 
         SWAP_POINTER(buffer1, buffer2);
