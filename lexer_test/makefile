@@ -1,5 +1,5 @@
 CC =  gcc
-# CFLAGS = -Wall -Wextra -Werror -O2
+CFLAGS = -Wall -Wextra # -Werror  -O2
 
 prog: lexer_test.o regex.o sample_code.txt
 	$(CC) $(CFLAGS) -o prog lexer_test.o regex.o

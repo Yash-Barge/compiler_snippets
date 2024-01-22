@@ -20,16 +20,16 @@
         x = y; \
         y = temp; \
     } while (0)
-#define NEXT_BUFFER(buf1, buf2, buf_cap, src, ind, f_ind) \
+#define SWAP_INT(x, y) \
     do { \
-        SWAP_POINTER(buf1, buf2); \
-        char *temp = fgets(buf2, buf_cap, src); \
-        if (temp == NULL) { \
-            free(buf2); \
-            buf2 = NULL; \
-        } \
-        ind = 0; \
-        f_ind = 0; \
+        x ^= y; \
+        y ^= x; \
+        x ^= y; \
+    } while (0)
+#define FILL_BUFFER(buf, buf_len, buf_cap, filestream) \
+    do { \
+        buf_len = fread(buf, sizeof(buf[0]), buf_cap, filestream); \
+        buf[buf_len] = '\0'; \
     } while (0)
 
 // Lexicographically sorted, specifically to use binary search
@@ -96,7 +96,7 @@ enum ENUM_ID {
     TK_RNUM
 };
 
-char* regular_expressions[] = {
+char *regular_expressions[] = {
     "[alp][alp]*",
     "[b-d][2-7][b-d]*[2-7]*",
     "[0-9][0-9]*",
@@ -109,14 +109,14 @@ char* regular_expressions[] = {
 };
 
 /**
- * @param expr expression that is to be checked 
+ * @param expr expression that is to be checked
  * @return int returns integer index of ENUM_ID of which it is a part, else returns -1
  */
-int typeof_identifier(char* expr){
-    for(int i=0; i<5; i++){
-        if(check(regular_expressions[i], expr)) return i;
+int typeof_identifier(char *expr) {
+    for (int i = 0; i < 5; i++) {
+        if (check(regular_expressions[i], expr)) return i;
     }
-    if(check(regular_expressions[5], expr) || check(regular_expressions[6], expr) || check(regular_expressions[7], expr) || check(regular_expressions[8], expr)) return 5;
+    if (check(regular_expressions[5], expr) || check(regular_expressions[6], expr) || check(regular_expressions[7], expr) || check(regular_expressions[8], expr)) return 5;
     return -1;
 }
 
@@ -216,7 +216,7 @@ enum ENUM_TOK tk_from_string(const char *const str) {
 
 void consume_whitespace(const char *const buffer, int max_buf_length, int *restrict index, int *restrict line_count) {
     while (*index < max_buf_length && IS_WHITESPACE(buffer[(*index)])) {
-        if (buffer[(*index)] == 10)
+        if (buffer[(*index)] == '\n')
             (*line_count)++;
         (*index)++;
     }
@@ -224,289 +224,124 @@ void consume_whitespace(const char *const buffer, int max_buf_length, int *restr
     return;
 }
 
-// TODO: Rewrite to use twin buffer
-char *consume_next_token(FILE *source, char *const buffer, int max_buf_length, int *restrict index, int *restrict line_count) {
-    char *tok = NULL;
-    char *tok_incomplete = NULL;
-
-consume_next_token_redo:
-
-    if (IS_WHITESPACE(buffer[(*index)])) {
-        // (After goto) Token is complete, line just happened to be max length of buffer
-        if (tok_incomplete != NULL)
-            return tok_incomplete;
-
-        consume_whitespace(buffer, max_buf_length, index, line_count);
-    }
-
-    // Comment removal
-    if (buffer[(*index)] == '%') {
-        while (buffer[(*index)] != '\n') {
-            if (buffer[(*index)] == '\0') {
-                if (fgets(buffer, max_buf_length, source) == NULL)
-                    break;
-                (*index) = 0;
-            }
-            (*index)++;
-        }
-
-        consume_whitespace(buffer, max_buf_length, index, line_count);
-    }
-
-    int forward_index = *index;
-
-    // For function, union and record names
-    if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && (buffer[forward_index] == '_' || buffer[forward_index] == '#')) {
-        forward_index++;
-        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHA(buffer[forward_index]))
-            forward_index++;
-    // Variable names
-    } else if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHA(buffer[forward_index])) {
-        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_ALPHANUMERIC(buffer[forward_index]))
-            forward_index++;
-    // Integers
-    } else if (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_NUMERIC(buffer[forward_index])) {
-        while (buffer[forward_index] != '\0' && !IS_WHITESPACE(buffer[forward_index]) && IS_NUMERIC(buffer[forward_index]))
-            forward_index++;
-    // Floats???
-    // Non-alphanumeric characters (excluding '_' and "#" at the start of tokens)
-    } else {
-        if (buffer[forward_index] == '\0')
-            return NULL;
-
-        switch (buffer[forward_index]) {
-        case '!':
-            if (buffer[forward_index + 1] == '\0') { // in next buffer
-                // EOF
-                if (fgets(buffer, max_buf_length, source) == NULL)
-                    goto consume_next_token_special_character_default;
-
-                (*index) = 0;
-
-                if (buffer[0] == '=') {
-                    ASSIGN_STRING(tok, token_list[TK_NE]);
-                    (*index) += 1;
-                } else {
-                    ASSIGN_STRING(tok, "!");
-                }
-            } else if (buffer[forward_index + 1] == '=') {
-                ASSIGN_STRING(tok, token_list[TK_NE]);
-                (*index) += 2;
-            } else
-                goto consume_next_token_special_character_default;
-            break;
-        case '=':
-            if (buffer[forward_index + 1] == '\0') { // in next buffer
-                // EOF
-                if (fgets(buffer, max_buf_length, source) == NULL)
-                    goto consume_next_token_special_character_default;
-
-                (*index) = 0;
-
-                if (buffer[0] == '=') {
-                    ASSIGN_STRING(tok, token_list[TK_EQ]);
-                    (*index) += 1;
-                } else {
-                    ASSIGN_STRING(tok, "=");
-                }
-            } else if (buffer[forward_index + 1] == '=') {
-                ASSIGN_STRING(tok, token_list[TK_EQ]);
-                (*index) += 2;
-            } else
-                goto consume_next_token_special_character_default;
-            break;
-        case '>':
-            if (buffer[forward_index + 1] == '\0') {
-                // EOF
-                if (fgets(buffer, max_buf_length, source) == NULL)
-                    goto consume_next_token_special_character_default;
-
-                (*index) = 0;
-
-                if (buffer[0] == '=') {
-                    ASSIGN_STRING(tok, token_list[TK_GE]);
-                    (*index) += 1;
-                } else {
-                    ASSIGN_STRING(tok, token_list[TK_GT]);
-                }
-            } else if (buffer[forward_index + 1] == '=') {
-                ASSIGN_STRING(tok, token_list[TK_GE]);
-                (*index) += 2;
-            } else
-                goto consume_next_token_special_character_default;
-            break;
-        default:
-        consume_next_token_special_character_default:
-            tok = malloc(sizeof(char) * 2);
-            tok[0] = buffer[(*index)++];
-            tok[1] = '\0';
-            break;
-        }
-
-        return tok;
-    }
-
-    tok = malloc(sizeof(char) * (forward_index - (*index) + 1));
-
-    for (int i = (*index); i < forward_index; i++)
-        tok[i - (*index)] = buffer[i];
-
-    tok[forward_index - (*index)] = '\0';
-
-    (*index) = forward_index;
-
-    // (After goto) concatenate and complete token
-    if (tok_incomplete != NULL) {
-        tok_incomplete = realloc(tok_incomplete, sizeof(char) * (strlen(tok_incomplete) + strlen(tok) + 1));
-        strcat(tok_incomplete, tok);
-        tok = tok_incomplete;
-        tok_incomplete = NULL;
-    }
-
-    // Buffer does not contain the entire line
-    if (forward_index == max_buf_length - 1) {
-        tok_incomplete = tok;
-        tok = NULL;
-
-        if (fgets(buffer, max_buf_length, source)) {
-            (*index) = 0;
-            goto consume_next_token_redo;
-        } else { // EOF, token is actually complete
-            tok = tok_incomplete;
-            tok_incomplete = NULL;
-        }
-    }
-
-    return tok;
-}
-
-// char *consume_next_token(FILE *new_source) {
-//     const int BUFFER_CAPACITY = 128;
-
-//     static char *buffer_1 = NULL;
-//     static char *buffer_2 = NULL;
-
-//     static FILE *source = NULL;
-//     static int line_count = 1;
-//     static int index = 0;
-
-//     char *tok = NULL;
-
-//     if (new_source != NULL) {
-//         source = new_source;
-//         line_count = 1;
-//         index = 0;
-
-//         if (buffer_1 == NULL)
-//             buffer_1 = malloc(sizeof(char) * BUFFER_CAPACITY);
-//         if (buffer_2 == NULL)
-//             buffer_2 = malloc(sizeof(char) * BUFFER_CAPACITY);
-
-//         char *temp_1 = fgets(buffer_1, BUFFER_CAPACITY, source);
-//         char *temp_2 = fgets(buffer_2, BUFFER_CAPACITY, source);
-
-//         if (temp_1 == NULL) {
-//             free(buffer_1);
-//             buffer_1 = NULL;
-//             free(buffer_2);
-//             buffer_2 = NULL;
-//         } else if (temp_2 == NULL) {
-//             free(buffer_2);
-//             buffer_2 = NULL;
-//         }
-
-//         return NULL;
-//     } else if (source == NULL) {
-//         return NULL;
-//     }
-
-// consume_next_token_redo:
-
-//     if (buffer_1 == NULL)
-//         return NULL;
-
-//     if (IS_WHITESPACE(buffer_1[index])) {
-//         consume_whitespace(buffer_1, BUFFER_CAPACITY, &index, &line_count);
-//     }
-
-//     if (buffer_1[index] == '\0') {
-//         NEXT_BUFFER(buffer_1, buffer_2, BUFFER_CAPACITY, source, index, index); // index done twice, as macro accepts 2 forward_index as 2nd index
-
-//         goto consume_next_token_redo;
-//     }
-
-//     // Comment removal
-//     if (buffer_1[index] == '%') {
-//         while (buffer_1[index] != '\n') {
-//             if (buffer_1[index] == '\0') {
-//                 if (buffer_2 == NULL) {
-//                     free(buffer_1);
-//                     buffer_1 = NULL;
-//                     return NULL;
-//                 }
-
-//                 NEXT_BUFFER(buffer_1, buffer_2, BUFFER_CAPACITY, source, index, index); // index done twice, as macro accepts 2 forward_index as 2nd index
-//             }
-//             index++;
-//         }
-
-//         goto consume_next_token_redo;
-//     }
-    
-//     int forward_index = index;
-
-//     // // For function, union and record names
-//     // if (buffer_1[forward_index] == '_' || buffer_1[forward_index] == '#')
-//     //     forward_index++;
-
-//     // while (buffer_1[forward_index] != '\0' && !IS_WHITESPACE(buffer_1[forward_index]) && IS_ALPHANUMERIC(buffer_1[forward_index]))
-//     //     forward_index++;
-
-//     // tok = malloc(sizeof(char) * (forward_index - index + 1));
-
-//     // for (int i = index; i < forward_index; i++)
-//     //     tok[i - index] = buffer_1[i];
-
-//     // tok[forward_index - index] = '\0';
-
-//     // index = forward_index;
-
-//     return tok;
-// }
-
 char **get_token_list(char *source_path) {
-    const int temp_list_size = 1024;
-    char **temp_list = malloc(sizeof(char *) * temp_list_size);
-    int list_index = 0;
-
     FILE *source = fopen(source_path, "r");
 
-    if (source == NULL) {
-        fprintf(stderr, "Cannot open source file %s! Are you sure the path and filename are correct?\n", source_path);
-        exit(1);
-    }
+    const int BUFFER_CAPACITY = 1;
 
-    const int buffer_capacity = 12;
-    char buffer[buffer_capacity];
-    int line_number = 1;
+    char *buffer1 = malloc(sizeof(char) * (BUFFER_CAPACITY + 1));
+    char *buffer2 = malloc(sizeof(char) * (BUFFER_CAPACITY + 1));
+    buffer1[BUFFER_CAPACITY] = '\0';
+    buffer2[BUFFER_CAPACITY] = '\0';
 
-    while (fgets(buffer, buffer_capacity, source)) {
-        int i = 0;
-        while (i < strlen(buffer)) {
-            char *seq = consume_next_token(source, buffer, buffer_capacity, &i, &line_number);
-            if (seq != NULL)
-                temp_list[list_index++] = seq;
+    int buffer1_length;
+    FILL_BUFFER(buffer1, buffer1_length, BUFFER_CAPACITY, source);
+    int buffer2_length, line_number = 1;
+
+    char *tok_incomplete = NULL;
+    int index = 0;
+
+    while (1) {
+        FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
+
+        while (index < buffer1_length) {
+            if (buffer1[index] == '%') {
+            continue_comment_removal:
+                while (buffer1[index] != '\n' && index < buffer1_length)
+                    index++;
+
+                if (buffer1[index] == '\n') {
+                    line_number++;
+                    index++;
+                    continue;
+                } else { // at end of buffer
+                    SWAP_POINTER(buffer1, buffer2);
+                    SWAP_INT(buffer1_length, buffer2_length);
+
+                    if (!buffer1_length)
+                        break;
+
+                    FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
+                    index = 0;
+                    goto continue_comment_removal;
+                }
+            } else if (IS_WHITESPACE(buffer1[index])) {
+                consume_whitespace(buffer1, buffer1_length, &index, &line_number);
+                continue;
+            } else {
+            consume_token:;
+                int f_index = index;
+                char *tok = NULL;
+
+                while (!IS_WHITESPACE(buffer1[f_index]) && f_index < buffer1_length) // temporary, will be replaced by the dfa implementation later
+                    f_index++;
+
+                char *temp = malloc(sizeof(char) * (f_index - index + 1));
+
+                for (int i = index; i < f_index; i++)
+                    temp[i - index] = buffer1[i];
+
+                temp[f_index - index + 1] = '\0';
+
+                index = f_index;
+
+                if (tok_incomplete != NULL) {
+                    tok_incomplete = realloc(tok_incomplete, sizeof(char) * (strlen(tok_incomplete) + strlen(temp) + 1));
+                    strcat(tok_incomplete, temp);
+                    free(temp);
+
+                    if (index == buffer1_length) {
+                        SWAP_POINTER(buffer1, buffer2);
+                        SWAP_INT(buffer1_length, buffer2_length);
+
+                        if (!buffer1_length)
+                            goto tok_completed;
+
+                        FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
+                        index = 0;
+                        goto consume_token;
+                    } else {
+                    tok_completed:
+                        tok = tok_incomplete;
+                        tok_incomplete = NULL;
+                    }
+                } else if (index == buffer1_length) {
+                    tok_incomplete = temp;
+                    SWAP_POINTER(buffer1, buffer2);
+                    SWAP_INT(buffer1_length, buffer2_length);
+
+                    if (!buffer1_length)
+                        goto tok_completed;
+
+                    FILL_BUFFER(buffer2, buffer2_length, BUFFER_CAPACITY, source);
+                    index = 0;
+                    goto consume_token;
+                } else {
+                    tok = temp;
+                }
+
+                printf("%s\n", tok);
+
+                free(tok);
+                tok = NULL;
+
+                continue;
+            }
         }
+
+        if (!buffer1_length)
+            break;
+
+        SWAP_POINTER(buffer1, buffer2);
+        SWAP_INT(buffer1_length, buffer2_length);
+
+        index = 0;
     }
 
-    // char *seq = NULL;
+    free(buffer1);
+    free(buffer2);
 
-    // while (seq = consume_next_token(source))
-    //     temp_list[list_index++] = seq;
-
-    fclose(source);
-
-    return temp_list;
+    return NULL;
 }
 
 int main(int argc, char *argv[]) {
@@ -515,14 +350,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char **source_tok_list = get_token_list(argv[1]);
+    // char **source_tok_list = get_token_list(argv[1]);
+    get_token_list(argv[1]);
 
-    for (int i = 0; i < 1024; i++) {
-        if (source_tok_list[i] == NULL)
-            break;
+    // for (int i = 0; i < 1024; i++) {
+    //     if (source_tok_list[i] == NULL)
+    //         break;
 
-        printf("%s\n", source_tok_list[i]);
-    }
+    //     printf("%s\n", source_tok_list[i]);
+    // }
 
     return 0;
 }
