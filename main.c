@@ -96,13 +96,17 @@ void hashmap_tests(void){
     printf("\nHashmap tests:\n");
     struct hashmap *hm = Hashmap.new(11);
 
-    Hashmap.insert(hm, 3);
-    Hashmap.insert(hm, 4);
-    Hashmap.insert(hm, 56);
-    Hashmap.insert(hm, 211);
-    Hashmap.insert(hm, 87);
-    Hashmap.insert(hm, 22);
-    Hashmap.insert(hm, 43);
+    Hashmap.insert(&hm, 3);
+    Hashmap.insert(&hm, 4);
+    Hashmap.insert(&hm, 56);
+    Hashmap.insert(&hm, 211);
+    Hashmap.insert(&hm, 87);
+    Hashmap.insert(&hm, 22);
+    Hashmap.insert(&hm, 43);
+    Hashmap.insert(&hm, 43);
+    Hashmap.insert(&hm, 22);
+    Hashmap.insert(&hm, 43);
+    Hashmap.insert(&hm, 43);
 
     printf("Search for Value 43 = %d\n", Hashmap.search(hm, 43));
     printf("Search for Value 211 = %d\n", Hashmap.search(hm, 211));

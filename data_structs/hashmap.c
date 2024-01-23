@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <time.h>
 
@@ -21,6 +22,11 @@ struct hashmap {
     int capacity;
 };
 
+struct hashmap* hashmap_new(int size);
+void hashmap_insert(struct hashmap** hm, int key);
+int hashmap_search(struct hashmap* hm, int key);
+void hashmap_erase(struct hashmap* hm, int key);
+void hashmap_free(struct hashmap **p_hm);
 
 struct node* new_node_hash(int val){
     struct node* n = malloc(sizeof(struct node));
@@ -67,7 +73,7 @@ int hash_function(int key, int size){
 struct hashmap* hashmap_new(int size){
     int hashmap_size = size;
     struct hashmap* hmap = malloc(sizeof(struct hashmap));
-    hmap->map = malloc(sizeof(struct map *) * hashmap_size);
+    hmap->map = malloc(sizeof(struct head*) * hashmap_size);
     for(int i=0; i<hashmap_size; i++){
         hmap->map[i] = new_head_hash();
     }
@@ -75,26 +81,29 @@ struct hashmap* hashmap_new(int size){
     return hmap;
 }
 
-struct hashmap* hashmap_resize(struct hashmap* hm){
-    assert(hm);
-    struct hashmap* new_hashmap = hashmap_new(hm->size * 2);
-    for(int i=0; i<hm->size; i++){
-        struct node* temp = hm->map[i]->first_node;
-        while(temp != NULL) {
-            hashmap_insert(new_hashmap, temp->val);
-        }
-    }
-    hashmap_free(hm);
-    return new_hashmap;
-}
+void hashmap_insert(struct hashmap** p_hm, int key){
+    assert(p_hm != NULL);
+    assert(*p_hm != NULL);
 
-void hashmap_insert(struct hashmap* hm, int key){
-    assert(hm != NULL);
+    struct hashmap *hm = *p_hm;
+
+    if (hashmap_search(hm, key))
+        return;
+
     int index = hash_function(key, hm->size);
     ll_insert(hm->map[index], key);
     hm->capacity++;
-    if(hm->capacity == hm->size*2){
-        hm = hashmap_resize(hm, hm->size);
+    if(hm->capacity == hm->size){
+        struct hashmap* new_hm = hashmap_new(hm->size * 2);
+        for(int i=0; i<hm->size; i++){
+            struct node* temp = hm->map[i]->first_node;
+            while(temp != NULL) {
+                hashmap_insert(&new_hm, temp->val);
+                temp = temp->next;
+            }
+        }
+        hashmap_free(p_hm);
+        *p_hm = new_hm;
     }
     return;
 }
