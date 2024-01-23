@@ -18,6 +18,7 @@ struct node {
 struct hashmap {
     struct head** map;
     int size;
+    int capacity;
 };
 
 
@@ -37,10 +38,6 @@ struct head* new_head_hash(){
 void ll_insert(struct head* h, int val){
     assert(h != NULL);
     struct node* n = new_node_hash(val);
-    // if(h->next == NULL){
-    //     h->next = n;
-    //     return;
-    // }
     n->next = h->first_node;
     h->first_node = n;
     return;
@@ -62,6 +59,11 @@ void ll_free(struct head* h){
     free(h);
 }
 
+
+int hash_function(int key, int size){
+    return (1LL * key * 23) % size;
+}
+
 struct hashmap* hashmap_new(int size){
     int hashmap_size = size;
     struct hashmap* hmap = malloc(sizeof(struct hashmap));
@@ -73,14 +75,27 @@ struct hashmap* hashmap_new(int size){
     return hmap;
 }
 
-int hash_function(int key, int size){
-    return (1LL * key * 23) % size;
+struct hashmap* hashmap_resize(struct hashmap* hm){
+    assert(hm);
+    struct hashmap* new_hashmap = hashmap_new(hm->size * 2);
+    for(int i=0; i<hm->size; i++){
+        struct node* temp = hm->map[i]->first_node;
+        while(temp != NULL) {
+            hashmap_insert(new_hashmap, temp->val);
+        }
+    }
+    hashmap_free(hm);
+    return new_hashmap;
 }
 
 void hashmap_insert(struct hashmap* hm, int key){
     assert(hm != NULL);
     int index = hash_function(key, hm->size);
     ll_insert(hm->map[index], key);
+    hm->capacity++;
+    if(hm->capacity == hm->size*2){
+        hm = hashmap_resize(hm, hm->size);
+    }
     return;
 }
 
@@ -128,7 +143,7 @@ void hashmap_free(struct hashmap **p_hm){
 
     struct hashmap *hm = *p_hm;
 
-    int hashmap_size = hm->size; // CHANGE IF HASH FUNCTION CHANGES   
+    int hashmap_size = hm->size;
     for(int i=0; i<hashmap_size; i++){
         ll_free(hm->map[i]);
     }
