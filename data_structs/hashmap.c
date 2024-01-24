@@ -12,7 +12,7 @@ struct head {
 };
 
 struct node {
-    int val;
+    char* val;
     struct node* next;
 };
 
@@ -23,14 +23,15 @@ struct hashmap {
 };
 
 struct hashmap* hashmap_new(int size);
-void hashmap_insert(struct hashmap** hm, int key);
-int hashmap_search(struct hashmap* hm, int key);
-void hashmap_erase(struct hashmap* hm, int key);
+void hashmap_insert(struct hashmap** hm, char* key);
+int hashmap_search(struct hashmap* hm, char* key);
+void hashmap_erase(struct hashmap* hm, char* key);
 void hashmap_free(struct hashmap **p_hm);
 
-struct node* new_node_hash(int val){
+struct node* new_node_hash(char* val){
     struct node* n = malloc(sizeof(struct node));
-    n->val = val;
+    n->val = malloc((strlen(val) + 1) * sizeof(char));
+    strcpy(n->val, val);
     n->next = NULL;
     return n;
 }
@@ -41,7 +42,7 @@ struct head* new_head_hash(){
     return h;
 }
 
-void ll_insert(struct head* h, int val){
+void ll_insert(struct head* h, char* val){
     assert(h != NULL);
     struct node* n = new_node_hash(val);
     n->next = h->first_node;
@@ -60,28 +61,28 @@ void ll_free(struct head* h){
     while(temp != NULL){
         prev = temp;
         temp = temp->next;
+        free(prev->val);
         free(prev);
     }
     free(h);
 }
 
 
-int hash_function(int key, int size){
-    return (1LL * key * 23) % size;
+int hash_function(char* key, int size){
+    return (1LL * strlen(key) * 23) % size;
 }
 
 struct hashmap* hashmap_new(int size){
-    int hashmap_size = size;
     struct hashmap* hmap = malloc(sizeof(struct hashmap));
-    hmap->map = malloc(sizeof(struct head*) * hashmap_size);
-    for(int i=0; i<hashmap_size; i++){
+    hmap->map = malloc(sizeof(struct head*) * size);
+    for(int i=0; i<size; i++){
         hmap->map[i] = new_head_hash();
     }
     hmap->size = size;
     return hmap;
 }
 
-void hashmap_insert(struct hashmap** p_hm, int key){
+void hashmap_insert(struct hashmap** p_hm, char* key){
     assert(p_hm != NULL);
     assert(*p_hm != NULL);
 
@@ -108,40 +109,42 @@ void hashmap_insert(struct hashmap** p_hm, int key){
     return;
 }
 
-int hashmap_search(struct hashmap* hm, int key){
+int hashmap_search(struct hashmap* hm, char* key){
     assert(hm != NULL);
     int index = hash_function(key, hm->size);
     if(hm->map[index]->first_node == NULL) return 0;
     struct node* temp = hm->map[index]->first_node;
     while(temp != NULL){
-        if(temp->val == key) return 1;
+        if(!strcmp(key, temp->val)) return 1;
         temp = temp->next;
     }
     return 0;
 }
 
-void hashmap_erase(struct hashmap* hm, int key){
+void hashmap_erase(struct hashmap* hm, char* key){
     assert(hm != NULL);
     if(!hashmap_search(hm, key)) return;
     
     int index = hash_function(key, hm->size);
-    if(hm->map[index]->first_node->val == key){
+    if(!strcmp(hm->map[index]->first_node->val, key)){
         struct node* temp = hm->map[index]->first_node;
         hm->map[index]->first_node = temp->next;
         temp->next = NULL;
+        free(temp->val);
         free(temp);
         return;
     }
     struct node* temp = hm->map[index]->first_node->next;
     struct node* prev = hm->map[index]->first_node;
     
-    while(temp->val != key){
+    while(strcmp(temp->val, key)){
         prev = temp;
         temp = temp->next;
     }
 
     prev->next = temp->next;
     temp->next = NULL;
+    free(temp->val);
     free(temp);
     return;
 }

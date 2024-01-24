@@ -96,31 +96,33 @@ void hashmap_tests(void){
     printf("\nHashmap tests:\n");
     struct hashmap *hm = Hashmap.new(11);
 
-    Hashmap.insert(&hm, 3);
-    Hashmap.insert(&hm, 4);
-    Hashmap.insert(&hm, 56);
-    Hashmap.insert(&hm, 211);
-    Hashmap.insert(&hm, 87);
-    Hashmap.insert(&hm, 22);
-    Hashmap.insert(&hm, 43);
-    Hashmap.insert(&hm, 43);
-    Hashmap.insert(&hm, 22);
-    Hashmap.insert(&hm, 43);
-    Hashmap.insert(&hm, 43);
+    Hashmap.insert(&hm, "uwu");
+    Hashmap.insert(&hm, "owo");
+    Hashmap.insert(&hm, "ara-ara");
+    Hashmap.insert(&hm, "YashBargeGhot");
+    Hashmap.insert(&hm, "CoCo");
+    Hashmap.insert(&hm, "CoNe");
+    Hashmap.insert(&hm, "def");
+    Hashmap.insert(&hm, "abc");
+    Hashmap.insert(&hm, "abc");
+    Hashmap.insert(&hm, "43");
 
-    printf("Search for Value 43 = %d\n", Hashmap.search(hm, 43));
-    printf("Search for Value 211 = %d\n", Hashmap.search(hm, 211));
-    printf("Search for Value 212 = %d\n", Hashmap.search(hm, 212));
+    printf("Search for Value Yash = %d\n", Hashmap.search(hm, "Yash"));
+    printf("Search for Value YashBargeGhot = %d\n", Hashmap.search(hm, "YashBargeGhot"));
+    printf("Search for Value Shubham = %d\n", Hashmap.search(hm, "Shubham"));
+    printf("Search for Value CoNe = %d\n", Hashmap.search(hm, "CoNe"));
 
-    Hashmap.erase(hm, 211);
-    Hashmap.erase(hm, 43);
-    Hashmap.erase(hm, 87);
-    Hashmap.erase(hm, 212);
+    Hashmap.erase(hm, "jsdijdijdsijdsijs");
+    Hashmap.erase(hm, "YashBargeGhot");
+    Hashmap.erase(hm, "CoNe");
 
-    printf("Search for Value 211 (After Deleting) = %d\n", Hashmap.search(hm, 211));
-    printf("Search for Value 43 (After Deleting) = %d\n", Hashmap.search(hm, 43));
-    printf("Search for Value 87 (After Deleting) = %d\n", Hashmap.search(hm, 87));
-    
+    printf("\nErasing...\n");
+
+    printf("Search for Value Yash = %d\n", Hashmap.search(hm, "Yash"));
+    printf("Search for Value YashBargeGhot = %d\n", Hashmap.search(hm, "YashBargeGhot"));
+    printf("Search for Value Shubham = %d\n", Hashmap.search(hm, "Shubham"));
+    printf("Search for Value CoNe = %d\n", Hashmap.search(hm, "CoNe"));
+
     printf("\nEnd of Hashmap tests\n");
 
     Hashmap.free(&hm);
