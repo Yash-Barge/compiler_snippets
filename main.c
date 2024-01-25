@@ -134,27 +134,39 @@ void hashmap_tests(void){
 
 void symbol_table_tests(void){
     printf("\nSymbol Table Tests:\n\n");
-    struct symbol_table* sym_table = SymbolTable.new(15);
-    SymbolTable.insert(&sym_table, "b2b7");
-    // SymbolTable.insert(&sym_table, "b2b6");
-    // SymbolTable.insert(&sym_table, "b2b5");
-    // SymbolTable.insert(&sym_table, "b2b4");
-    // SymbolTable.insert(&sym_table, "b2b3");
-    // SymbolTable.insert(&sym_table, "b2b2");
-    // SymbolTable.insert(&sym_table, "b2c7");
-    // SymbolTable.insert(&sym_table, "b2c6");
+    struct symbol_table* sym_table = SymbolTable.new(3);
+    SymbolTable.insert(&sym_table, "b");
+    SymbolTable.insert(&sym_table, "b2b6");
+    SymbolTable.insert(&sym_table, "b2b5");
+    SymbolTable.insert(&sym_table, "b2b4");
+    SymbolTable.insert(&sym_table, "b2b3");
+    SymbolTable.insert(&sym_table, "b2b2");
+    SymbolTable.insert(&sym_table, "b2c7");
+    SymbolTable.insert(&sym_table, "b2c6");
     SymbolTable.insert(&sym_table, "while");
     SymbolTable.insert(&sym_table, "union");
     SymbolTable.insert(&sym_table, "endunion");
 
-    printf("Search for Value b2b7 = %d\n", SymbolTable.search(sym_table, "b2b7"));
+    printf("Search for Value b = %d\n", SymbolTable.search(sym_table, "b2b7"));
     printf("Search for Value b2b6 = %d\n", SymbolTable.search(sym_table, "b2b6"));
-    // printf("Search for Value d6d5 = %d\n", SymbolTable.search(sym_table, "d6d5"));
     printf("Search for Value Shubham = %d\n", SymbolTable.search(sym_table, "Shubham"));
     printf("Search for Value while = %d\n", SymbolTable.search(sym_table, "while"));
 
+
     SymbolTable.free(&sym_table);
 
+    struct symbol_table* init_symbol_table = SymbolTable.init();
+
+    printf("\n\nSearch for Value ~ = %d\n", SymbolTable.search(init_symbol_table, "~"));
+    printf("Search for Value write = %d\n", SymbolTable.search(init_symbol_table, "write"));
+    printf("Search for Value else = %d\n", SymbolTable.search(init_symbol_table, "else"));
+    printf("Search for Value while = %d\n", SymbolTable.search(init_symbol_table, "while"));
+    printf("Search for Value <--- = %d\n", SymbolTable.search(init_symbol_table, "<---"));
+    printf("Search for Value != = %d\n", SymbolTable.search(init_symbol_table, "!="));
+    printf("Search for Value - = %d\n", SymbolTable.search(init_symbol_table, "-"));
+
+
+    SymbolTable.free(&init_symbol_table);
     printf("\nEnd of Symbol Table\n");
     return;
 }
