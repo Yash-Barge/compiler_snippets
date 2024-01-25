@@ -6,7 +6,6 @@
 
 #include "hashmap.h"
 
-
 struct head {
     struct node* first_node;
 };
@@ -42,7 +41,7 @@ struct head* new_head_hash(){
     return h;
 }
 
-void ll_insert(struct head* h, char* val){
+void ll_insert_hm(struct head* h, char* val){
     assert(h != NULL);
     struct node* n = new_node_hash(val);
     n->next = h->first_node;
@@ -50,7 +49,7 @@ void ll_insert(struct head* h, char* val){
     return;
 }
 
-void ll_free(struct head* h){
+void ll_free_hm(struct head* h){
     assert(h != NULL);
     if(h->first_node == NULL) {
         free(h);
@@ -68,7 +67,7 @@ void ll_free(struct head* h){
 }
 
 
-int hash_function(char* key, int size){
+int hash_function_hm(char* key, int size){
     return (1LL * strlen(key) * 23) % size;
 }
 
@@ -91,8 +90,8 @@ void hashmap_insert(struct hashmap** p_hm, char* key){
     if (hashmap_search(hm, key))
         return;
 
-    int index = hash_function(key, hm->size);
-    ll_insert(hm->map[index], key);
+    int index = hash_function_hm(key, hm->size);
+    ll_insert_hm(hm->map[index], key);
     hm->capacity++;
     if(hm->capacity == hm->size){
         struct hashmap* new_hm = hashmap_new(hm->size * 2);
@@ -111,7 +110,7 @@ void hashmap_insert(struct hashmap** p_hm, char* key){
 
 int hashmap_search(struct hashmap* hm, char* key){
     assert(hm != NULL);
-    int index = hash_function(key, hm->size);
+    int index = hash_function_hm(key, hm->size);
     if(hm->map[index]->first_node == NULL) return 0;
     struct node* temp = hm->map[index]->first_node;
     while(temp != NULL){
@@ -125,7 +124,7 @@ void hashmap_erase(struct hashmap* hm, char* key){
     assert(hm != NULL);
     if(!hashmap_search(hm, key)) return;
     
-    int index = hash_function(key, hm->size);
+    int index = hash_function_hm(key, hm->size);
     if(!strcmp(hm->map[index]->first_node->val, key)){
         struct node* temp = hm->map[index]->first_node;
         hm->map[index]->first_node = temp->next;
@@ -137,10 +136,12 @@ void hashmap_erase(struct hashmap* hm, char* key){
     struct node* temp = hm->map[index]->first_node->next;
     struct node* prev = hm->map[index]->first_node;
     
-    while(strcmp(temp->val, key)){
+    while(strcmp(temp->val, key) && temp != NULL){
         prev = temp;
         temp = temp->next;
     }
+
+    if(temp == NULL) return;
 
     prev->next = temp->next;
     temp->next = NULL;
@@ -157,7 +158,7 @@ void hashmap_free(struct hashmap **p_hm){
 
     int hashmap_size = hm->size;
     for(int i=0; i<hashmap_size; i++){
-        ll_free(hm->map[i]);
+        ll_free_hm(hm->map[i]);
     }
     free(hm->map);
     free(hm);

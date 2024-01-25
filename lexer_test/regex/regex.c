@@ -172,48 +172,69 @@ int check(char* regex, char* expr){
     long long freq = find_freq(regex);
 
     while(true){
+        // printf("%d %d\n", id, expr_ptr);
+        
         if(end_of_regex(freq) && (strcmp(expr, "") == 0)){
             // Empty string part of language.
+            // printf("PASS1\n");
             freeParts(parts, parts_length);
             return 1;
         }
         if(freq == 0 && expr_ptr != strlen(expr) - 1) {
             // At end of regex, but expression is still left.
+            // printf("FAIL1\n");
             freeParts(parts, parts_length);
             return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && !end_of_regex(freq/10)) {
             // At end of expression, but regex has more terms.
+            // printf("FAIL2\n");
             freeParts(parts, parts_length);
             return 0;
         }
         else if(expr_ptr == strlen(expr) - 1 && end_of_regex(freq/10)) {
-            if(search(parts[id], expr[expr_ptr])) break;
-            else {
-                // printf("Invalid\n");
-                freeParts(parts, parts_length);
-                return 0;
+            int flag = 0;
+            while(id < parts_length){
+                if(search(parts[id], expr[expr_ptr])) {
+                    flag = 1;
+                    break;
+                }
+                id++;
+                freq /= 10;
+                // printf("%d %d\n", id, expr_ptr);
+
             }
+            if(flag) break;
+            // printf("Invalid\n");
+            // printf("FAIL3\n");
+            freeParts(parts, parts_length);
+            return 0;
+            
         }
         else if(freq%10 == 1 && search(parts[id], expr[expr_ptr])){
+            // printf("OP1\n");
             id++;
             expr_ptr++;
             freq/=10;
         }
         else if(freq%10 == 1 && !search(parts[id], expr[expr_ptr])){
             // Fail because of absence of necessary part of regex. ([0-9][alp]* with input abc, then [0-9] is necessary part of regex)
+            // printf("FAIL4\n");
             freeParts(parts, parts_length);
             return 0;
         }
         else if(freq%10 == 2 && search(parts[id], expr[expr_ptr])){
+            // printf("OP2\n");
             expr_ptr++;
         }
         else if(freq%10 == 2 && !search(parts[id], expr[expr_ptr])){
+            // printf("OP3\n");
             id++;
             freq/=10;
         }
     }
     freeParts(parts, parts_length);
+    // printf("AT END\n");
     return end_of_regex(freq);
 }
 
@@ -228,12 +249,12 @@ int check(char* regex, char* expr){
 //     // check(regex, "12345abcd");
 //     // check(regex, "12345a");
 
-//     char *regex = "[alp][0-9][alp]";
+//     char *regex = "[b-d][2-7][b-d]*[2-7]";
 
-//     printf("%s\n", check(regex, "a93") ? "Valid" : "Invalid");
-//     printf("%s\n", check(regex, "zzz") ? "Valid" : "Invalid");
-//     printf("%s\n", check(regex, "zzz325") ? "Valid" : "Invalid");
-//     printf("%s\n", check(regex, "K9a") ? "Valid" : "Invalid");
+//     // printf("%s\n", check(regex, "a93") ? "Valid" : "Invalid");
+//     // printf("%s\n", check(regex, "zzz") ? "Valid" : "Invalid");
+//     // printf("%s\n", check(regex, "zzz325") ? "Valid" : "Invalid");
+//     printf("%s\n", check(regex, "b2b7") ? "Valid" : "Invalid");
     
 //     // char* regex = "[2-7][2-7][2-7][2-7]";
 //     // check(regex, "222");

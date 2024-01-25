@@ -5,6 +5,7 @@
 #include "data_structs/vector.h"
 #include "data_structs/queue.h"
 #include "data_structs/hashmap.h"
+#include "data_structs/symbol_table.h"
 
 #include "lib/errors.h"
 
@@ -131,8 +132,35 @@ void hashmap_tests(void){
     
 }
 
+void symbol_table_tests(void){
+    printf("\nSymbol Table Tests:\n\n");
+    struct symbol_table* sym_table = SymbolTable.new(15);
+    SymbolTable.insert(&sym_table, "b2b7");
+    // SymbolTable.insert(&sym_table, "b2b6");
+    // SymbolTable.insert(&sym_table, "b2b5");
+    // SymbolTable.insert(&sym_table, "b2b4");
+    // SymbolTable.insert(&sym_table, "b2b3");
+    // SymbolTable.insert(&sym_table, "b2b2");
+    // SymbolTable.insert(&sym_table, "b2c7");
+    // SymbolTable.insert(&sym_table, "b2c6");
+    SymbolTable.insert(&sym_table, "while");
+    SymbolTable.insert(&sym_table, "union");
+    SymbolTable.insert(&sym_table, "endunion");
+
+    printf("Search for Value b2b7 = %d\n", SymbolTable.search(sym_table, "b2b7"));
+    printf("Search for Value b2b6 = %d\n", SymbolTable.search(sym_table, "b2b6"));
+    // printf("Search for Value d6d5 = %d\n", SymbolTable.search(sym_table, "d6d5"));
+    printf("Search for Value Shubham = %d\n", SymbolTable.search(sym_table, "Shubham"));
+    printf("Search for Value while = %d\n", SymbolTable.search(sym_table, "while"));
+
+    SymbolTable.free(&sym_table);
+
+    printf("\nEnd of Symbol Table\n");
+    return;
+}
+
 void cmd_line_handler(int argc, char **argv) {
-    enum flags { STACK, VECTOR, QUEUE, HASHMAP, FLAG_COUNT };
+    enum flags { STACK, VECTOR, QUEUE, HASHMAP, SYMBOL_TABLE, FLAG_COUNT };
     int flag_arr[FLAG_COUNT] = {0};
 
     for (int i = 1; i < argc; i++) {
@@ -147,11 +175,13 @@ void cmd_line_handler(int argc, char **argv) {
             flag_arr[QUEUE] = 1;
         else if (!strcmp(argv[i], "-Thashmap"))
             flag_arr[HASHMAP] = 1;
+        else if (!strcmp(argv[i], "-Tsymboltable"))
+            flag_arr[SYMBOL_TABLE] = 1;
         else
             warn("Unrecognized argument '%s'\n", argv[i]);
     }
 
-    void (*fun_arr[])() = { stack_tests, vector_tests, queue_tests, hashmap_tests };
+    void (*fun_arr[])() = { stack_tests, vector_tests, queue_tests, hashmap_tests, symbol_table_tests };
 
     for (int i = 0; i < FLAG_COUNT; i++)
         if (flag_arr[i])
