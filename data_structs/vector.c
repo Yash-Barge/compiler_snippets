@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+#include <string.h>
 
 #include "vector.h"
 
@@ -38,10 +39,7 @@ void vi_insert(struct vector *vec, int index, int data) {
     if(vec->size == vec->capacity)
         grow_vector(vec);
 
-    vec->size++;
-
-    for (int i = vec->size - 1; i > index; i--)
-        vec->vector[i] = vec->vector[i - 1];
+    memmove(vec->vector + index + 1, vec->vector + index, sizeof(int) * (vec->size++ - index));
 
     vec->vector[index] = data;
 
@@ -54,10 +52,7 @@ int vi_erase(struct vector *vec, int index) {
 
     int val = vec->vector[index];
 
-    for(int i = index; i < vec->size - 1; i++)
-        vec->vector[i] = vec->vector[i + 1];
-
-    vec->size--;
+    memmove(vec->vector + index, vec->vector + index + 1, sizeof(int) * (--vec->size - index));
 
     return val;
 }
