@@ -1,20 +1,20 @@
-#include "symboltable.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "symboltable.h"
+
 Table createtable(){
     Table symboltable;
-    symboltable=(Table) malloc(sizeof(struct table));
-    symboltable->count=0;
-    symboltable->head=NULL;
+    symboltable = malloc(sizeof(struct table));
+    symboltable->count = 0;
+    symboltable->head = NULL;
     return symboltable;
 }
 
 void addrow(char* lexeme, enum token_names type, Table symboltable){
-    int x=0;
     struct row* newrow;
-    newrow=(struct row*) malloc(sizeof(struct row));
+    newrow = malloc(sizeof(struct row));
     strncpy(newrow->name, lexeme, sizeof(newrow->name));
     // is \0 necessary for above?
     newrow->token_type=type;
@@ -28,29 +28,30 @@ void addrow(char* lexeme, enum token_names type, Table symboltable){
         symboltable->head=newnode;
         newnode->next=NULL;
         symboltable->count++;
-    }
-    else{
+    } else {
         newnode->next=symboltable->head;
         symboltable->head=newnode;
         symboltable->count++;
     }
+
+    return;
 }
 
 Node lookup(char* lexeme, Table symboltable){
-    Node temp=symboltable->head;
-    while(temp!=NULL){
-        if(strcmp(lexeme, temp->entry->name)==0){
+    Node temp = symboltable->head;
+
+    while (temp != NULL) {
+        if (strcmp(lexeme, temp->entry->name) == 0)
             return temp;
-        }
-        else{
+        else
             temp=temp->next;
-        }
     }
+
     return NULL;
 }
 
 void populate(Table symboltable){
-    char* names[] = {
+    char *names[] = {
         "with",
         "parameters",
         "end",
@@ -80,6 +81,7 @@ void populate(Table symboltable){
         "endrecord",
         "else"
     };
+
     enum token_names token_types[] = {
         TK_WITH,
         TK_PARAMETERS,
@@ -110,7 +112,7 @@ void populate(Table symboltable){
         TK_ENDRECORD,
         TK_ELSE
     };
-    for(int i=0; i < 28; i++){
+
+    for(int i = 0; i < 28; i++)
         addrow(names[i], token_types[i], symboltable);
-    }
 }
