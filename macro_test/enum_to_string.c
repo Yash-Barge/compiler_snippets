@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define FOREACH_TOK(TOK)            \
+        TOK(TK_ASSIGNOP)            \
+        TOK(TK_COMMENT)             \
+        TOK(TK_FIELDID)             \
+        TOK(TK_ID)                  \
+        TOK(TK_NUM)                 \
+        TOK(TK_RNUM)                \
+        TOK(TK_FUNID)               \
+        TOK(TK_RUID)                \
+        TOK(TK_WITH)                \
+        TOK(TK_PARAMETERS)          \
+        TOK(TK_END)                 \
+        TOK(TK_WHILE)               \
+        TOK(TK_UNION)               \
+        TOK(TK_ENDUNION)            \
+        TOK(TK_DEFINETYPE)          \
+        TOK(TK_AS)                  \
+        TOK(TK_TYPE)                \
+        TOK(TK_MAIN)                \
+        TOK(TK_GLOBAL)              \
+        TOK(TK_PARAMETER)           \
+        TOK(TK_LIST)                \
+        TOK(TK_SQL)                 \
+        TOK(TK_SQR)                 \
+        TOK(TK_INPUT)               \
+        TOK(TK_OUTPUT)              \
+        TOK(TK_INT)                 \
+        TOK(TK_REAL)                \
+        TOK(TK_COMMA)               \
+        TOK(TK_SEM)                 \
+        TOK(TK_COLON)               \
+        TOK(TK_DOT)                 \
+        TOK(TK_ENDWHILE)            \
+        TOK(TK_OP)                  \
+        TOK(TK_CL)                  \
+        TOK(TK_IF)                  \
+        TOK(TK_THEN)                \
+        TOK(TK_ENDIF)               \
+        TOK(TK_READ)                \
+        TOK(TK_WRITE)               \
+        TOK(TK_RETURN)              \
+        TOK(TK_PLUS)                \
+        TOK(TK_MINUS)               \
+        TOK(TK_MUL)                 \
+        TOK(TK_DIV)                 \
+        TOK(TK_CALL)                \
+        TOK(TK_RECORD)              \
+        TOK(TK_ENDRECORD)           \
+        TOK(TK_ELSE)                \
+        TOK(TK_AND)                 \
+        TOK(TK_OR)                  \
+        TOK(TK_NOT)                 \
+        TOK(TK_LT)                  \
+        TOK(TK_LE)                  \
+        TOK(TK_EQ)                  \
+        TOK(TK_GT)                  \
+        TOK(TK_GE)                  \
+        TOK(TK_NE)                  \
+
+#define GENERATE_ENUM(TOK) TOK, 
+#define GENERATE_STRINGS(STR) #STR,
+
+enum TOK_ENUM {
+    FOREACH_TOK(GENERATE_ENUM)
+};
+
+static const char* TOK_STRING[] = {
+    FOREACH_TOK(GENERATE_STRINGS)
+};
+
+int main(void){
+    printf("Enum TK_NE as a string = %s\n", TOK_STRING[TK_NE]);
+}
