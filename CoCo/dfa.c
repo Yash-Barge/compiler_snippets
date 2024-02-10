@@ -174,7 +174,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             case '\n':
                 state = 32;
                 break;
-            case '\t': case ' ':
+            case '\t': case ' ': case '\r':
                 state = 55;
                 break;
             case '%':
@@ -573,7 +573,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             ignore_read_characters(io);
             ch = getChar(io, state == 0);
             switch (ch) {
-            case '\t': case ' ':
+            case '\t': case ' ': case '\r':
                 state = 55;
                 break;
             case '\n':
