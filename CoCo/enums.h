@@ -1,5 +1,8 @@
+// currently unused, check if required
+
 #ifndef ENUMS
 #define ENUMS
+
 enum token_names{
     TK_ASSIGNOP,
     TK_COMMENT,
@@ -59,4 +62,7 @@ enum token_names{
     TK_GE,
     TK_NE,
 };
+
+// extern const char *tokenenumnames[];
+
 #endif
