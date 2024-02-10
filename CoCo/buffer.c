@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "buffer.h"
+#include <string.h>
 
 BUFFER * createBuffers(){
     BUFFER *buf = (BUFFER *)malloc(sizeof(BUFFER));
@@ -16,12 +17,12 @@ BUFFER * createBuffers(){
         return NULL;
     }
     buf->currentBuffer = 1;
-    // buf->startBuffer = 1;
+    buf->startBuffer = 1;
     // buf->containsData1=false;
     // buf->containsData2=false;
     buf->forward=-1;
     buf->init = false;
-    // buf->start=-1;
+    buf->start=-1;
     buf->size=0;
     buf->advancedSize=0;
     buf->advanceRead=false;
@@ -38,6 +39,7 @@ IOHandler* createIOHandler(char* fileName){
     io->buf = createBuffers();
     io->EOFReached = false;
     io->inputFin=false;
+    io->lineNumber=0;
     return io;
 }
 
@@ -73,7 +75,7 @@ int readFile(IOHandler* io){
     return 0;    
 }
 
-char getChar(IOHandler* io){
+char getChar(IOHandler* io, bool isStart){
     if(io->buf->forward==io->buf->size-1){
         if(!io->EOFReached){
             int read = readFile(io);
@@ -95,6 +97,10 @@ char getChar(IOHandler* io){
     }
     char ret;
     io->buf->forward = (io->buf->forward+1)%BUF_SIZE;
+    if(isStart){
+        io->buf->startBuffer=io->buf->currentBuffer;
+        io->buf->start=io->buf->forward;
+    }
     if(io->buf->currentBuffer==1){
         ret = io->buf->buf1[io->buf->forward];
     }
@@ -115,6 +121,10 @@ int retract(IOHandler* io){
         io->buf->forward = BUF_SIZE-1;
         io->buf->currentBuffer = (io->buf->currentBuffer==1?2:1);
     }
+    //check later
+    if(io->inputFin==true){
+        io->inputFin=false;
+    }
     return 0;
 }
 
@@ -128,20 +138,55 @@ int closeHandler(IOHandler* io){
     return 0;
 }
 
-int main(){
-    IOHandler *io=createIOHandler("f1.txt");
-    int i=0;
-    while(!io->inputFin){
-        char c = getChar(io);
-        printf("%c", c);
-        i++;
-        if(i==33){
-            retract(io);
-            retract(io);
-            retract(io);
-            retract(io);
-        }
+char * getStartBuffer(IOHandler *io){
+    if(io->buf->startBuffer==1){
+        return io->buf->buf1;
     }
-    closeHandler(io);
-    return 0;
+    else{
+        return io->buf->buf2;
+    }
 }
+
+char * getCurrentBuffer(IOHandler *io){
+    if(io->buf->currentBuffer==1){
+        return io->buf->buf1;
+    }
+    else{
+        return io->buf->buf2;
+    }
+}
+
+char* getLexeme(IOHandler *io){
+    int lexemeSize = io->buf->forward;
+    if(io->buf->currentBuffer!=io->buf->startBuffer){
+        lexemeSize+=(BUF_SIZE-io->buf->start);
+    }
+    char * lexeme = (char *)calloc(sizeof(char), lexemeSize+1);
+    if(io->buf->startBuffer==io->buf->currentBuffer){
+        strncpy(lexeme, getCurrentBuffer(io)+io->buf->start, lexemeSize);
+    }
+    else{
+        strncpy(lexeme, getStartBuffer(io)+io->buf->start, BUF_SIZE-io->buf->start);
+        strncpy(lexeme+BUF_SIZE-io->buf->start, getCurrentBuffer(io), io->buf->forward+1);
+    }
+    lexeme[lexemeSize]='\0';
+    return lexeme;
+}
+
+// int main(){
+//     IOHandler *io=createIOHandler("f1.txt");
+//     int i=0;
+//     while(!io->inputFin){
+//         char c = getChar(io, false);
+//         printf("%c", c);
+//         i++;
+//         if(i==33){
+//             retract(io);
+//             retract(io);
+//             retract(io);
+//             retract(io);
+//         }
+//     }
+//     closeHandler(io);
+//     return 0;
+// }
