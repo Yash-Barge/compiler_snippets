@@ -1,8 +1,11 @@
-#define BUF_SIZE 32
 #include <stdio.h>
 #include <stdbool.h>
+
+#define BUF_SIZE 32
+
 typedef struct buffer BUFFER;
 typedef struct IOHandler IOHandler;
+
 struct buffer{
     char *buf1;
     char *buf2;
@@ -10,8 +13,6 @@ struct buffer{
     int startBuffer;
     bool init;
     bool advanceRead;
-    // bool containsData1;
-    // bool containsData2;
     int forward;
     int start;
     int size;
@@ -26,7 +27,6 @@ struct IOHandler{
     bool inputFin;
 };
 
-
 BUFFER* createBuffers();
 IOHandler* createIOHandler(char* fileName);
 int readFile(IOHandler* io);
@@ -36,3 +36,4 @@ int closeHandler(IOHandler* io);
 char * getStartBuffer(IOHandler *io);
 char * getCurrentBuffer(IOHandler *io);
 char* getLexeme(IOHandler *io);
+void ignore_read_characters(IOHandler *io);

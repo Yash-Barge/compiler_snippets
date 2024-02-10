@@ -110,7 +110,7 @@ void populate(Table symboltable){
         TK_ENDRECORD,
         TK_ELSE
     };
-    for(int i=0; i<=28; i++){
+    for(int i=0; i < 28; i++){
         addrow(names[i], token_types[i], symboltable);
     }
 }
