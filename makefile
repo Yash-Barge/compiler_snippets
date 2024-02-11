@@ -1,19 +1,20 @@
 CC = gcc
 CFLAGS = -Wall -Wextra # -Werror -O2
+INC_DIR = -I ./headers
 
-prog: lexer.o symboltable.o dfa.o buffer.o
-	$(CC) $(CFLAGS) -o prog lexer.o symboltable.o dfa.o buffer.o
+prog: main.o symboltable.o dfa.o buffer.o
+	$(CC) $(CFLAGS) $(INC_DIR) -o prog main.o symboltable.o dfa.o buffer.o
 	rm -f *.o
 	./prog
-lexer.o: lexer.c lexer.h dfa.h
-	$(CC) $(CFLAGS) -c lexer.c
-symboltable.o: symboltable.c symboltable.h
-	$(CC) $(CFLAGS) -c symboltable.c
+main.o: main.c headers/dfa.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c main.c
+symboltable.o: source/symboltable.c headers/symboltable.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c source/symboltable.c
 # enumprint.o: enumprint.c enums.h
-# 	$(CC) $(CFLAGS) -c enumprint.c
-dfa.o: dfa.c dfa.h
-	$(CC) $(CFLAGS) -c dfa.c
-buffer.o: buffer.c buffer.h
-	$(CC) $(CFLAGS) -c buffer.c
+# 	$(CC) $(CFLAGS) $(INC_DIR) -c enumprint.c
+dfa.o: source/dfa.c headers/dfa.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c source/dfa.c
+buffer.o: source/buffer.c headers/buffer.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c source/buffer.c
 clean:
 	rm -f *.o prog

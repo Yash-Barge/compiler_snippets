@@ -1,6 +1,7 @@
+#include <stdio.h>
+
 #include "dfa.h"
 #include "symboltable.h"
-#include <stdio.h>
 
 void lexer(char * file_name){
     IOHandler* io = createIOHandler(file_name);
