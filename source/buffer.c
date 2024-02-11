@@ -62,7 +62,6 @@ int readFile(IOHandler* io) {
 
     if (feof(io->file_ptr)) {
         io->EOFReached = true;
-        printf("EOF Reached!\n");
         return 1;
     }
 

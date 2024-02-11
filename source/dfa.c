@@ -314,9 +314,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR 
             }
             break;
@@ -359,9 +360,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR 
             }
             break;
@@ -374,9 +376,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR 
             }
             break;
@@ -389,9 +392,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR 
             }
             break;
@@ -404,9 +408,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR   
             }
             break;
@@ -423,7 +428,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             fin = true;
             break;
         case 34:
-            ignore_read_characters(io);
+            // ignore_read_characters(io);
             ch = getChar(io, state == 0);
             switch (ch) {
             case '\n':
@@ -437,7 +442,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             }
             break;
         case 33:
-            ignore_read_characters(io);
+            // ignore_read_characters(io);
             io->lineNumber++;
             state = 0;
             break;
@@ -450,9 +455,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -465,9 +471,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -537,9 +544,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -563,9 +571,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -602,7 +611,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             fin = true;
             break;
         case 55:
-            ignore_read_characters(io);
+            // ignore_read_characters(io);
             ch = getChar(io, state == 0);
             switch (ch) {
             case '\t': case ' ': case '\r':
@@ -621,7 +630,7 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             state = 0;
             break;
         case 32:
-            ignore_read_characters(io);
+            // ignore_read_characters(io);
             io->lineNumber++;
             state = 0;
             break;
@@ -650,9 +659,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -698,9 +708,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 62;
                 break; ///ERROR
             }
             break;
@@ -713,9 +724,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -750,9 +762,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -765,9 +778,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -780,9 +794,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             default:
                 // printf("ERROR! state = %d\n", state);
                 // exit(1);
-                retract(io);
-                lexical_error(io);
-                state = 0;
+                // retract(io);
+                // lexical_error(io);
+                // state = 0;
+                state = 69;
                 break; ///ERROR
             }
             break;
@@ -795,9 +810,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 69:
             retract(io);
-            token->isError = true;
-            token->lexeme = getLexeme(io);
-            fin = true;
+            lexical_error(io);
+            state = 0;
+            // token->isError = true;
+            // token->lexeme = getLexeme(io);
+            // fin = true;
             break;
         case 29:
             token->token = TK_SQL;
@@ -811,12 +828,21 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             token->lineNumber = io->lineNumber;
             fin = true;
             break;
+        case 62:
+            retract(io);
+            retract(io);
+            token->token = TK_NUM;
+            token->lexeme = getLexeme(io);
+            token->lineNumber = io->lineNumber;
+            fin = true;
+            break;
         default:
             // printf("ERROR: state not handled!\nstate = %d\n", state);
             // exit(1);
-            retract(io);
-            lexical_error(io);
-            state = 0;
+            // retract(io);
+            // lexical_error(io);
+            // state = 0;
+            state = 69;
             break; ///ERROR (?)
         }
     }

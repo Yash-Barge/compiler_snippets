@@ -29,9 +29,12 @@ _main
     [d2]<--- call _recordDemo with parameters[b2,c2];
     write(d2);
 
+    123.2abc % how should this give errors?
     % Yash: additional tests
-    % if (b2.price == c2.price &&& c2.price != d2.price) then
-    %     b2.price <--- d2.price;
+
+    if (b2.price == c2.price &&& c2.price != d2.price) then
+        b2.price <--- d2.price;
+    
     % ! =
     % != != ! ! ! = !!=!=!=!
     % ======= ==== = === = % another comment test
