@@ -5,7 +5,7 @@ INC_DIR = -I ./headers
 prog: main.o symboltable.o dfa.o buffer.o errors.o
 	$(CC) $(CFLAGS) $(INC_DIR) -o prog main.o symboltable.o dfa.o buffer.o errors.o
 	rm -f *.o
-	./prog
+	./prog testcases/f1.txt
 main.o: main.c headers/dfa.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c main.c
 symboltable.o: source/symboltable.c headers/symboltable.h

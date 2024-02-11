@@ -5,7 +5,7 @@
 #include "symboltable.h"
 #include "errors.h"
 
-void lexer(char * file_name){
+void lexer(char *file_name){
     IOHandler* io = createIOHandler(file_name);
     
     Table symboltable = createtable();
@@ -26,7 +26,13 @@ void lexer(char * file_name){
     return;
 }
 
-int main(){
-    lexer("f1.txt");
+int main(int argc, char *argv[]){
+    if (argc != 2) {
+        error("Invalid number of arguments! Execute program followed by source file!\n");
+        return 1;
+    }
+
+    lexer(argv[1]);
+
     return 0;
 }

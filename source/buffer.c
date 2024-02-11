@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 
 #include "buffer.h"
 #include "errors.h"
@@ -43,6 +44,12 @@ IOHandler* createIOHandler(char* fileName){
     }
 
     io->file_ptr = fopen(fileName, "r");
+
+    if (io->file_ptr == NULL) {
+        error("Cannot open file %s (%s)\n", fileName, strerror(errno));
+        exit(0);
+    }
+
     io->buf = createBuffers();
     io->EOFReached = false;
     io->inputFin = false;
