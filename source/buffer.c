@@ -70,9 +70,10 @@ int readFile(IOHandler* io) {
         return 0;
     }
 
-    if (feof(io->file_ptr)) {
-        io->EOFReached = true;
-        return 1;
+    if (!io->buf->init) {
+        io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
+        io->buf->init = true;
+        io->buf->currentBuffer = 1;
     }
 
     if (io->buf->init && io->buf->currentBuffer == 1) {
@@ -83,14 +84,13 @@ int readFile(IOHandler* io) {
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
     }
 
+    if (io->buf->init && !io->buf->size) {
+        io->EOFReached = true;
+        return 1;
+    }
+
     io->buf->currentBuffer = io->buf->currentBuffer == 2 ? 1 : 2;
     io->buf->forward = 0;
-
-    if (!io->buf->init) {
-        io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
-        io->buf->init = true;
-        io->buf->currentBuffer = 1;
-    }
 
     if (ferror(io->file_ptr)) {
         printf("File IO Error!\n");
