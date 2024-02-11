@@ -142,6 +142,13 @@ char getChar(IOHandler* io, bool isStart) {
 
 int retract(IOHandler* io) {
 
+    // reading at the EOF does not increment the forward pointer, and returns a null character.
+    // thus, we mark it as not finished, but do not decrement the forward pointer.
+    if (io->inputFin) {
+        io->inputFin = false;
+        return 0;
+    }
+
     if (io->buf->forward != 0) {
         io->buf->forward--;
     } else {
@@ -151,9 +158,6 @@ int retract(IOHandler* io) {
         io->buf->forward = BUF_SIZE;
         io->buf->currentBuffer = io->buf->currentBuffer == 1 ? 2 : 1;
     }
-    //check later
-    // if (io->inputFin)
-    //     io->inputFin = false;
 
     return 0;
 }
