@@ -29,7 +29,7 @@ _main
     [d2]<--- call _recordDemo with parameters[b2,c2];
     write(d2);
 
-    123.2abc % how should this give errors?
+    % 123.2abc % how should this give errors?
     % Yash: additional tests
 
     if (b2.price == c2.price &&& c2.price != d2.price) then
@@ -39,7 +39,8 @@ _main
     % != != ! ! ! = !!=!=!=!
     % ======= ==== = === = % another comment test
     % >= >= >>>>=> > = >=
-    < <- <-- <--- % Uncommenting this line causes an out of bounds error
 end
 % #1234 9adfbcd
 % 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345ggez
+% the below does not get tokenized correctly
+<--

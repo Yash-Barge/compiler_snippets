@@ -60,17 +60,19 @@ IOHandler* createIOHandler(char* fileName){
 
 int readFile(IOHandler* io) {
 
-    if (feof(io->file_ptr)) {
-        io->EOFReached = true;
-        return 1;
-    }
-
     if (io->buf->advanceRead) {
         io->buf->size = io->buf->advancedSize;
         io->buf->advancedSize = 0;
         io->buf->advanceRead = false;
+        io->buf->forward = 0;
         io->buf->currentBuffer = io->buf->currentBuffer == 2 ? 1 : 2;
+
         return 0;
+    }
+
+    if (feof(io->file_ptr)) {
+        io->EOFReached = true;
+        return 1;
     }
 
     if (io->buf->init && io->buf->currentBuffer == 1) {
@@ -106,7 +108,7 @@ char getChar(IOHandler* io, bool isStart) {
             if (read < 0) {
                 printf("IO Error!\n");
             } else if (read == 1) {
-                io->inputFin=true;
+                io->inputFin = true;
                 return '\0';
             }
         } else {
@@ -115,7 +117,7 @@ char getChar(IOHandler* io, bool isStart) {
         }
     }
 
-    if (io->buf->init==false /* || io->buf->forward==io->buf->size */) {
+    if (!io->buf->init) {
         int read = readFile(io);
         if (read < 0) {
             printf("IO Error!\n");
@@ -146,12 +148,12 @@ int retract(IOHandler* io) {
         io->buf->advanceRead = true;
         io->buf->advancedSize = io->buf->size;
         io->buf->size = BUF_SIZE;
-        io->buf->forward = BUF_SIZE - 1;
+        io->buf->forward = BUF_SIZE;
         io->buf->currentBuffer = io->buf->currentBuffer == 1 ? 2 : 1;
     }
     //check later
     // if (io->inputFin)
-    //     io->inputFin=false;
+    //     io->inputFin = false;
 
     return 0;
 }
