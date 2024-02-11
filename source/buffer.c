@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "buffer.h"
+#include "errors.h"
 
 BUFFER * createBuffers(){
     BUFFER *buf = (BUFFER *)malloc(sizeof(BUFFER));
@@ -143,8 +144,8 @@ int retract(IOHandler* io) {
         io->buf->currentBuffer = io->buf->currentBuffer == 1 ? 2 : 1;
     }
     //check later
-    if (io->inputFin)
-        io->inputFin=false;
+    // if (io->inputFin)
+    //     io->inputFin=false;
 
     return 0;
 }
@@ -196,6 +197,14 @@ char *getLexeme(IOHandler *io){
 void ignore_read_characters(IOHandler *io) {
     io->buf->startBuffer = io->buf->currentBuffer;
     io->buf->start = io->buf->forward;
+
+    return;
+}
+
+void lexical_error(IOHandler *io) {
+    char *invalid_lexeme = getLexeme(io);
+    error("line %d: Invalid lexeme `%s`\n", io->lineNumber, invalid_lexeme);
+    free(invalid_lexeme);
 
     return;
 }

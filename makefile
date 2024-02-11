@@ -12,11 +12,11 @@ symboltable.o: source/symboltable.c headers/symboltable.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/symboltable.c
 # enumprint.o: enumprint.c enums.h
 # 	$(CC) $(CFLAGS) $(INC_DIR) -c enumprint.c
-dfa.o: source/dfa.c headers/dfa.h headers/errors.h
+dfa.o: source/dfa.c headers/dfa.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/dfa.c
 errors.o: source/errors.c headers/errors.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/errors.c
-buffer.o: source/buffer.c headers/buffer.h
+buffer.o: source/buffer.c headers/buffer.h headers/errors.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/buffer.c
 clean:
 	rm -f *.o prog

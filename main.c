@@ -18,7 +18,7 @@ void lexer(char * file_name){
 
     if (get_error_count()) {
         fprintf(stderr, "\033[1;31merror: \033[0mLexing of file %s ended with \033[1;31m%d lexer error(s)\033[0m \nTerminating compilation...\n", file_name, get_error_count());
-        exit(1);
+        exit(0);
     }
 
     printf("Lexing of file %s successful!\n", file_name);

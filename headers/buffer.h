@@ -39,5 +39,6 @@ char * getStartBuffer(IOHandler *io);
 char * getCurrentBuffer(IOHandler *io);
 char* getLexeme(IOHandler *io);
 void ignore_read_characters(IOHandler *io);
+void lexical_error(IOHandler *io);
 
 #endif
