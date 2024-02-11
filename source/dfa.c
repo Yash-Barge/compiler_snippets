@@ -4,6 +4,9 @@
 #include <string.h>
 
 #include "dfa.h"
+#include "buffer.h"
+#include "symboltable.h"
+#include "errors.h"
 
 const char *tokenenumnames[] = {
     "TK_ASSIGNOP",
@@ -183,8 +186,10 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             case '\0':
                 return NULL;
             default:
-                printf("unknown character (%c)!\n", ch);
-                exit(1);
+                // printf("unknown character (%c)!\n", ch);
+                // exit(1);
+                error("Unknown character (%c)!\n", ch);
+                ignore_read_characters(io);
                 break;
             }
             break;
@@ -307,8 +312,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 9;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR 
             }
             break;
@@ -349,8 +357,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 59;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR 
             }
             break;
@@ -361,8 +372,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 25;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR 
             }
             break;
@@ -373,8 +387,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 57;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR 
             }
             break;
@@ -385,8 +402,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 24;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR   
             }
             break;
@@ -428,8 +448,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 27;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -440,8 +463,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 28;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -509,8 +535,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 50;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -532,8 +561,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 47;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -616,8 +648,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 45;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -661,8 +696,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 37;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -673,8 +711,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 38;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -707,8 +748,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 41;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -719,8 +763,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 40;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -731,8 +778,11 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 3;
                 break;
             default:
-                printf("ERROR! state = %d\n", state);
-                exit(1);
+                // printf("ERROR! state = %d\n", state);
+                // exit(1);
+                ; char *invalid_lex = getLexeme(io);
+                error("Invalid lexeme (%s)!\n", invalid_lex);
+                free(invalid_lex);
                 break; ///ERROR
             }
             break;
@@ -762,8 +812,12 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             fin = true;
             break;
         default:
-            printf("ERROR: state not handled!\nstate = %d\n", state);
-            exit(1);
+            // printf("ERROR: state not handled!\nstate = %d\n", state);
+            // exit(1);
+            ; char *invalid_lex = getLexeme(io);
+            error("Invalid lexeme (%s)!\n", invalid_lex);
+            free(invalid_lex);
+            break; ///ERROR (?)
         }
     }
     printToken(token);

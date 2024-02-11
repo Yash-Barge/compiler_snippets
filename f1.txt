@@ -33,7 +33,7 @@ _main
     % if (b2.price == c2.price &&& c2.price != d2.price) then
     %     b2.price <--- d2.price;
     % ! =
-    % != != ! ! ! = !!=!=!=!
+    % != != ! ! ! = !!=!=!=! % uncommenting this line complete fucks up; should display 6 lexer errors, shows 47 instead (and now segfaults with this comment)
     % ======= ==== = === = % another comment test
     % >= >= >>>>=> > = >=
 end

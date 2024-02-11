@@ -1,4 +1,6 @@
-#include <stdio.h>
+#ifndef H_BUFFER
+#define H_BUFFER
+
 #include <stdbool.h>
 
 #define BUF_SIZE 32
@@ -37,3 +39,5 @@ char * getStartBuffer(IOHandler *io);
 char * getCurrentBuffer(IOHandler *io);
 char* getLexeme(IOHandler *io);
 void ignore_read_characters(IOHandler *io);
+
+#endif
