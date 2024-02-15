@@ -44,4 +44,9 @@ int get_warning_count(void) {
     return warning_count;
 }
 
+void reset_error_count(void) {
+    error_count = 0;
+    return;
+}
+
 // maybe a reset warning count between compiler stages?

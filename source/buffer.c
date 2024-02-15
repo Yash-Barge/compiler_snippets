@@ -74,6 +74,9 @@ int readFile(IOHandler* io) {
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
         io->buf->init = true;
         io->buf->currentBuffer = 1;
+        io->buf->forward = 0;
+
+        return 0;
     }
 
     if (io->buf->init && io->buf->currentBuffer == 1) {
@@ -102,6 +105,14 @@ int readFile(IOHandler* io) {
 
 char getChar(IOHandler* io, bool isStart) {
 
+    if (!io->buf->init) {
+        int read = readFile(io);
+        if (read < 0) {
+            printf("IO Error!\n");
+            return '\0';
+        }
+    }
+
     if (io->buf->forward == io->buf->size) {
         if (!io->EOFReached) {
             int read = readFile(io);
@@ -113,14 +124,6 @@ char getChar(IOHandler* io, bool isStart) {
             }
         } else {
             io->inputFin = true;
-            return '\0';
-        }
-    }
-
-    if (!io->buf->init) {
-        int read = readFile(io);
-        if (read < 0) {
-            printf("IO Error!\n");
             return '\0';
         }
     }

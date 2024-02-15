@@ -2,10 +2,11 @@ CC = gcc
 CFLAGS = -Wall -Wextra # -Werror -O2
 INC_DIR = -I ./headers
 
-prog: main.o symboltable.o dfa.o buffer.o errors.o
-	$(CC) $(CFLAGS) $(INC_DIR) -o prog main.o symboltable.o dfa.o buffer.o errors.o
+stage1exe: main.o symboltable.o dfa.o buffer.o errors.o
+	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symboltable.o dfa.o buffer.o errors.o
 	rm -f *.o
-	./prog testcases/f1.txt
+	./stage1exe testcases/f1.txt
+# all executions of ./stage1exe should be removed for final submission
 main.o: main.c headers/dfa.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c main.c
 symboltable.o: source/symboltable.c headers/symboltable.h
