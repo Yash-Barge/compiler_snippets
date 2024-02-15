@@ -18,6 +18,7 @@ struct buffer{
     int forward;
     int start;
     int size;
+    int old_size;
     int advancedSize;
 };
 

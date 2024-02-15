@@ -29,6 +29,7 @@ BUFFER * createBuffers(){
     buf->init = false;
     buf->start = 0;
     buf->size=0;
+    buf->old_size = 0;
     buf->advancedSize=0;
     buf->advanceRead=false;
 
@@ -61,6 +62,7 @@ IOHandler* createIOHandler(char* fileName){
 int readFile(IOHandler* io) {
 
     if (io->buf->advanceRead) {
+        io->buf->old_size = io->buf->size;
         io->buf->size = io->buf->advancedSize;
         io->buf->advancedSize = 0;
         io->buf->advanceRead = false;
@@ -71,6 +73,7 @@ int readFile(IOHandler* io) {
     }
 
     if (!io->buf->init) {
+        io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
         io->buf->init = true;
         io->buf->currentBuffer = 1;
@@ -80,10 +83,12 @@ int readFile(IOHandler* io) {
     }
 
     if (io->buf->init && io->buf->currentBuffer == 1) {
+        io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf2, sizeof(char), BUF_SIZE, io->file_ptr);
     }
 
     if (io->buf->init && io->buf->currentBuffer == 2) {
+        io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
     }
 
@@ -152,8 +157,10 @@ int retract(IOHandler* io) {
 
     // reading at the EOF does not increment the forward pointer, and returns a null character.
     // thus, we mark it as not finished, but do not decrement the forward pointer.
+    // also, as size is set to 0 from fread, we must set it to the old size
     if (io->inputFin) {
         io->inputFin = false;
+        io->buf->size = io->buf->old_size;
         return 0;
     }
 
