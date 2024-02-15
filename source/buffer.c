@@ -113,6 +113,11 @@ char getChar(IOHandler* io, bool isStart) {
         }
     }
 
+    if (!io->buf->size) { // After reaching EOF, io->buf->size would be set to 0 from the fread, cause below pointer checks to fail
+        io->inputFin = true;
+        return '\0';
+    }
+
     if (io->buf->forward == io->buf->size) {
         if (!io->EOFReached) {
             int read = readFile(io);

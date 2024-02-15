@@ -18,6 +18,10 @@ void print_source_without_comments(char *file_name) {
         printf("%c", c);
     }
 
+    printf("\n");
+
+    closeHandler(io);
+
     return;
 }
 
