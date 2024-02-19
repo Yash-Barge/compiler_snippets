@@ -1,5 +1,11 @@
 #include "set.h"
 
+#define GENERATE_STRINGS(STR) #STR,
+
+const char *const TOK_STRING[] = {
+    FOREACH_TOK(GENERATE_STRINGS)
+};
+
 struct set {
     enum terminals *term;
     int size;
@@ -43,7 +49,7 @@ void set_print(struct set *st) {
     assert(st != NULL);
 
     for(int i = 0; i < st->size; i++)
-        printf("%d ", st->term[i]);
+        printf("%s ", TOK_STRING[st->term[i]]);
     printf("\n");
 
     return;
