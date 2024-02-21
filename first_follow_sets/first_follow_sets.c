@@ -20,7 +20,7 @@ int get_non_terminals(FILE* fp){
                 }
                 temp[j++] = '\n';
                 temp[j] = '\0';
-                fprintf(fp2, temp);
+                fprintf(fp2, "%s",temp);
                 memset(temp, '\0', MAXSIZE);
                 break;
             }
@@ -45,7 +45,7 @@ void get_rhs_of_rules(FILE* fp){
                 for(int j = i; j<strlen(buffer); j++){
                     temp[j-i] = buffer[k++];
                 }
-                fprintf(fp2, temp);
+                fprintf(fp2, "%s", temp);
                 printf("%s\n", temp);
             }
         }
