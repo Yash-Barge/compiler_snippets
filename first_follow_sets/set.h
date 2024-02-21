@@ -76,6 +76,7 @@ struct set_lib {
     void (*const insert)(struct set *, enum terminals);
     void (*const push_back)(struct set *, int);
     void (*const push_front)(struct set *, int);
+    int (*const search)(struct set *, int);
     void (*const print)(struct set *);
     void (*const free)(struct set **);
 };

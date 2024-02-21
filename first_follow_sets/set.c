@@ -32,18 +32,27 @@ int set_size(struct set* st){
     return st->size;
 }
 
+int set_search(struct set *st, int searchVal){
+    assert(st != NULL);
+    for(int i=0; i<st->size; i++)
+        if(st->term[i] == searchVal) return 1;
+    return 0;
+}
+
 void set_insert(struct set *st, enum terminals term) {
     assert(st != NULL);
 
-    if(st->size == st->capacity)
-        grow_set(st);
+    if(!set_search(st, term)){
+        if(st->size == st->capacity)
+            grow_set(st);
 
 
-    st->term[st->size] = term;
-    st->size++;
-
+        st->term[st->size] = term;
+        st->size++;
+    }
     return;
 }
+
 
 void set_print(struct set *st) {
     assert(st != NULL);
@@ -67,4 +76,4 @@ void set_free(struct set **p_set) {
     return;
 }
 
-const struct set_lib Set = { .new = new_set, .size = set_size, .insert = set_insert, .print = set_print, .free = set_free };
+const struct set_lib Set = { .new = new_set, .size = set_size, .insert = set_insert, .search = set_search, .print = set_print, .free = set_free };
