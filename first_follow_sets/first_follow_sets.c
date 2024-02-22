@@ -115,6 +115,7 @@ char *get_next_t_or_nt(const char *restrict const raw_prod_rule, int *index) {
 
     char *ret = malloc(sizeof(*ret) * (*index - start_index + 1));
     strncpy(ret, raw_prod_rule + start_index, *index - start_index);
+    ret[*index - start_index] = '\0';
 
     // to go past the last '>' character
     if (nt)
@@ -173,6 +174,8 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
     char buffer[MAXSIZE];
     while (fgets(buffer, sizeof(buffer), grammar_file)) {
         if (buffer[strlen(buffer) - 1] == '\n')
+            buffer[strlen(buffer) - 1] = '\0';
+        if (buffer[strlen(buffer) - 1] == '\r')
             buffer[strlen(buffer) - 1] = '\0';
 
         if (strlen(buffer) && substring_count(buffer, "===>")) // not empty and grammar rule

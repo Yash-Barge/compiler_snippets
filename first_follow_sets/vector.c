@@ -178,7 +178,7 @@ void vstring_print(struct vector_string *vec) {
     assert(vec != NULL);
 
     for(int i = 0; i < vec->size; i++)
-        printf("%s ", vec->vector[i]);
+        printf("%s\n", vec->vector[i]);
     printf("\n");
 
     return;
