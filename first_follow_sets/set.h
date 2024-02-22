@@ -10,6 +10,13 @@
 
 #define FOREACH_TOK(TOK) \
     TOK(TK_ASSIGNOP) \
+    TOK(TK_COMMENT) \
+    TOK(TK_FIELDID) \
+    TOK(TK_ID) \
+    TOK(TK_NUM) \
+    TOK(TK_RNUM) \
+    TOK(TK_FUNID) \
+    TOK(TK_RUID) \
     TOK(TK_WITH) \
     TOK(TK_PARAMETERS) \
     TOK(TK_END) \
@@ -55,7 +62,7 @@
     TOK(TK_NOT) \
     TOK(TK_LT) \
     TOK(TK_LE) \
-    TOK(TK_EO) \
+    TOK(TK_EQ) \
     TOK(TK_GT) \
     TOK(TK_GE) \
     TOK(TK_NE) \
@@ -67,6 +74,8 @@ enum terminals {
 };
 
 extern const char *const TOK_STRING[];
+
+enum terminals tok_enumify(const char *restrict const tok);
 
 struct set;
 

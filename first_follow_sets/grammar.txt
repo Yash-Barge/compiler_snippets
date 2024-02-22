@@ -21,7 +21,7 @@
 <global_or_not>===>TK_COLON TK_GLOBAL | EPS
 <otherStmts>===><stmt><otherStmts> | EPS
 <stmt>===><assignmentStmt> | <iterativeStmt> | <conditionalStmt> | <ioStmt> | <funCallStmt>
-<assignmentStmt>===><SingleOrRecId> TK_ASSIGNOP <arithmeticExpression2> TK_SEM
+<assignmentStmt>===><singleOrRecId> TK_ASSIGNOP <arithmeticExpression2> TK_SEM
 <singleOrRecId>===>TK_ID <singleOrRecId_>
 <singleOrRecId_>===>TK_DOT  <recursiveFieldIDs> | EPS
 <recursiveFieldIDs>===>TK_FIELDID <recursiveFieldIDs_>
