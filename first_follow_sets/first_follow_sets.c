@@ -357,51 +357,108 @@ struct set *follow_helper(struct grammar* g, struct set** st, int index, struct 
     if (st[index] == NULL) {
         st[index] = Set.new(); // Initialise the Set
         for(int i=0; i<Set.size(proc[index]); i++){
-            int NT = index + TK_COUNT;
-            int grammarID = Set.at(proc[index], i) - TK_COUNT;
+            int NT = index + TK_COUNT; // The non terminal whose Follow we are calculating
+            int grammarID = Set.at(proc[index], i) - TK_COUNT; // The grammar rule which we are currently referring to
 
             for (int a = 0; a < g->rules[grammarID].rhs_count; a++) {
                 for(int j=0; j < VectorInt.size(g->rules[grammarID].rhs[a]); j++){
                     if (NT == VectorInt.at(g->rules[grammarID].rhs[a], j)) {
-                        if (j == VectorInt.size(g->rules[grammarID].rhs[a]) - 1) { // end of rule
-                            // follow of parent in follow of child
-                            struct set* temp = follow_helper(g, st, grammarID, proc, first);
+                        if (j == VectorInt.size(g->rules[grammarID].rhs[a]) - 1) { 
 
-                            for (int k = 0; k < Set.size(temp); k++)
-                                Set.insert(st[index], Set.at(temp, k));
+                            /*
+                                If we are at the end of the production rule, say A ===> BCDE, and we want to find the 
+                                follow of E, then all elements in Follow(A) belong to Follow(E)
+
+                                However, if a production like A ===> BCA exists, we would be in a dilemma if we use the above
+                                logic, and so don't follow it
+                                
+                            */
+                            if(strcmp(g->rules[grammarID].lhs, t_or_nt_string(g, NT))){ 
+
+                                /*
+                                    Execute code in this if condition if the transition is not of the form A ===> BCA
+                                */
+
+                                struct set* temp = follow_helper(g, st, grammarID, proc, first);
+
+                                for (int k = 0; k < Set.size(temp); k++)
+                                    Set.insert(st[index], Set.at(temp, k));
+                            }
+                                
                         } else if (VectorInt.at(g->rules[grammarID].rhs[a], j+1) < TK_COUNT) {
+
+                            /*
+                                If a Non terminal is followed by a terminal, we can simply add those terminals to the follow
+                                of the non terminal, and exit out of the loop
+                            */
+
                             Set.insert(st[index], VectorInt.at(g->rules[grammarID].rhs[a], j + 1));
+                            break;
                         } else {
-                            int currInd = j+1;
+
+                            /*
+                                This is the case when we have a non terminal following a non terminal, and that can be generating epsilon
+                            */
+
+                            int currInd = j+1; // Our current index of the following non terminal. As the terminal whose follow we want is at index j, the followed non terminal is at index j+1
                             while (1) {
-                                int epsilon_found = 0;
-                                int t_or_nt_enum = VectorInt.at(g->rules[grammarID].rhs[a], currInd);
+                                int epsilon_found = 0; // Indicates if the following non terminal has an epsilon transition
+                                int t_or_nt_enum = VectorInt.at(g->rules[grammarID].rhs[a], currInd); // Indicates the token at currInd
 
-                                if (t_or_nt_enum < TK_COUNT) {
+                                if (t_or_nt_enum < TK_COUNT) { 
+                                    
+                                    /*
+                                        If it is a terminal, push it into the Follow Set and break out of the loop.
+                                    */
+                                    
                                     Set.insert(st[index], t_or_nt_enum);
-
                                     break;
                                 }
 
                                 for (int k=0; k < Set.size(first[t_or_nt_enum - TK_COUNT]); k++) {
+
+                                    /*
+                                        For all elements in the First set of the following non terminal, we add them to the 
+                                        follow of the original Non terminal, except if it is epsilon
+                                    */
+
                                     if (Set.at(first[t_or_nt_enum - TK_COUNT], k) != TK_EPSILON)
-                                        Set.insert(st[index], Set.at(first[t_or_nt_enum - TK_COUNT], k));
+                                        Set.insert(st[index], Set.at(first[t_or_nt_enum - TK_COUNT], k)); // Condition when the element is not epsilon
+                                    
                                     else
-                                        epsilon_found++;
+                                        epsilon_found++; // Condition when the element is epsilon
+                                    
                                 }
 
                                 if (!epsilon_found)
-                                    break;
+                                    break;  // If no epsilons have been found, we are done with our computation, and can break out of the loop
+                                else 
+                                    currInd++; // If there are epsilons in the First set, we will have to check the token after the token at currInd
+                                
 
-                                if (epsilon_found) {
-                                    currInd++;
-                                } else if (currInd == VectorInt.size(g->rules[grammarID].rhs[a]) - 1) {
-                                    // follow of parent in follow of child
-                                    struct set* temp = follow_helper(g, st, grammarID, proc, first);
+                                if (currInd >= VectorInt.size(g->rules[grammarID].rhs[a])) {
 
-                                    for (int k = 0; k < Set.size(temp); k++)
-                                        Set.insert(st[index], Set.at(temp, k));
-                                    
+                                    /*
+                                        If we are at the end of the production rule, say A ===> BCDE, and we want to find the 
+                                        follow of E, then all elements in Follow(A) belong to Follow(E)
+
+                                        However, if a production like A ===> BCA exists, we would be in a dilemma if we use the above
+                                        logic, and so don't follow it
+                                        
+                                    */
+
+
+                                    if(strcmp(g->rules[grammarID].lhs, t_or_nt_string(g, NT))){ 
+
+                                        /*
+                                            Execute code in this if condition if the transition is not of the form A ===> BCA
+                                        */
+
+                                        struct set* temp = follow_helper(g, st, grammarID, proc, first);
+
+                                        for (int k = 0; k < Set.size(temp); k++)
+                                            Set.insert(st[index], Set.at(temp, k));
+                                    }
                                     break;
                                 }
                             }
@@ -430,7 +487,10 @@ struct set** generate_follow(struct grammar* g, struct set** first){
 
     struct set** proc = follow_preprocess(g);
 
-     for(int i=0; i<g->rule_count; i++){
+    follow[0] = Set.new();
+    Set.insert(follow[0], -1);
+
+     for(int i=1; i<g->rule_count; i++){
         if(!follow[i]){
             follow_helper(g, follow, i, proc, first);
         }
@@ -456,6 +516,8 @@ int main(void){
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
 
+
+    printf("\n\n\n");
     for (int i = 0; i < g->rule_count; i++) {
         printf("%25s: ", t_or_nt_string(g, i + TK_COUNT));
         for (int j = 0; j < Set.size(follow[i]); j++)
