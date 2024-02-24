@@ -69,7 +69,6 @@ void parser(char *file_name) {
 
     // TODO: Parse file
 
-    // TODO: Free
     for (int i = 0; i < g->rule_count; i++) {
         VectorInt.free(&first[i]);
         VectorInt.free(&follow[i]);
