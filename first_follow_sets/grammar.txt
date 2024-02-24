@@ -11,8 +11,7 @@
 <remaining_list>===>TK_COMMA <parameter_list> | EPS
 <stmts>===><typeDefinitions> <declarations> <otherStmts> <returnStmt>
 <typeDefinitions>===><typeDefinition> <typeDefinitions> | <definetypestmt> <typeDefinitions> | EPS
-<typeDefinition>===>TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD
-<typeDefinition>===>TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
+<typeDefinition>===>TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD | TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
 <fieldDefinitions>===><fieldDefinition> <fieldDefinition> <moreFields>
 <fieldDefinition>===>TK_TYPE <dataType> TK_COLON TK_FIELDID TK_SEM
 <moreFields>===><fieldDefinition> <moreFields> | EPS
@@ -38,9 +37,7 @@
 <arithmeticExpression1_>===>TK_DIV  <arithmeticExpression1_> | TK_MUL <arithmeticExpression1_> | EPS
 <arithmeticExpression0>===><arithmeticExpression1> <arithmeticExpression0_>
 <arithmeticExpression0_>===>TK_MINUS <arithmeticExpression0_> | TK_PLUS <arithmeticExpression0_> | EPS
-<booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL
-<booleanExpression>===><var> <relationalOp> <var>
-<booleanExpression>===>TK_NOT TK_OP <booleanExpression> TK_CL
+<booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL | <var> <relationalOp> <var> | TK_NOT TK_OP <booleanExpression> TK_CL
 <var>===>TK_NUM | TK_RNUM | <singleOrRecId>
 <logicalOp>===>TK_AND | TK_OR
 <relationalOp>===>TK_LT | TK_LE | TK_EQ |TK_GT | TK_GE | TK_NE

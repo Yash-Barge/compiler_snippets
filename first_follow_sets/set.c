@@ -67,6 +67,14 @@ void set_insert(struct set *st, enum terminals term) {
     return;
 }
 
+int set_at(struct set *st, int i){
+    assert(st != NULL);
+    assert(i < st->size);
+    assert(i >= 0);
+
+    return st->term[i];
+}
+
 
 void set_print(struct set *st) {
     assert(st != NULL);
@@ -90,4 +98,4 @@ void set_free(struct set **p_set) {
     return;
 }
 
-const struct set_lib Set = { .new = new_set, .size = set_size, .insert = set_insert, .search = set_search, .print = set_print, .free = set_free };
+const struct set_lib Set = { .new = new_set, .size = set_size, .insert = set_insert, .at = set_at, .search = set_search, .print = set_print, .free = set_free };

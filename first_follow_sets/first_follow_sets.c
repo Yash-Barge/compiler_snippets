@@ -234,24 +234,118 @@ const char *const t_or_nt_string(struct grammar *g, int enumified_t_or_nt) {
     return enumified_t_or_nt < TK_COUNT ? TOK_STRING[enumified_t_or_nt] : g->rules[enumified_t_or_nt - TK_COUNT].lhs;
 }
 
+
+
+
+/**
+ * @brief 
+ * 
+ * @param g The grammar 
+ * @param st A pointer to the array of sets, used for recursion
+ * @param index The of the grammar rule (Or non terminal)
+ * @return struct set* The return value of the set at index
+ */
+struct set *first_helper(struct grammar* g, struct set** st, int index){
+    if (st[index] == NULL) {
+        st[index] = Set.new(); // Initialise the Set
+
+        for (int i=0; i<g->rules[index].rhs_count; i++) {
+            if (VectorInt.at(g->rules[index].rhs[i], 0) < TK_COUNT) {
+                Set.insert(st[index], VectorInt.at(g->rules[index].rhs[i], 0)); // If the first token in the RHS of a production rule is a terminal, add it to the first set
+            } else {
+                int current_index = 0; 
+
+                /* 
+                    Current index of the non terminal we are finding the first of
+                    if <A> ===> <B><C><D><E>
+                    To find first(A), we will need the first(B), and if that has an epsilon, we will move onto finding the first(C)
+                    if we are finding first(C), current_index = 1
+                */
+
+                while (current_index < VectorInt.size(g->rules[index].rhs[i])) { // Iterate over the Right hand side of the rule for all Non terminals
+                    if (VectorInt.at(g->rules[index].rhs[i], current_index) < TK_COUNT) { // If it is a terminal, add it to the set, and break out of the while loop
+                        Set.insert(st[index], VectorInt.at(g->rules[index].rhs[i], current_index));
+                        break;
+                    }
+
+                    // Now we have established that the token at index value = current_index is a non terminal
+
+                    struct set *temp = first_helper(g, st, VectorInt.at(g->rules[index].rhs[i], current_index) - TK_COUNT); // Recursive call on the non terminals
+                    int contains_epsilon = 0; // Flag that indicates if the non terminal has epsilon or not
+
+                    for (int j = 0; j < Set.size(temp); j++) { // Iterate over the elements of the first(Non_Terminal)
+                        if (current_index == VectorInt.size(g->rules[index].rhs[i]) - 1 || Set.at(temp, j) != TK_EPSILON) // If it is the last rule, blindly add everything in it's first set to the original first set 
+                            Set.insert(st[index], Set.at(temp, j));
+                        else
+                            contains_epsilon = 1; // Indicates the non terminal has epsilon
+                    }
+
+                    if (contains_epsilon)
+                        current_index++; // Move to the next index if it has epsilon, and continue checking
+                    else
+                        break;
+                }
+            }
+        }
+    }
+
+    return st[index];
+}
+
+/**
+ * @brief 
+ * 
+ * @param g The grammar rules generated above 
+ * @return struct set** 
+ */
+struct set** generate_first(struct grammar* g){
+    struct set** first = malloc(sizeof(struct set*) * g->rule_count);
+    for(int i=0; i<g->rule_count; i++){
+        first[i] = NULL;
+    }
+
+     for(int i=0; i<g->rule_count; i++){
+        if(!first[i]){
+            first_helper(g, first, i);
+        }
+     }
+
+
+    return first;
+}
+
+
+
+
+
+
+
+
 int main(void){
     struct grammar *g = make_grammar("grammar.txt");
 
-    // For testing make_grammar(), can be removed.
-    for (int i = 0; i < g->rule_count; i++) {
-        printf("NT: '%s', enumified: %d\n", g->rules[i].lhs, TK_COUNT + i);
-        printf("RHS:\n");
+    struct set **first = generate_first(g);
 
-        for (int j = 0; j < g->rules[i].rhs_count; j++) {
-            for (int k = 0; k < VectorInt.size(g->rules[i].rhs[j]); k++) {
-                int enumified_tok = VectorInt.at(g->rules[i].rhs[j], k);
-                printf("%s ", t_or_nt_string(g, enumified_tok));
-            }
-            printf("\n");
-        }
-
-        printf("NT: '%s' done\n\n", g->rules[i].lhs);
+    for(int j=0; j<g->rule_count; j++){
+        Set.print(first[j]);
     }
+    
+
+    // // For testing make_grammar(), can be removed.
+    // for (int i = 0; i < g->rule_count; i++) {
+    //     printf("NT: '%s', enumified: %d\n", g->rules[i].lhs, TK_COUNT + i);
+    //     printf("RHS:\n");
+
+    //     for (int j = 0; j < g->rules[i].rhs_count; j++) {
+    //         for (int k = 0; k < VectorInt.size(g->rules[i].rhs[j]); k++) {
+    //             int enumified_tok = VectorInt.at(g->rules[i].rhs[j], k);
+    //             printf("%s ", t_or_nt_string(g, enumified_tok));
+    //         }
+    //         printf("\n");
+    //     }
+
+    //     printf("NT: '%s' done\n\n", g->rules[i].lhs);
+    // }
 
     return 0;
 }
