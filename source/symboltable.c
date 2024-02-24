@@ -12,7 +12,7 @@ Table createtable(){
     return symboltable;
 }
 
-void addrow(char* lexeme, enum token_names type, Table symboltable){
+void addrow(char* lexeme, enum terminals type, Table symboltable){
     struct row* newrow;
     newrow = malloc(sizeof(struct row));
     strncpy(newrow->name, lexeme, sizeof(newrow->name));
@@ -82,7 +82,7 @@ void populate(Table symboltable){
         "else"
     };
 
-    enum token_names token_types[] = {
+    enum terminals token_types[] = {
         TK_WITH,
         TK_PARAMETERS,
         TK_END,

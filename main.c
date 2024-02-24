@@ -4,6 +4,7 @@
 #include "dfa.h"
 #include "symboltable.h"
 #include "errors.h"
+#include "first_follow_sets.h"
 
 void print_source_without_comments(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
@@ -46,6 +47,40 @@ void lexer(char *file_name) {
     return;
 }
 
+void parser(char *file_name) {    
+    struct grammar *g = make_grammar("grammar.txt");
+    struct set **first = generate_first(g);
+    struct set **follow = generate_follow(g, first);
+
+    // Will most likely remove this
+    for (int i = 0; i < g->rule_count; i++) {
+        printf("%s:\n", t_or_nt_string(g, i + TK_COUNT));
+
+        printf("%10s", "first: ");
+        for (int j = 0; j < Set.size(first[i]); j++)
+            printf("%s ", t_or_nt_string(g, Set.at(first[i], j)));
+        printf("\n");
+
+        printf("%10s", "follow: ");
+        for (int j = 0; j < Set.size(follow[i]); j++)
+            printf("%s ", t_or_nt_string(g, Set.at(follow[i], j)));
+        printf("\n\n");
+    }
+
+    // TODO: Parse file
+
+    // TODO: Free
+    for (int i = 0; i < g->rule_count; i++) {
+        VectorInt.free(&first[i]);
+        VectorInt.free(&follow[i]);
+    }
+    free(first);
+    free(follow);
+    free_grammar(&g);
+
+    return;
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) { // should eventually change to 3, to put parser output in a file
         error("Invalid number of arguments! Execute program followed by source file!\n");
@@ -69,7 +104,7 @@ int main(int argc, char *argv[]) {
             lexer(argv[1]);
             break;
         case 3:
-            printf("TODO...\n");
+            parser(argv[1]);
             break;
         case 4:
             printf("TODO...\n");

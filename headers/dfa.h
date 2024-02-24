@@ -5,11 +5,12 @@
 
 #include "buffer.h"
 #include "symboltable.h"
+#include "enums.h"
 
 typedef struct token TOKEN;
 
 struct token{
-    enum token_names token;
+    enum terminals token;
     char *lexeme;
     int lineNumber;
     bool isError;
