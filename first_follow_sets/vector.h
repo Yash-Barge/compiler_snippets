@@ -7,6 +7,7 @@ struct vector_int_lib {
     struct vector_int *(*const new)(void);
     int (*const size)(struct vector_int *);
     void (*const insert)(struct vector_int *, int, int);
+    int (*const search)(struct vector_int *, int);
     int (*const erase)(struct vector_int *, int);
     void (*const push_back)(struct vector_int *, int);
     int (*const pop_back)(struct vector_int *);

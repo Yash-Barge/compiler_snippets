@@ -80,7 +80,7 @@ void set_print(struct set *st) {
     assert(st != NULL);
 
     for(int i = 0; i < st->size; i++)
-        printf("%s ", TOK_STRING[st->term[i]]);
+        printf("%d ", st->term[i]);
     printf("\n");
 
     return;

@@ -315,6 +315,134 @@ struct set** generate_first(struct grammar* g){
 }
 
 
+/**
+ * @brief 
+ * 
+ * @param g The grammar 
+ * @return struct set** An array of sets, where the i'th index of the array has a set of all grammar rules which have that non terminal in the RHS 
+ */
+struct set** follow_preprocess(struct grammar* g){
+    struct set** processed_data = malloc(sizeof(struct set*) * g->rule_count);
+
+    for(int i=0; i<g->rule_count; i++){
+        processed_data[i] = Set.new();
+    }
+
+    for (int i = 0; i < g->rule_count; i++) {
+        for (int j = 0; j < g->rules[i].rhs_count; j++) {
+            for (int k = 0; k < VectorInt.size(g->rules[i].rhs[j]); k++) {
+                if (VectorInt.at(g->rules[i].rhs[j], k) >= TK_COUNT) {
+                    Set.insert(processed_data[VectorInt.at(g->rules[i].rhs[j], k) - TK_COUNT], i + TK_COUNT);
+                }
+            }
+        }
+    }
+
+
+    return processed_data;
+}
+
+
+/**
+ * @brief 
+ * 
+ * @param g The grammar 
+ * @param st A pointer to the array of sets, used for recursion
+ * @param index The of the grammar rule (Or non terminal)
+ * @param proc The processed Data
+ * @param first The first sets
+ * @return struct set* The return value of the set at index
+ */
+struct set *follow_helper(struct grammar* g, struct set** st, int index, struct set** proc, struct set** first){
+    if (st[index] == NULL) {
+        st[index] = Set.new(); // Initialise the Set
+        for(int i=0; i<Set.size(proc[index]); i++){
+            int NT = index + TK_COUNT;
+            int grammarID = Set.at(proc[index], i) - TK_COUNT;
+
+            for (int a = 0; a < g->rules[grammarID].rhs_count; a++) {
+                for(int j=0; j < VectorInt.size(g->rules[grammarID].rhs[a]); j++){
+                    if (NT == VectorInt.at(g->rules[grammarID].rhs[a], j)) {
+                        if (j == VectorInt.size(g->rules[grammarID].rhs[a]) - 1) { // end of rule
+                            // follow of parent in follow of child
+                            struct set* temp = follow_helper(g, st, grammarID, proc, first);
+
+                            for (int k = 0; k < Set.size(temp); k++)
+                                Set.insert(st[index], Set.at(temp, k));
+                        } else if (VectorInt.at(g->rules[grammarID].rhs[a], j+1) < TK_COUNT) {
+                            Set.insert(st[index], VectorInt.at(g->rules[grammarID].rhs[a], j + 1));
+                        } else {
+                            int currInd = j+1;
+                            while (1) {
+                                int epsilon_found = 0;
+                                int t_or_nt_enum = VectorInt.at(g->rules[grammarID].rhs[a], currInd);
+
+                                if (t_or_nt_enum < TK_COUNT) {
+                                    Set.insert(st[index], t_or_nt_enum);
+
+                                    break;
+                                }
+
+                                for (int k=0; k < Set.size(first[t_or_nt_enum - TK_COUNT]); k++) {
+                                    if (Set.at(first[t_or_nt_enum - TK_COUNT], k) != TK_EPSILON)
+                                        Set.insert(st[index], Set.at(first[t_or_nt_enum - TK_COUNT], k));
+                                    else
+                                        epsilon_found++;
+                                }
+
+                                if (!epsilon_found)
+                                    break;
+
+                                if (epsilon_found) {
+                                    currInd++;
+                                } else if (currInd == VectorInt.size(g->rules[grammarID].rhs[a]) - 1) {
+                                    // follow of parent in follow of child
+                                    struct set* temp = follow_helper(g, st, grammarID, proc, first);
+
+                                    for (int k = 0; k < Set.size(temp); k++)
+                                        Set.insert(st[index], Set.at(temp, k));
+                                    
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    return st[index];
+}
+
+/**
+ * @brief 
+ * 
+ * @param g The grammar rules generated above 
+ * @return struct set** 
+ */
+struct set** generate_follow(struct grammar* g, struct set** first){
+    struct set** follow = malloc(sizeof(struct set*) * g->rule_count);
+    for(int i=0; i<g->rule_count; i++){
+        follow[i] = NULL;
+    }
+
+    struct set** proc = follow_preprocess(g);
+
+     for(int i=0; i<g->rule_count; i++){
+        if(!follow[i]){
+            follow_helper(g, follow, i, proc, first);
+        }
+     }
+
+    // freeing
+    for (int i = 0; i < g->rule_count; i++)
+        Set.free(&proc[i]);
+    free(proc);
+
+    return follow;
+}
 
 
 
@@ -324,12 +452,22 @@ struct set** generate_first(struct grammar* g){
 int main(void){
     struct grammar *g = make_grammar("grammar.txt");
 
-    struct set **first = generate_first(g);
-
-    for(int j=0; j<g->rule_count; j++){
-        Set.print(first[j]);
-    }
     
+    struct set **first = generate_first(g);
+    struct set **follow = generate_follow(g, first);
+
+    for (int i = 0; i < g->rule_count; i++) {
+        printf("%25s: ", t_or_nt_string(g, i + TK_COUNT));
+        for (int j = 0; j < Set.size(follow[i]); j++)
+            printf("%s ", t_or_nt_string(g, Set.at(follow[i], j)));
+        printf("\n");
+    }
+
+    // for(int i=0; i<g->rule_count; i++){
+    //     printf("printing %d\n", i);
+    //     Set.print(proc[i]);
+    //     printf("done %d\n", i);
+    // } 
 
     // // For testing make_grammar(), can be removed.
     // for (int i = 0; i < g->rule_count; i++) {

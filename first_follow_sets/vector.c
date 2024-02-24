@@ -46,6 +46,14 @@ void vint_insert(struct vector_int *vec, int index, int data) {
     return;
 }
 
+int vint_search(struct vector_int *vec, int searchVal){
+    assert(vec != NULL);
+    for(int i=0; i<vec->size; i++)
+        if(vec->vector[i] == searchVal) return 1;
+    return 0;
+}
+
+
 int vint_erase(struct vector_int *vec, int index) {
     assert(vec != NULL);
     assert(index >= 0 && index < vec->size);
@@ -100,7 +108,7 @@ void vint_free(struct vector_int **p_vec) {
     return;
 }
 
-const struct vector_int_lib VectorInt = { .new = vint_new, .size = vint_size, .insert = vint_insert, .erase = vint_erase, .push_back = vint_push_back, .push_front = vint_push_front, .pop_back = vint_pop_back, .pop_front = vint_pop_front, .at = vint_at, .print = vint_print, .free = vint_free };
+const struct vector_int_lib VectorInt = { .new = vint_new, .size = vint_size, .insert = vint_insert, .search = vint_search, .erase = vint_erase, .push_back = vint_push_back, .push_front = vint_push_front, .pop_back = vint_pop_back, .pop_front = vint_pop_front, .at = vint_at, .print = vint_print, .free = vint_free };
 
 struct vector_string {
     char **vector;
