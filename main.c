@@ -5,6 +5,7 @@
 #include "symboltable.h"
 #include "errors.h"
 #include "first_follow_sets.h"
+#include "parser.h"
 
 void print_source_without_comments(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
@@ -67,6 +68,22 @@ void parser(char *file_name) {
         printf("\n\n");
     }
 
+    struct vector_int ***parse_table = make_parse_table(g, first, follow);
+
+    for (int i = 0; i < g->rule_count; i++) {
+        for (int j = 0; j < TK_COUNT; j++) {
+            if (parse_table[i][j] != NULL) {
+                printf("Stack symbol: %s, next token: %s\n", t_or_nt_string(g, i + TK_COUNT), t_or_nt_string(g, j));
+                printf("Production rule: %s ===> ", t_or_nt_string(g, i + TK_COUNT));
+
+                for (int k = 0; k < VectorInt.size(parse_table[i][j]); k++)
+                    printf("%s ", t_or_nt_string(g, VectorInt.at(parse_table[i][j], k)));
+                
+                printf("\n\n");
+            }
+        }
+    }
+
     // TODO: Parse file
 
     for (int i = 0; i < g->rule_count; i++) {
@@ -75,6 +92,7 @@ void parser(char *file_name) {
     }
     free(first);
     free(follow);
+    free_parse_table(&parse_table, g);
     free_grammar(&g);
 
     return;
