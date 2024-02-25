@@ -48,7 +48,7 @@ void lexer(char *file_name) {
 }
 
 void parser(char *file_name) {    
-    struct grammar *g = make_grammar("grammar.txt");
+    struct grammar *g = make_grammar("nalanda_grammar.txt");
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
 
@@ -70,8 +70,8 @@ void parser(char *file_name) {
     // TODO: Parse file
 
     for (int i = 0; i < g->rule_count; i++) {
-        VectorInt.free(&first[i]);
-        VectorInt.free(&follow[i]);
+        Set.free(&first[i]);
+        Set.free(&follow[i]);
     }
     free(first);
     free(follow);

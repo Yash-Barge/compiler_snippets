@@ -126,6 +126,8 @@ int enumify_t_or_nt(struct grammar *g, const char *restrict const t_or_nt) {
             return i + TK_COUNT;
         
     // ERROR
+    fprintf(stderr, "\033[31mError parsing grammar:\033[0m %s\nThis non-terminal does not exist on LHS of any grammar production rule\n", t_or_nt);
+
     exit(1);
 }
 
@@ -142,8 +144,12 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
         if (buffer[strlen(buffer) - 1] == '\r')
             buffer[strlen(buffer) - 1] = '\0';
 
-        if (strlen(buffer) && substring_count(buffer, "===>")) // not empty and grammar rule
+        if (!strlen(buffer))
+            continue;
+        else if (substring_count(buffer, "===>")) // not empty and grammar rule
             VectorString.push_back(prod_rules_raw, buffer);
+        else
+            fprintf(stderr, "\033[33mWARNING:\033[0m Line %s is not counted as `===>` not found in line\n", buffer);
     }
 
     struct grammar *ret = malloc(sizeof(*ret) + sizeof(struct grammar_rule) * VectorString.size(prod_rules_raw));
@@ -170,6 +176,9 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
         int j = 0;
         while (index < strlen(temp)) {
             char *t_or_nt = get_next_t_or_nt(temp, &index);
+
+            if (t_or_nt == NULL)
+                continue;
 
             if (!strcmp(t_or_nt, "|")) {
                 j++;
@@ -210,6 +219,8 @@ void free_grammar(struct grammar **p_g) {
 }
 
 const char *t_or_nt_string(struct grammar *g, int enumified_t_or_nt) {
+    if (enumified_t_or_nt == -1)
+        return "$";
     return enumified_t_or_nt < TK_COUNT ? TOK_STRING[enumified_t_or_nt] : g->rules[enumified_t_or_nt - TK_COUNT].lhs;
 }
 
