@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "dfa.h"
 #include "stack.h"
+#include "tree.h"
 
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
@@ -168,4 +169,11 @@ void parse(char *file_name, struct grammar *g) {
     free_parse_table(&parse_table, g);
 
     return;
+}
+
+
+struct tree* generate_parse_tree(struct vector*** parse_table, char* file_path){
+    struct tree* root = Tree.new();
+
+
 }

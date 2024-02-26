@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -Wall -Wextra # -Werror -O2
 INC_DIR = -I ./headers
 
-stage1exe: main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o
-	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o
+stage1exe: main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
+	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
 	rm -f *.o
 	./stage1exe testcases/f1.txt
 # all executions of ./stage1exe should be removed for final submission
@@ -23,6 +23,8 @@ errors.o: source/errors.c headers/errors.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/errors.c
 buffer.o: source/buffer.c headers/buffer.h headers/errors.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/buffer.c
+tree.o: source/tree.c headers/tree.h headers/vector.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c source/tree.c
 set.o: source/set.c headers/set.h headers/enums.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/set.c
 vector.o: source/vector.c headers/vector.h

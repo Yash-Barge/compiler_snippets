@@ -210,3 +210,103 @@ void vstring_free(struct vector_string **p_vec) {
 }
 
 const struct vector_string_lib VectorString = { .new = vstring_new, .size = vstring_size, .insert = vstring_insert, .erase = vstring_erase, .push_back = vstring_push_back, .push_front = vstring_push_front, .pop_back = vstring_pop_back, .pop_front = vstring_pop_front, .at = vstring_at, .print = vstring_print, .free = vstring_free };
+
+struct vector_tree {
+    void **children;
+    int size;
+    int capacity;
+};
+
+struct vector_tree *vtree_new(void) {
+    struct vector_tree *vec = malloc(sizeof(*vec));
+    *vec = (struct vector_tree) { .size = 0, .capacity = 1 };
+    vec->children = malloc(sizeof(*vec->children) * vec->capacity);
+
+    return vec;
+}
+
+void vtree_grow_vector(struct vector_tree *vec) {
+    vec->children = realloc(vec->children, sizeof(*vec->children) * vec->capacity * 2);
+    vec->capacity *= 2;
+
+    return;
+} 
+
+int vtree_size(struct vector_tree *vec){
+    assert(vec != NULL);
+    return vec->size;
+}
+
+void vtree_insert(struct vector_tree *vec, int index, char *data) {
+    assert(vec != NULL);
+    assert(index >= 0 && index <= vec->size);
+
+    if(vec->size == vec->capacity)
+        vtree_grow_vector(vec);
+
+    memmove(vec->children + index + 1, vec->children + index, sizeof(*vec->children) * (vec->size++ - index));
+
+    vec->children[index] = malloc(sizeof(char) * (strlen(data) + 1));
+    strcpy(vec->children[index], data);
+
+    return;
+}
+
+char *vtree_erase(struct vector_tree *vec, int index) {
+    assert(vec != NULL);
+    assert(index >= 0 && index < vec->size);
+
+    char *val = vec->children[index];
+
+    memmove(vec->children + index, vec->children + index + 1, sizeof(*vec->children) * (--vec->size - index));
+
+    return val;
+}
+
+char *vtree_pop_back(struct vector_tree *vec) {
+    return vtree_erase(vec, vec->size-1); 
+}
+
+char *vtree_pop_front(struct vector_tree *vec) {
+    return vtree_erase(vec, 0); 
+}
+
+void vtree_push_back(struct vector_tree *vec, char *val) {
+    return vtree_insert(vec, vec->size, val); 
+}
+
+void vtree_push_front(struct vector_tree *vec, char *val) {
+    return vtree_insert(vec, 0, val); 
+}
+
+const char *vtree_at(struct vector_tree *vec, int index) {
+    return vec->children[index];
+}
+
+void vtree_print(struct vector_tree *vec) {
+    assert(vec != NULL);
+
+    for(int i = 0; i < vec->size; i++)
+        printf("%s\n", vec->children[i]);
+    printf("\n");
+
+    return;
+}
+
+void vtree_free(struct vector_tree **p_vec) {
+    assert(p_vec != NULL);
+    assert(*p_vec != NULL);
+
+    struct vector_tree *vec = *p_vec;
+
+    for (int i = 0; i < vec->size; i++)
+        free(vec->children[i]);
+
+    free(vec->children);
+    free(vec);
+    *p_vec = NULL;
+
+    return;
+}
+
+const struct vector_tree_node_lib VectorNodes = { .new = vtree_new, .size = vtree_size, .insert = vtree_insert, .erase = vtree_erase, .push_back = vtree_push_back, .push_front = vtree_push_front, .pop_back = vtree_pop_back, .pop_front = vtree_pop_front, .at = vtree_at, .print = vtree_print, .free = vtree_free };
