@@ -19,7 +19,7 @@
 <moreFields>===><fieldDefinition><moreFields> | EPS
 <declarations> ===> <declaration><declarations>| EPS
 <declaration>===> TK_TYPE <dataType> TK_COLON TK_ID <global_or_not> TK_SEM
-<global_or_not>===>TK_GLOBAL| EPS
+<global_or_not>===>TK_COLON TK_GLOBAL| EPS
 <otherStmts>===> <stmt><otherStmts> | EPS
 <stmt>===> <assignmentStmt> | <iterativeStmt>|<conditionalStmt>|<ioStmt>| <funCallStmt>
 <assignmentStmt>===><singleOrRecId> TK_ASSIGNOP <arithmeticExpression> TK_SEM
