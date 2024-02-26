@@ -1,4 +1,6 @@
 #include "parser.h"
+#include "dfa.h"
+#include "stack.h"
 
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
@@ -102,6 +104,68 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
 
     free(parse_table);
     *p_parse_table = NULL;
+
+    return;
+}
+
+// TODO: properly set inputs and return type
+void parse(char *file_name, struct grammar *g) {
+    struct set **first = generate_first(g);
+    struct set **follow = generate_follow(g, first);
+    struct vector_int ***parse_table = make_parse_table(g, first, follow);
+    free_first_and_follow(&first, g);
+    free_first_and_follow(&follow, g);
+
+    struct stack *parse_stack = Stack.new();
+    Stack.push(parse_stack, -1);
+    Stack.push(parse_stack, TK_COUNT);
+
+    // TODO: lexer vs parser errors need to be re-thought
+    IOHandler *io = createIOHandler(file_name);
+
+    Table symboltable = createtable();
+    populate(symboltable);
+
+    while (!io->inputFin) {
+        TOKEN *tok = runDFA(io, symboltable);
+
+        if (tok == NULL)
+            continue;
+        
+
+        while (tok->token != Stack.top(parse_stack)) {
+            int nt = Stack.pop(parse_stack);
+
+            if (nt == TK_EPSILON)
+                continue;
+
+            if (nt < TK_COUNT) {
+                fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d (expected %s)\n", tok->lexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                exit(1);
+            }
+
+            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->token];
+
+            if (rhs == NULL) {
+                fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d\n(non-terminal %s; no parse table entry)\n", tok->lexeme, tok->lineNumber, t_or_nt_string(g, nt));
+                exit(1);
+            }
+
+            for (int i = VectorInt.size(rhs) - 1; i >= 0; i--)
+                Stack.push(parse_stack, VectorInt.at(rhs, i));
+        }
+
+        assert(tok->token == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
+        Stack.pop(parse_stack);
+
+        free_token(&tok);
+    }
+
+    assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
+    printf("Parsing of %s completed successfully!\n", file_name);
+
+    closeHandler(io);
+    free_parse_table(&parse_table, g);
 
     return;
 }

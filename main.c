@@ -58,13 +58,14 @@ void parser(char *file_name) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
 
-    print_first_follow(g, first, follow);
+    // print_first_follow(g, first, follow);
 
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
 
-    print_parse_table(g, parse_table);
+    // print_parse_table(g, parse_table);
 
     // TODO: Parse file
+    parse(file_name, g);
 
     free_first_and_follow(&first, g);
     free_first_and_follow(&follow, g);
