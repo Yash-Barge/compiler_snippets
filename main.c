@@ -70,10 +70,12 @@ void parser(char *file_name) {
 
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
 
+    int count = 0;
     for (int i = 0; i < g->rule_count; i++) {
         for (int j = 0; j < TK_COUNT; j++) {
             if (parse_table[i][j] != NULL) {
-                printf("Stack symbol: %s, next token: %s\n", t_or_nt_string(g, i + TK_COUNT), t_or_nt_string(g, j));
+                count++;
+                printf("%d. Stack symbol: %s, next token: %s\n", count, t_or_nt_string(g, i + TK_COUNT), t_or_nt_string(g, j));
                 printf("Production rule: %s ===> ", t_or_nt_string(g, i + TK_COUNT));
 
                 for (int k = 0; k < VectorInt.size(parse_table[i][j]); k++)
@@ -83,6 +85,7 @@ void parser(char *file_name) {
             }
         }
     }
+    printf("Total parse table entries: %d\n", count);
 
     // TODO: Parse file
 

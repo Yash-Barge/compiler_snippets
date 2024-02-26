@@ -12,8 +12,7 @@
 <stmts>===><typeDefinitions> <declarations> <otherStmts><returnStmt>
 <typeDefinitions>===> <actualOrRedefined> <typeDefinitions> | EPS
 <actualOrRedefined> ===> <typeDefinition> | <definetypestmt>
-<typeDefinition>===>TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD
-<typeDefinition>===>TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
+<typeDefinition>===>TK_RECORD TK_RUID <fieldDefinitions> TK_ENDRECORD | TK_UNION TK_RUID <fieldDefinitions> TK_ENDUNION
 <fieldDefinitions>===> <fieldDefinition><fieldDefinition><moreFields>
 <fieldDefinition>===> TK_TYPE <fieldType> TK_COLON TK_FIELDID TK_SEM
 <fieldType>===> <primitiveDatatype> | <constructedDatatype>
@@ -42,7 +41,6 @@
 <factor> ===> TK_OP <arithmeticExpression> TK_CL | <var>
 <highPrecedenceOperators>===> TK_MUL | TK_DIV
 <lowPrecedenceOperators> ===> TK_PLUS | TK_MINUS
-<arithmeticExpression> ===> <term> <expPrime>
 <booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL | <var> <relationalOp> <var> | TK_NOT TK_OP <booleanExpression> TK_CL
 <var>===> <singleOrRecId> | TK_NUM | TK_RNUM 
 <logicalOp>===>TK_AND | TK_OR
