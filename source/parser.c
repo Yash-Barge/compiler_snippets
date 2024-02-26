@@ -1,4 +1,7 @@
 #include "parser.h"
+#include "dfa.h"
+
+#define MAX_SIZE 512
 
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
@@ -104,4 +107,18 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     *p_parse_table = NULL;
 
     return;
+}
+
+
+
+struct tree* generate_parse_tree(struct vector*** parse_table, char* file_path){
+    struct tree* root = Tree.new();
+
+    // while(fgets(buff, MAX_SIZE, fp)) {
+    //     int index = 0;
+    //     while(index < strlen(buff)){
+
+    //     }
+    // }
+
 }
