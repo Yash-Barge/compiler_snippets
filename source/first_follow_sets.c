@@ -476,3 +476,37 @@ struct set** generate_follow(struct grammar* g, struct set** first) {
 
     return follow;
 }
+
+void print_first_follow(struct grammar *g, struct set **first, struct set **follow) {
+    for (int i = 0; i < g->rule_count; i++) {
+        printf("%s:\n", t_or_nt_string(g, i + TK_COUNT));
+
+        printf("%10s", "first: ");
+        for (int j = 0; j < Set.size(first[i]); j++)
+            printf("%s ", t_or_nt_string(g, Set.at(first[i], j)));
+        printf("\n");
+
+        printf("%10s", "follow: ");
+        for (int j = 0; j < Set.size(follow[i]); j++)
+            printf("%s ", t_or_nt_string(g, Set.at(follow[i], j)));
+        printf("\n\n");
+    }
+
+    return;
+}
+
+void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
+    assert(p_first_or_follow != NULL);
+    assert(*p_first_or_follow != NULL);
+
+    struct set **first_or_follow = *p_first_or_follow;
+
+    for (int i = 0; i < g->rule_count; i++) {
+        Set.free(&first_or_follow[i]);
+    }
+    free(first_or_follow);
+
+    *p_first_or_follow = NULL;
+
+    return;
+}

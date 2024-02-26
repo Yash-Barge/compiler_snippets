@@ -33,8 +33,13 @@ void lexer(char *file_name) {
     Table symboltable = createtable();
     populate(symboltable);
 
-    while (!io->inputFin)
-        runDFA(io, symboltable);
+    while (!io->inputFin) {
+        TOKEN *tok = runDFA(io, symboltable);
+        if (tok != NULL) {
+            printToken(tok);
+            free_token(&tok);
+        }
+    }
 
     closeHandler(io);
 
@@ -53,48 +58,16 @@ void parser(char *file_name) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
 
-    // Will most likely remove this
-    for (int i = 0; i < g->rule_count; i++) {
-        printf("%s:\n", t_or_nt_string(g, i + TK_COUNT));
-
-        printf("%10s", "first: ");
-        for (int j = 0; j < Set.size(first[i]); j++)
-            printf("%s ", t_or_nt_string(g, Set.at(first[i], j)));
-        printf("\n");
-
-        printf("%10s", "follow: ");
-        for (int j = 0; j < Set.size(follow[i]); j++)
-            printf("%s ", t_or_nt_string(g, Set.at(follow[i], j)));
-        printf("\n\n");
-    }
+    print_first_follow(g, first, follow);
 
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
 
-    int count = 0;
-    for (int i = 0; i < g->rule_count; i++) {
-        for (int j = 0; j < TK_COUNT; j++) {
-            if (parse_table[i][j] != NULL) {
-                count++;
-                printf("%d. Stack symbol: %s, next token: %s\n", count, t_or_nt_string(g, i + TK_COUNT), t_or_nt_string(g, j));
-                printf("Production rule: %s ===> ", t_or_nt_string(g, i + TK_COUNT));
-
-                for (int k = 0; k < VectorInt.size(parse_table[i][j]); k++)
-                    printf("%s ", t_or_nt_string(g, VectorInt.at(parse_table[i][j], k)));
-                
-                printf("\n\n");
-            }
-        }
-    }
-    printf("Total parse table entries: %d\n", count);
+    print_parse_table(g, parse_table);
 
     // TODO: Parse file
 
-    for (int i = 0; i < g->rule_count; i++) {
-        Set.free(&first[i]);
-        Set.free(&follow[i]);
-    }
-    free(first);
-    free(follow);
+    free_first_and_follow(&first, g);
+    free_first_and_follow(&follow, g);
     free_parse_table(&parse_table, g);
     free_grammar(&g);
 

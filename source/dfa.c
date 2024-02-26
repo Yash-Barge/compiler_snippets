@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dfa.h"
 
@@ -19,10 +20,20 @@ TOKEN *createToken() {
 }
 
 void printToken(TOKEN *token) {
-    if (token->isError == false)
-        printf("%4d\t%15s\t%32s\n", token->lineNumber, TOK_STRING[token->token], token->lexeme);
-    else
-        printf("Lexical error on line %d in lexeme: %s\n", token->lineNumber, token->lexeme);
+    printf("%4d\t%15s\t%32s\n", token->lineNumber, token->token == -1 ? "$": TOK_STRING[token->token], token->lexeme);
+
+    return;
+}
+
+void free_token(TOKEN **p_token) {
+    assert(p_token != NULL);
+    assert(*p_token != NULL);
+
+    TOKEN *token = *p_token;
+
+    free(token->lexeme);
+    free(token);
+    *p_token = NULL;
 
     return;
 }
@@ -121,7 +132,15 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 34;
                 break;
             case '\0':
-                return NULL;
+                // free(token);
+                // return NULL;
+                token->token = -1;
+                // done so that free-ing the string won't cause segfault
+                token->lexeme = calloc(2, sizeof(char));
+                token->lexeme[0] = '$';
+                token->lineNumber = io->lineNumber;
+                fin = true;
+                break;
             default:
                 // printf("unknown character (%c)!\n", ch);
                 // exit(1);
@@ -373,7 +392,15 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 33;
                 break;
             case '\0': // reached EOF, and no newline character after end of comment
-                return NULL;
+                // free(token);
+                // return NULL;
+                token->token = -1;
+                // done so that free-ing the string won't cause segfault
+                token->lexeme = calloc(2, sizeof(char));
+                token->lexeme[0] = '$';
+                token->lineNumber = io->lineNumber;
+                fin = true;
+                break;
             default:
                 state = 34;
                 break;
@@ -784,6 +811,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break; ///ERROR (?)
         }
     }
-    printToken(token);
+
     return token;
 }

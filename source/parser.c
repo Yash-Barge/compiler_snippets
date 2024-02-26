@@ -70,6 +70,27 @@ struct vector_int ***make_parse_table(struct grammar *g, struct set **first, str
     return ret;
 }
 
+void print_parse_table(struct grammar *g, struct vector_int ***parse_table) {
+    int count = 0;
+    for (int i = 0; i < g->rule_count; i++) {
+        for (int j = 0; j < TK_COUNT; j++) {
+            if (parse_table[i][j] != NULL) {
+                count++;
+                printf("%d. Stack symbol: %s, next token: %s\n", count, t_or_nt_string(g, i + TK_COUNT), t_or_nt_string(g, j));
+                printf("Production rule: %s ===> ", t_or_nt_string(g, i + TK_COUNT));
+
+                for (int k = 0; k < VectorInt.size(parse_table[i][j]); k++)
+                    printf("%s ", t_or_nt_string(g, VectorInt.at(parse_table[i][j], k)));
+                
+                printf("\n\n");
+            }
+        }
+    }
+    printf("Total parse table entries: %d\n", count);
+
+    return;
+}
+
 void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     assert(p_parse_table != NULL);
     assert(*p_parse_table != NULL);

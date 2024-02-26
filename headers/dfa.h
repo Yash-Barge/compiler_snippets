@@ -19,5 +19,6 @@ struct token{
 TOKEN* createToken();
 TOKEN* runDFA(IOHandler *io, Table symboltable);
 void printToken(TOKEN * token);
+void free_token(TOKEN **p_token);
 
 #endif

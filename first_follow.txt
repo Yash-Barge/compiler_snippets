@@ -1,0 +1,211 @@
+program:
+   first: TK_FUNID TK_MAIN 
+  follow: $ 
+
+mainFunction:
+   first: TK_MAIN 
+  follow: $ 
+
+otherFunctions:
+   first: TK_FUNID TK_EPSILON 
+  follow: TK_MAIN 
+
+function:
+   first: TK_FUNID 
+  follow: TK_FUNID TK_MAIN 
+
+input_par:
+   first: TK_INPUT 
+  follow: TK_OUTPUT TK_SEM 
+
+output_par:
+   first: TK_OUTPUT TK_EPSILON 
+  follow: TK_SEM 
+
+parameter_list:
+   first: TK_INT TK_REAL TK_RECORD TK_UNION TK_RUID 
+  follow: TK_SQR 
+
+dataType:
+   first: TK_INT TK_REAL TK_RECORD TK_UNION TK_RUID 
+  follow: TK_ID TK_COLON 
+
+primitiveDatatype:
+   first: TK_INT TK_REAL 
+  follow: TK_ID TK_COLON 
+
+constructedDatatype:
+   first: TK_RECORD TK_UNION TK_RUID 
+  follow: TK_ID TK_COLON 
+
+remaining_list:
+   first: TK_COMMA TK_EPSILON 
+  follow: TK_SQR 
+
+stmts:
+   first: TK_RECORD TK_UNION TK_DEFINETYPE TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+  follow: TK_END 
+
+typeDefinitions:
+   first: TK_RECORD TK_UNION TK_DEFINETYPE TK_EPSILON 
+  follow: TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+actualOrRedefined:
+   first: TK_RECORD TK_UNION TK_DEFINETYPE 
+  follow: TK_RECORD TK_UNION TK_DEFINETYPE TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+typeDefinition:
+   first: TK_RECORD TK_UNION 
+  follow: TK_RECORD TK_UNION TK_DEFINETYPE TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+fieldDefinitions:
+   first: TK_TYPE 
+  follow: TK_ENDRECORD TK_ENDUNION 
+
+fieldDefinition:
+   first: TK_TYPE 
+  follow: TK_TYPE TK_ENDRECORD TK_ENDUNION 
+
+fieldType:
+   first: TK_INT TK_REAL TK_RECORD TK_UNION TK_RUID 
+  follow: TK_COLON 
+
+moreFields:
+   first: TK_TYPE TK_EPSILON 
+  follow: TK_ENDRECORD TK_ENDUNION 
+
+declarations:
+   first: TK_TYPE TK_EPSILON 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+declaration:
+   first: TK_TYPE 
+  follow: TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+global_or_not:
+   first: TK_COLON TK_EPSILON 
+  follow: TK_SEM 
+
+otherStmts:
+   first: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_EPSILON 
+  follow: TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+stmt:
+   first: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+assignmentStmt:
+   first: TK_ID 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+singleOrRecId:
+   first: TK_ID 
+  follow: TK_ASSIGNOP TK_CL TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+
+option_single_constructed:
+   first: TK_DOT TK_EPSILON 
+  follow: TK_ASSIGNOP TK_CL TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+
+oneExpansion:
+   first: TK_DOT 
+  follow: TK_DOT TK_ASSIGNOP TK_CL TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+
+moreExpansions:
+   first: TK_DOT TK_EPSILON 
+  follow: TK_ASSIGNOP TK_CL TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+
+funCallStmt:
+   first: TK_SQL TK_CALL 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+outputParameters:
+   first: TK_SQL TK_EPSILON 
+  follow: TK_CALL 
+
+inputParameters:
+   first: TK_SQL 
+  follow: TK_SEM 
+
+iterativeStmt:
+   first: TK_WHILE 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+conditionalStmt:
+   first: TK_IF 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+elsePart:
+   first: TK_ELSE TK_ENDIF 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+ioStmt:
+   first: TK_READ TK_WRITE 
+  follow: TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN TK_ENDWHILE TK_ELSE TK_ENDIF 
+
+arithmeticExpression:
+   first: TK_OP TK_ID TK_NUM TK_RNUM 
+  follow: TK_SEM TK_CL 
+
+expPrime:
+   first: TK_PLUS TK_MINUS TK_EPSILON 
+  follow: TK_SEM TK_CL 
+
+term:
+   first: TK_OP TK_ID TK_NUM TK_RNUM 
+  follow: TK_PLUS TK_MINUS TK_SEM TK_CL 
+
+termPrime:
+   first: TK_MUL TK_DIV TK_EPSILON 
+  follow: TK_PLUS TK_MINUS TK_SEM TK_CL 
+
+factor:
+   first: TK_OP TK_ID TK_NUM TK_RNUM 
+  follow: TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_CL 
+
+highPrecedenceOperators:
+   first: TK_MUL TK_DIV 
+  follow: TK_OP TK_ID TK_NUM TK_RNUM 
+
+lowPrecedenceOperators:
+   first: TK_PLUS TK_MINUS 
+  follow: TK_OP TK_ID TK_NUM TK_RNUM 
+
+booleanExpression:
+   first: TK_OP TK_ID TK_NUM TK_RNUM TK_NOT 
+  follow: TK_CL 
+
+var:
+   first: TK_ID TK_NUM TK_RNUM 
+  follow: TK_CL TK_MUL TK_DIV TK_PLUS TK_MINUS TK_SEM TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+
+logicalOp:
+   first: TK_AND TK_OR 
+  follow: TK_OP 
+
+relationalOp:
+   first: TK_LT TK_LE TK_EQ TK_GT TK_GE TK_NE 
+  follow: TK_ID TK_NUM TK_RNUM 
+
+returnStmt:
+   first: TK_RETURN 
+  follow: TK_END 
+
+optionalReturn:
+   first: TK_SQL TK_EPSILON 
+  follow: TK_SEM 
+
+idList:
+   first: TK_ID 
+  follow: TK_SQR 
+
+more_ids:
+   first: TK_COMMA TK_EPSILON 
+  follow: TK_SQR 
+
+definetypestmt:
+   first: TK_DEFINETYPE 
+  follow: TK_RECORD TK_UNION TK_DEFINETYPE TK_TYPE TK_ID TK_WHILE TK_IF TK_READ TK_WRITE TK_SQL TK_CALL TK_RETURN 
+
+A:
+   first: TK_RECORD TK_UNION 
+  follow: TK_RUID 

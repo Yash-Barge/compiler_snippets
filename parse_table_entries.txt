@@ -1,0 +1,565 @@
+1. Stack symbol: program, next token: TK_FUNID
+Production rule: program ===> otherFunctions mainFunction 
+
+2. Stack symbol: program, next token: TK_MAIN
+Production rule: program ===> otherFunctions mainFunction 
+
+3. Stack symbol: mainFunction, next token: TK_MAIN
+Production rule: mainFunction ===> TK_MAIN stmts TK_END 
+
+4. Stack symbol: otherFunctions, next token: TK_FUNID
+Production rule: otherFunctions ===> function otherFunctions 
+
+5. Stack symbol: otherFunctions, next token: TK_MAIN
+Production rule: otherFunctions ===> TK_EPSILON 
+
+6. Stack symbol: function, next token: TK_FUNID
+Production rule: function ===> TK_FUNID input_par output_par TK_SEM stmts TK_END 
+
+7. Stack symbol: input_par, next token: TK_INPUT
+Production rule: input_par ===> TK_INPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR 
+
+8. Stack symbol: output_par, next token: TK_OUTPUT
+Production rule: output_par ===> TK_OUTPUT TK_PARAMETER TK_LIST TK_SQL parameter_list TK_SQR 
+
+9. Stack symbol: output_par, next token: TK_SEM
+Production rule: output_par ===> TK_EPSILON 
+
+10. Stack symbol: parameter_list, next token: TK_RUID
+Production rule: parameter_list ===> dataType TK_ID remaining_list 
+
+11. Stack symbol: parameter_list, next token: TK_UNION
+Production rule: parameter_list ===> dataType TK_ID remaining_list 
+
+12. Stack symbol: parameter_list, next token: TK_INT
+Production rule: parameter_list ===> dataType TK_ID remaining_list 
+
+13. Stack symbol: parameter_list, next token: TK_REAL
+Production rule: parameter_list ===> dataType TK_ID remaining_list 
+
+14. Stack symbol: parameter_list, next token: TK_RECORD
+Production rule: parameter_list ===> dataType TK_ID remaining_list 
+
+15. Stack symbol: dataType, next token: TK_RUID
+Production rule: dataType ===> constructedDatatype 
+
+16. Stack symbol: dataType, next token: TK_UNION
+Production rule: dataType ===> constructedDatatype 
+
+17. Stack symbol: dataType, next token: TK_INT
+Production rule: dataType ===> primitiveDatatype 
+
+18. Stack symbol: dataType, next token: TK_REAL
+Production rule: dataType ===> primitiveDatatype 
+
+19. Stack symbol: dataType, next token: TK_RECORD
+Production rule: dataType ===> constructedDatatype 
+
+20. Stack symbol: primitiveDatatype, next token: TK_INT
+Production rule: primitiveDatatype ===> TK_INT 
+
+21. Stack symbol: primitiveDatatype, next token: TK_REAL
+Production rule: primitiveDatatype ===> TK_REAL 
+
+22. Stack symbol: constructedDatatype, next token: TK_RUID
+Production rule: constructedDatatype ===> TK_RUID 
+
+23. Stack symbol: constructedDatatype, next token: TK_UNION
+Production rule: constructedDatatype ===> TK_UNION TK_RUID 
+
+24. Stack symbol: constructedDatatype, next token: TK_RECORD
+Production rule: constructedDatatype ===> TK_RECORD TK_RUID 
+
+25. Stack symbol: remaining_list, next token: TK_SQR
+Production rule: remaining_list ===> TK_EPSILON 
+
+26. Stack symbol: remaining_list, next token: TK_COMMA
+Production rule: remaining_list ===> TK_COMMA parameter_list 
+
+27. Stack symbol: stmts, next token: TK_ID
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+28. Stack symbol: stmts, next token: TK_WHILE
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+29. Stack symbol: stmts, next token: TK_UNION
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+30. Stack symbol: stmts, next token: TK_DEFINETYPE
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+31. Stack symbol: stmts, next token: TK_TYPE
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+32. Stack symbol: stmts, next token: TK_SQL
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+33. Stack symbol: stmts, next token: TK_IF
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+34. Stack symbol: stmts, next token: TK_READ
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+35. Stack symbol: stmts, next token: TK_WRITE
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+36. Stack symbol: stmts, next token: TK_RETURN
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+37. Stack symbol: stmts, next token: TK_CALL
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+38. Stack symbol: stmts, next token: TK_RECORD
+Production rule: stmts ===> typeDefinitions declarations otherStmts returnStmt 
+
+39. Stack symbol: typeDefinitions, next token: TK_ID
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+40. Stack symbol: typeDefinitions, next token: TK_WHILE
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+41. Stack symbol: typeDefinitions, next token: TK_UNION
+Production rule: typeDefinitions ===> actualOrRedefined typeDefinitions 
+
+42. Stack symbol: typeDefinitions, next token: TK_DEFINETYPE
+Production rule: typeDefinitions ===> actualOrRedefined typeDefinitions 
+
+43. Stack symbol: typeDefinitions, next token: TK_TYPE
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+44. Stack symbol: typeDefinitions, next token: TK_SQL
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+45. Stack symbol: typeDefinitions, next token: TK_IF
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+46. Stack symbol: typeDefinitions, next token: TK_READ
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+47. Stack symbol: typeDefinitions, next token: TK_WRITE
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+48. Stack symbol: typeDefinitions, next token: TK_RETURN
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+49. Stack symbol: typeDefinitions, next token: TK_CALL
+Production rule: typeDefinitions ===> TK_EPSILON 
+
+50. Stack symbol: typeDefinitions, next token: TK_RECORD
+Production rule: typeDefinitions ===> actualOrRedefined typeDefinitions 
+
+51. Stack symbol: actualOrRedefined, next token: TK_UNION
+Production rule: actualOrRedefined ===> typeDefinition 
+
+52. Stack symbol: actualOrRedefined, next token: TK_DEFINETYPE
+Production rule: actualOrRedefined ===> definetypestmt 
+
+53. Stack symbol: actualOrRedefined, next token: TK_RECORD
+Production rule: actualOrRedefined ===> typeDefinition 
+
+54. Stack symbol: typeDefinition, next token: TK_UNION
+Production rule: typeDefinition ===> TK_UNION TK_RUID fieldDefinitions TK_ENDUNION 
+
+55. Stack symbol: typeDefinition, next token: TK_RECORD
+Production rule: typeDefinition ===> TK_RECORD TK_RUID fieldDefinitions TK_ENDRECORD 
+
+56. Stack symbol: fieldDefinitions, next token: TK_TYPE
+Production rule: fieldDefinitions ===> fieldDefinition fieldDefinition moreFields 
+
+57. Stack symbol: fieldDefinition, next token: TK_TYPE
+Production rule: fieldDefinition ===> TK_TYPE fieldType TK_COLON TK_FIELDID TK_SEM 
+
+58. Stack symbol: fieldType, next token: TK_RUID
+Production rule: fieldType ===> constructedDatatype 
+
+59. Stack symbol: fieldType, next token: TK_UNION
+Production rule: fieldType ===> constructedDatatype 
+
+60. Stack symbol: fieldType, next token: TK_INT
+Production rule: fieldType ===> primitiveDatatype 
+
+61. Stack symbol: fieldType, next token: TK_REAL
+Production rule: fieldType ===> primitiveDatatype 
+
+62. Stack symbol: fieldType, next token: TK_RECORD
+Production rule: fieldType ===> constructedDatatype 
+
+63. Stack symbol: moreFields, next token: TK_ENDUNION
+Production rule: moreFields ===> TK_EPSILON 
+
+64. Stack symbol: moreFields, next token: TK_TYPE
+Production rule: moreFields ===> fieldDefinition moreFields 
+
+65. Stack symbol: moreFields, next token: TK_ENDRECORD
+Production rule: moreFields ===> TK_EPSILON 
+
+66. Stack symbol: declarations, next token: TK_ID
+Production rule: declarations ===> TK_EPSILON 
+
+67. Stack symbol: declarations, next token: TK_WHILE
+Production rule: declarations ===> TK_EPSILON 
+
+68. Stack symbol: declarations, next token: TK_TYPE
+Production rule: declarations ===> declaration declarations 
+
+69. Stack symbol: declarations, next token: TK_SQL
+Production rule: declarations ===> TK_EPSILON 
+
+70. Stack symbol: declarations, next token: TK_IF
+Production rule: declarations ===> TK_EPSILON 
+
+71. Stack symbol: declarations, next token: TK_READ
+Production rule: declarations ===> TK_EPSILON 
+
+72. Stack symbol: declarations, next token: TK_WRITE
+Production rule: declarations ===> TK_EPSILON 
+
+73. Stack symbol: declarations, next token: TK_RETURN
+Production rule: declarations ===> TK_EPSILON 
+
+74. Stack symbol: declarations, next token: TK_CALL
+Production rule: declarations ===> TK_EPSILON 
+
+75. Stack symbol: declaration, next token: TK_TYPE
+Production rule: declaration ===> TK_TYPE dataType TK_COLON TK_ID global_or_not TK_SEM 
+
+76. Stack symbol: global_or_not, next token: TK_SEM
+Production rule: global_or_not ===> TK_EPSILON 
+
+77. Stack symbol: global_or_not, next token: TK_COLON
+Production rule: global_or_not ===> TK_COLON TK_GLOBAL 
+
+78. Stack symbol: otherStmts, next token: TK_ID
+Production rule: otherStmts ===> stmt otherStmts 
+
+79. Stack symbol: otherStmts, next token: TK_WHILE
+Production rule: otherStmts ===> stmt otherStmts 
+
+80. Stack symbol: otherStmts, next token: TK_SQL
+Production rule: otherStmts ===> stmt otherStmts 
+
+81. Stack symbol: otherStmts, next token: TK_ENDWHILE
+Production rule: otherStmts ===> TK_EPSILON 
+
+82. Stack symbol: otherStmts, next token: TK_IF
+Production rule: otherStmts ===> stmt otherStmts 
+
+83. Stack symbol: otherStmts, next token: TK_ENDIF
+Production rule: otherStmts ===> TK_EPSILON 
+
+84. Stack symbol: otherStmts, next token: TK_READ
+Production rule: otherStmts ===> stmt otherStmts 
+
+85. Stack symbol: otherStmts, next token: TK_WRITE
+Production rule: otherStmts ===> stmt otherStmts 
+
+86. Stack symbol: otherStmts, next token: TK_RETURN
+Production rule: otherStmts ===> TK_EPSILON 
+
+87. Stack symbol: otherStmts, next token: TK_CALL
+Production rule: otherStmts ===> stmt otherStmts 
+
+88. Stack symbol: otherStmts, next token: TK_ELSE
+Production rule: otherStmts ===> TK_EPSILON 
+
+89. Stack symbol: stmt, next token: TK_ID
+Production rule: stmt ===> assignmentStmt 
+
+90. Stack symbol: stmt, next token: TK_WHILE
+Production rule: stmt ===> iterativeStmt 
+
+91. Stack symbol: stmt, next token: TK_SQL
+Production rule: stmt ===> funCallStmt 
+
+92. Stack symbol: stmt, next token: TK_IF
+Production rule: stmt ===> conditionalStmt 
+
+93. Stack symbol: stmt, next token: TK_READ
+Production rule: stmt ===> ioStmt 
+
+94. Stack symbol: stmt, next token: TK_WRITE
+Production rule: stmt ===> ioStmt 
+
+95. Stack symbol: stmt, next token: TK_CALL
+Production rule: stmt ===> funCallStmt 
+
+96. Stack symbol: assignmentStmt, next token: TK_ID
+Production rule: assignmentStmt ===> singleOrRecId TK_ASSIGNOP arithmeticExpression TK_SEM 
+
+97. Stack symbol: singleOrRecId, next token: TK_ID
+Production rule: singleOrRecId ===> TK_ID option_single_constructed 
+
+98. Stack symbol: option_single_constructed, next token: TK_ASSIGNOP
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+99. Stack symbol: option_single_constructed, next token: TK_SEM
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+100. Stack symbol: option_single_constructed, next token: TK_DOT
+Production rule: option_single_constructed ===> oneExpansion moreExpansions 
+
+101. Stack symbol: option_single_constructed, next token: TK_CL
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+102. Stack symbol: option_single_constructed, next token: TK_PLUS
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+103. Stack symbol: option_single_constructed, next token: TK_MINUS
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+104. Stack symbol: option_single_constructed, next token: TK_MUL
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+105. Stack symbol: option_single_constructed, next token: TK_DIV
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+106. Stack symbol: option_single_constructed, next token: TK_LT
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+107. Stack symbol: option_single_constructed, next token: TK_LE
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+108. Stack symbol: option_single_constructed, next token: TK_EQ
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+109. Stack symbol: option_single_constructed, next token: TK_GT
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+110. Stack symbol: option_single_constructed, next token: TK_GE
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+111. Stack symbol: option_single_constructed, next token: TK_NE
+Production rule: option_single_constructed ===> TK_EPSILON 
+
+112. Stack symbol: oneExpansion, next token: TK_DOT
+Production rule: oneExpansion ===> TK_DOT TK_FIELDID 
+
+113. Stack symbol: moreExpansions, next token: TK_ASSIGNOP
+Production rule: moreExpansions ===> TK_EPSILON 
+
+114. Stack symbol: moreExpansions, next token: TK_SEM
+Production rule: moreExpansions ===> TK_EPSILON 
+
+115. Stack symbol: moreExpansions, next token: TK_DOT
+Production rule: moreExpansions ===> oneExpansion moreExpansions 
+
+116. Stack symbol: moreExpansions, next token: TK_CL
+Production rule: moreExpansions ===> TK_EPSILON 
+
+117. Stack symbol: moreExpansions, next token: TK_PLUS
+Production rule: moreExpansions ===> TK_EPSILON 
+
+118. Stack symbol: moreExpansions, next token: TK_MINUS
+Production rule: moreExpansions ===> TK_EPSILON 
+
+119. Stack symbol: moreExpansions, next token: TK_MUL
+Production rule: moreExpansions ===> TK_EPSILON 
+
+120. Stack symbol: moreExpansions, next token: TK_DIV
+Production rule: moreExpansions ===> TK_EPSILON 
+
+121. Stack symbol: moreExpansions, next token: TK_LT
+Production rule: moreExpansions ===> TK_EPSILON 
+
+122. Stack symbol: moreExpansions, next token: TK_LE
+Production rule: moreExpansions ===> TK_EPSILON 
+
+123. Stack symbol: moreExpansions, next token: TK_EQ
+Production rule: moreExpansions ===> TK_EPSILON 
+
+124. Stack symbol: moreExpansions, next token: TK_GT
+Production rule: moreExpansions ===> TK_EPSILON 
+
+125. Stack symbol: moreExpansions, next token: TK_GE
+Production rule: moreExpansions ===> TK_EPSILON 
+
+126. Stack symbol: moreExpansions, next token: TK_NE
+Production rule: moreExpansions ===> TK_EPSILON 
+
+127. Stack symbol: funCallStmt, next token: TK_SQL
+Production rule: funCallStmt ===> outputParameters TK_CALL TK_FUNID TK_WITH TK_PARAMETERS inputParameters TK_SEM 
+
+128. Stack symbol: funCallStmt, next token: TK_CALL
+Production rule: funCallStmt ===> outputParameters TK_CALL TK_FUNID TK_WITH TK_PARAMETERS inputParameters TK_SEM 
+
+129. Stack symbol: outputParameters, next token: TK_SQL
+Production rule: outputParameters ===> TK_SQL idList TK_SQR TK_ASSIGNOP 
+
+130. Stack symbol: outputParameters, next token: TK_CALL
+Production rule: outputParameters ===> TK_EPSILON 
+
+131. Stack symbol: inputParameters, next token: TK_SQL
+Production rule: inputParameters ===> TK_SQL idList TK_SQR 
+
+132. Stack symbol: iterativeStmt, next token: TK_WHILE
+Production rule: iterativeStmt ===> TK_WHILE TK_OP booleanExpression TK_CL stmt otherStmts TK_ENDWHILE 
+
+133. Stack symbol: conditionalStmt, next token: TK_IF
+Production rule: conditionalStmt ===> TK_IF TK_OP booleanExpression TK_CL TK_THEN stmt otherStmts elsePart 
+
+134. Stack symbol: elsePart, next token: TK_ENDIF
+Production rule: elsePart ===> TK_ENDIF 
+
+135. Stack symbol: elsePart, next token: TK_ELSE
+Production rule: elsePart ===> TK_ELSE stmt otherStmts TK_ENDIF 
+
+136. Stack symbol: ioStmt, next token: TK_READ
+Production rule: ioStmt ===> TK_READ TK_OP var TK_CL TK_SEM 
+
+137. Stack symbol: ioStmt, next token: TK_WRITE
+Production rule: ioStmt ===> TK_WRITE TK_OP var TK_CL TK_SEM 
+
+138. Stack symbol: arithmeticExpression, next token: TK_ID
+Production rule: arithmeticExpression ===> term expPrime 
+
+139. Stack symbol: arithmeticExpression, next token: TK_NUM
+Production rule: arithmeticExpression ===> term expPrime 
+
+140. Stack symbol: arithmeticExpression, next token: TK_RNUM
+Production rule: arithmeticExpression ===> term expPrime 
+
+141. Stack symbol: arithmeticExpression, next token: TK_OP
+Production rule: arithmeticExpression ===> term expPrime 
+
+142. Stack symbol: expPrime, next token: TK_SEM
+Production rule: expPrime ===> TK_EPSILON 
+
+143. Stack symbol: expPrime, next token: TK_CL
+Production rule: expPrime ===> TK_EPSILON 
+
+144. Stack symbol: expPrime, next token: TK_PLUS
+Production rule: expPrime ===> lowPrecedenceOperators term expPrime 
+
+145. Stack symbol: expPrime, next token: TK_MINUS
+Production rule: expPrime ===> lowPrecedenceOperators term expPrime 
+
+146. Stack symbol: term, next token: TK_ID
+Production rule: term ===> factor termPrime 
+
+147. Stack symbol: term, next token: TK_NUM
+Production rule: term ===> factor termPrime 
+
+148. Stack symbol: term, next token: TK_RNUM
+Production rule: term ===> factor termPrime 
+
+149. Stack symbol: term, next token: TK_OP
+Production rule: term ===> factor termPrime 
+
+150. Stack symbol: termPrime, next token: TK_SEM
+Production rule: termPrime ===> TK_EPSILON 
+
+151. Stack symbol: termPrime, next token: TK_CL
+Production rule: termPrime ===> TK_EPSILON 
+
+152. Stack symbol: termPrime, next token: TK_PLUS
+Production rule: termPrime ===> TK_EPSILON 
+
+153. Stack symbol: termPrime, next token: TK_MINUS
+Production rule: termPrime ===> TK_EPSILON 
+
+154. Stack symbol: termPrime, next token: TK_MUL
+Production rule: termPrime ===> highPrecedenceOperators factor termPrime 
+
+155. Stack symbol: termPrime, next token: TK_DIV
+Production rule: termPrime ===> highPrecedenceOperators factor termPrime 
+
+156. Stack symbol: factor, next token: TK_ID
+Production rule: factor ===> var 
+
+157. Stack symbol: factor, next token: TK_NUM
+Production rule: factor ===> var 
+
+158. Stack symbol: factor, next token: TK_RNUM
+Production rule: factor ===> var 
+
+159. Stack symbol: factor, next token: TK_OP
+Production rule: factor ===> TK_OP arithmeticExpression TK_CL 
+
+160. Stack symbol: highPrecedenceOperators, next token: TK_MUL
+Production rule: highPrecedenceOperators ===> TK_MUL 
+
+161. Stack symbol: highPrecedenceOperators, next token: TK_DIV
+Production rule: highPrecedenceOperators ===> TK_DIV 
+
+162. Stack symbol: lowPrecedenceOperators, next token: TK_PLUS
+Production rule: lowPrecedenceOperators ===> TK_PLUS 
+
+163. Stack symbol: lowPrecedenceOperators, next token: TK_MINUS
+Production rule: lowPrecedenceOperators ===> TK_MINUS 
+
+164. Stack symbol: booleanExpression, next token: TK_ID
+Production rule: booleanExpression ===> var relationalOp var 
+
+165. Stack symbol: booleanExpression, next token: TK_NUM
+Production rule: booleanExpression ===> var relationalOp var 
+
+166. Stack symbol: booleanExpression, next token: TK_RNUM
+Production rule: booleanExpression ===> var relationalOp var 
+
+167. Stack symbol: booleanExpression, next token: TK_OP
+Production rule: booleanExpression ===> TK_OP booleanExpression TK_CL logicalOp TK_OP booleanExpression TK_CL 
+
+168. Stack symbol: booleanExpression, next token: TK_NOT
+Production rule: booleanExpression ===> TK_NOT TK_OP booleanExpression TK_CL 
+
+169. Stack symbol: var, next token: TK_ID
+Production rule: var ===> singleOrRecId 
+
+170. Stack symbol: var, next token: TK_NUM
+Production rule: var ===> TK_NUM 
+
+171. Stack symbol: var, next token: TK_RNUM
+Production rule: var ===> TK_RNUM 
+
+172. Stack symbol: logicalOp, next token: TK_AND
+Production rule: logicalOp ===> TK_AND 
+
+173. Stack symbol: logicalOp, next token: TK_OR
+Production rule: logicalOp ===> TK_OR 
+
+174. Stack symbol: relationalOp, next token: TK_LT
+Production rule: relationalOp ===> TK_LT 
+
+175. Stack symbol: relationalOp, next token: TK_LE
+Production rule: relationalOp ===> TK_LE 
+
+176. Stack symbol: relationalOp, next token: TK_EQ
+Production rule: relationalOp ===> TK_EQ 
+
+177. Stack symbol: relationalOp, next token: TK_GT
+Production rule: relationalOp ===> TK_GT 
+
+178. Stack symbol: relationalOp, next token: TK_GE
+Production rule: relationalOp ===> TK_GE 
+
+179. Stack symbol: relationalOp, next token: TK_NE
+Production rule: relationalOp ===> TK_NE 
+
+180. Stack symbol: returnStmt, next token: TK_RETURN
+Production rule: returnStmt ===> TK_RETURN optionalReturn TK_SEM 
+
+181. Stack symbol: optionalReturn, next token: TK_SQL
+Production rule: optionalReturn ===> TK_SQL idList TK_SQR 
+
+182. Stack symbol: optionalReturn, next token: TK_SEM
+Production rule: optionalReturn ===> TK_EPSILON 
+
+183. Stack symbol: idList, next token: TK_ID
+Production rule: idList ===> TK_ID more_ids 
+
+184. Stack symbol: more_ids, next token: TK_SQR
+Production rule: more_ids ===> TK_EPSILON 
+
+185. Stack symbol: more_ids, next token: TK_COMMA
+Production rule: more_ids ===> TK_COMMA idList 
+
+186. Stack symbol: definetypestmt, next token: TK_DEFINETYPE
+Production rule: definetypestmt ===> TK_DEFINETYPE A TK_RUID TK_AS TK_RUID 
+
+187. Stack symbol: A, next token: TK_UNION
+Production rule: A ===> TK_UNION 
+
+188. Stack symbol: A, next token: TK_RECORD
+Production rule: A ===> TK_RECORD 
+
+Total parse table entries: 188

@@ -68,3 +68,7 @@ struct set **generate_first(struct grammar *g);
 struct set **generate_follow(struct grammar *g, struct set **first);
 
 void free_grammar(struct grammar **p_g);
+
+void print_first_follow(struct grammar *g, struct set **first, struct set **follow);
+
+void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g);
