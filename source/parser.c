@@ -1,7 +1,6 @@
 #include "parser.h"
 #include "dfa.h"
 #include "stack.h"
-#include "tree.h"
 
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
@@ -109,8 +108,7 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
-// TODO: properly set inputs and return type
-void parse(char *file_name, struct grammar *g) {
+struct tree_node *parse(char *file_name, struct grammar *g) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
@@ -118,7 +116,7 @@ void parse(char *file_name, struct grammar *g) {
     free_first_and_follow(&follow, g);
 
     struct stack *parse_stack = Stack.new();
-    Stack.push(parse_stack, -1);
+    Stack.push(parse_stack, -1); // `$`, end-of-file marker
     Stack.push(parse_stack, TK_COUNT);
 
     // TODO: lexer vs parser errors need to be re-thought
@@ -126,6 +124,9 @@ void parse(char *file_name, struct grammar *g) {
 
     Table symboltable = createtable();
     populate(symboltable);
+
+    struct tree_node *root = Tree.new(TK_COUNT);
+    struct tree_node *tracker = root;
 
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, symboltable);
@@ -154,6 +155,31 @@ void parse(char *file_name, struct grammar *g) {
 
             for (int i = VectorInt.size(rhs) - 1; i >= 0; i--)
                 Stack.push(parse_stack, VectorInt.at(rhs, i));
+            
+            // tree.insert nt, rhs
+            assert(tracker->data == nt); // data in it IS nt
+            Tree.insert(tracker, rhs);
+
+            // in-order traversal to next non-terminal
+            while (1) {
+                int exit_loop = 0;
+
+                for (int i = 0; i < tracker->children_count; i++) {
+                    if (tracker->children[i].children_count == 0 && tracker->children[i].data > TK_COUNT) {
+                        tracker = &(tracker->children[i]);
+                        exit_loop = 1;
+                        break;
+                    }
+                }
+
+                if (exit_loop)
+                    break;
+                
+                tracker = tracker->parent;
+
+                if (tracker == NULL) // I'm guessing this is the end of parsing?
+                    break;
+            }
         }
 
         assert(tok->token == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
@@ -168,12 +194,5 @@ void parse(char *file_name, struct grammar *g) {
     closeHandler(io);
     free_parse_table(&parse_table, g);
 
-    return;
-}
-
-
-struct tree* generate_parse_tree(struct vector*** parse_table, char* file_path){
-    struct tree* root = Tree.new();
-
-
+    return root;
 }

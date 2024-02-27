@@ -6,6 +6,7 @@
 #include "errors.h"
 #include "first_follow_sets.h"
 #include "parser.h"
+#include "tree.h"
 
 void print_source_without_comments(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
@@ -53,6 +54,43 @@ void lexer(char *file_name) {
     return;
 }
 
+void pre_order_print(struct grammar *g, struct tree_node *t) {
+    printf("\n%s", t_or_nt_string(g, t->data));
+
+    struct tree_node *tracker = t->parent;
+
+    while (tracker) {
+        printf(" <=== %s", t_or_nt_string(g, tracker->data));
+        tracker = tracker->parent;
+    }
+    printf("\n");
+
+    if (t->children_count) {
+        printf("number of children, %d: ", t->children_count);
+        for (int i = 0; i < t->children_count; i++)
+            printf("%s ", t_or_nt_string(g, t->children[i].data));
+        printf("\n");
+    }
+    printf("\n");
+
+    for (int i = 0; i < t->children_count; i++)
+        pre_order_print(g, &(t->children[i]));
+
+    if (t->children_count) {
+        printf("done: %s", t_or_nt_string(g, t->data));
+
+        struct tree_node *tracker = t->parent;
+
+        while (tracker) {
+            printf(" <=== %s", t_or_nt_string(g, tracker->data));
+            tracker = tracker->parent;
+        }
+        printf("\n");
+    }
+
+    return;
+}
+
 void parser(char *file_name) {    
     struct grammar *g = make_grammar("nalanda_grammar.txt");
     struct set **first = generate_first(g);
@@ -64,9 +102,10 @@ void parser(char *file_name) {
 
     // print_parse_table(g, parse_table);
 
-    // TODO: Parse file
-    parse(file_name, g);
+    struct tree_node *tree = parse(file_name, g);
+    pre_order_print(g, tree);
 
+    Tree.free(&tree);
     free_first_and_follow(&first, g);
     free_first_and_follow(&follow, g);
     free_parse_table(&parse_table, g);

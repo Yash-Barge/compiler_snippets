@@ -1,52 +1,62 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "tree.h"
-#include "vector.h"
 
-
-struct node {
-    int data;
-    struct node* parent;
-    struct node** children;
-};
-
-struct tree {
-    struct node* root;
-};
-
-struct node* tree_node_new_without_data(void) {
-    struct node* temp = malloc(sizeof(*temp));
-    temp->data = -1;
-    temp->parent = NULL;
-    temp->children = VectorNodes.new();
-    
-    return temp;
-}
-
-struct node* tree_node_new_with_data(int data) {
-    struct node* temp = malloc(sizeof(*temp));
+struct tree_node *tree_node_new(int data) {
+    struct tree_node *temp = malloc(sizeof(*temp));
     temp->data = data;
+    temp->children_count = 0;
     temp->parent = NULL;
-    temp->children = VectorNodes.new();
+    temp->children = NULL;
     
     return temp;
 }
 
-struct tree* tree_new(void) {
-    struct tree* temp = malloc(sizeof(*temp));
-    temp->root = tree_node_new_without_data();
+void tree_node_insert(struct tree_node *parent, struct vector_int *rhs_prod_rule) {
+    parent->children_count = VectorInt.size(rhs_prod_rule);
+    parent->children = malloc(sizeof(*parent) * parent->children_count);
 
-    return temp;
-}
-
-void tree_free(struct node* t){
-    if(t == NULL) return;
-    for(int i=0; i < VectorInt.size(t->children); i++){
-        tree_free(t->children[i]);
+    for (int i = 0; i < parent->children_count; i++) {
+        parent->children[i].parent = parent;
+        parent->children[i].data = VectorInt.at(rhs_prod_rule, i);
+        parent->children[i].children_count = 0;
+        parent->children[i].children = NULL;
     }
-    free(t);
+
+    return;
 }
 
-const struct tree_lib Tree = { .new = tree_new, .free = tree_free };
+void tree_free_helper(struct tree_node *t) {
+    assert(t != NULL);
 
+    for (int i = 0; i < t->children_count; i++)
+        tree_free_helper(&t->children[i]);
+    
+    if (t->children_count)
+        free(t->children);
+
+    return;
+}
+
+void tree_free(struct tree_node** p_tree) {
+    assert(p_tree != NULL);
+    assert(*p_tree != NULL);
+
+    struct tree_node *t = *p_tree;
+
+    for (int i = 0; i < t->children_count; i++)
+        tree_free_helper(&t->children[i]);
+
+    if (t->children_count)
+        free(t->children);
+    
+    free(t);
+
+    *p_tree = NULL;
+
+    return;
+}
+
+const struct tree_lib Tree = { .new = tree_node_new, .insert = tree_node_insert, .free = tree_free };
