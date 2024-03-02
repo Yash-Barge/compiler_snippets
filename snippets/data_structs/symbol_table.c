@@ -7,62 +7,6 @@
 #include "symbol_table.h"
 #include "../lexer_test/regex/regex.h"
 
-// All Tokens (Except Identifiers)
-enum ENUM_TOKENS {
-    TOKEN_INVALID = -1,
-    TK_NE,
-    TK_AND,
-    TK_OP,
-    TK_CL,
-    TK_MUL,
-    TK_PLUS,
-    TK_COMMA,
-    TK_MINUS,
-    TK_DOT,
-    TK_DIV,
-    TK_COLON,
-    TK_SEMI,
-    TK_LT,
-    TK_ASSIGNOP,
-    TK_LE,
-    TK_EQ,
-    TK_GT,
-    TK_GE,
-    TK_OR,
-    TK_SQL,
-    TK_SQR,
-    TK_MAIN,
-    TK_AS,
-    TK_CALL,
-    TK_DEFINETYPE,
-    TK_ELSE,
-    TK_END,
-    TK_ENDIF,
-    TK_ENDRECORD,
-    TK_ENDUNION,
-    TK_ENDWHILE,
-    TK_GLOBAL,
-    TK_IF,
-    TK_INPUT,
-    TK_INT,
-    TK_LIST,
-    TK_OUTPUT,
-    TK_PARAMETER,
-    TK_PARAMETERS,
-    TK_READ,
-    TK_REAL,
-    TK_RECORD,
-    TK_RETURN,
-    TK_THEN,
-    TK_TYPE,
-    TK_UNION,
-    TK_WHILE,
-    TK_WITH,
-    TK_WRITE,
-    TK_NOT,
-    TOKEN_COUNT // Just to show count of tokens
-};
-
 // All representations of the tokens (Not identifiers) in Lexical order
 char *const token_list[] = {
     "!=",
@@ -117,51 +61,27 @@ char *const token_list[] = {
     "~"
 };
 
-// All Identifiers
-enum ENUM_IDENTIFIERS {
-    TK_INVALID = -1,
-    TK_FIELDID,
-    TK_ID,
-    TK_NUM,
-    TK_FUNID,
-    TK_RUID,
-    TK_RNUM,
-    TK_COUNT
-};
-
-// All regular expressions corresponding to the identifiers
-char *regular_expressions[] = {
-    "[alp][alp]*",
-    "[b-d][2-7][b-d]*[2-7]*",
-    "[0-9][0-9]*",
-    "[_-_][alp][alp]*[0-9]*",
-    "[#-#][alp][alp]",
-    "[0-9][0-9]*[.-.][0-9][0-9]",
-    "[0-9][0-9]*[.-.][0-9][0-9][E-E][+-+][0-9][0-9]",
-    "[0-9][0-9]*[.-.][0-9][0-9][E-E][---][0-9][0-9]",
-    "[0-9][0-9]*[.-.][0-9][0-9][E-E][0-9][0-9]",
-};
 
 // Start point for each linked list of the Symbol Table
 struct head {
     struct node* first_node;
 };
 
-// Union for if the token is an identifier or not
 typedef union {
-    enum ENUM_TOKENS tok;
-    enum ENUM_IDENTIFIERS id;
-} ENUM_TYPE;
+    char* lexeme;
+    long long intVal;
+    double floatVal;
+} dataElements;
 
 // Data of the lexeme, which includes the lexeme's name and the type of token
 struct data {
-    char* lexeme;
-    ENUM_TYPE* token_type;
+    dataElements lexeme;
+    ENUM_TOKENS token_type;
 };
 
 // Nodes of the Linked list
 struct node {
-    struct data* val;
+    struct data val;
     struct node* next;
 };
 
@@ -173,57 +93,11 @@ struct symbol_table {
 };
 
 struct symbol_table* symbol_table_new(int size);
-void symbol_table_insert(struct symbol_table** hm, char* key);
-int symbol_table_search(struct symbol_table* hm, char* key);
+void symbol_table_insert(struct symbol_table** hm, char* key, ENUM_TOKENS tk);
+int symbol_table_search(struct symbol_table* hm, char* key, ENUM_TOKENS tk);
 void symbol_table_erase(struct symbol_table* hm, char* key);
 void symbol_table_free(struct symbol_table **p_hm);
 
-/**
- * @brief Returns the identifier ID by checking all the regex's and returns the index that satisfies it, else returns -1. 
- * 
- *
- * @param str String for which we want to find which class of identifier it belongs to
- * @return Identifier index from the ENUM_IDENTIFIERS
- */
-enum ENUM_IDENTIFIERS token_from_string_id(char* str) {
-    for(int i=0; i<5; i++){
-        if(check(regular_expressions[i], str)) return i;
-    }
-    for(int i=5; i<9; i++){
-        if(check(regular_expressions[i], str)) return 5;
-    }
-    return TK_INVALID;
-}
-
-/**
- * @brief Returns the identifier ID by checking tokens and returns the index that satisfies it, else returns -1. 
- * 
- *
- * @param str String for which we want to find which class of identifier it belongs to
- * @return Token index from the ENUM_TOKENS
- */
-enum ENUM_TOKENS token_from_string_tok(char* str) {
-    int bottom = 0;
-    int top = TOKEN_COUNT - 1;
-    int valid_token = 0;
-
-    while (top >= bottom) {
-        int comparison = strcmp(str, token_list[(top + bottom) / 2]);
-
-        if (!comparison) {
-            valid_token = 1;
-            break;
-        } else if (comparison > 0)
-            bottom = (top + bottom) / 2 + 1;
-        else
-            top = (top + bottom) / 2 - 1;
-    }
-
-    if (!valid_token)
-        return TOKEN_INVALID;
-
-    return (top + bottom) / 2;
-}
 
 /**
  * @brief Given a string (or Lexeme) and token, it returns a node with these fields
@@ -232,59 +106,29 @@ enum ENUM_TOKENS token_from_string_tok(char* str) {
  * @param val The Lexeme
  * @return Pointer to the node for that Lexeme.
  */
-struct node* new_node_symbol_table_with_tok(int tok, char* val){
+struct node* new_node_symbol_table_with_tok(ENUM_TOKENS tok, char* val){
     struct node* n = malloc(sizeof(struct node));
-    n->val = malloc(sizeof(struct data));
-    n->val->lexeme = malloc((strlen(val) + 1) * sizeof(char));
-    n->val->token_type = malloc(sizeof(ENUM_TYPE));
-    if(token_from_string_tok(val) == -1){
-        if(token_from_string_id(val) == -1){
-            return NULL; // Neither a Identifier token or of any other type.
-        }
-        else{
-            n->val->token_type->id = tok;
-        }
+
+    if(tok == TK_NUM) {
+        long long temp = atoi(val);
+        n->val.lexeme.intVal= temp;
+        n->val.token_type = TK_NUM;
     }
-    else{
-        n->val->token_type->tok = tok;
+    else if(tok == TK_RNUM) {
+        double temp = atof(val);
+        n->val.lexeme.floatVal = temp;
+        n->val.token_type = TK_RNUM;
     }
-    strcpy(n->val->lexeme, val);
+    else {
+        n->val.lexeme.lexeme = malloc(sizeof(char) * (strlen(val) + 1));
+        strcpy(n->val.lexeme.lexeme, val);
+        n->val.token_type = tok;
+    }
+
     n->next = NULL;
     return n;
 }
 
-/**
- * @brief Given a string (or Lexeme), it returns a node, with the token type found from ENUM_IDENTIFIERS or ENUM_TOKENS
- * 
- * @param val The Lexeme
- * @return Pointer to the node for that Lexeme.
- */
-struct node* new_node_symbol_table_without_tok(char* val){
-    struct node* n = malloc(sizeof(struct node));
-    n->val = malloc(sizeof(struct data));
-    n->val->lexeme = malloc((strlen(val) + 1) * sizeof(char));
-    n->val->token_type = malloc(sizeof(ENUM_TYPE));
-
-    int tok_val = token_from_string_tok(val);
-    int id_val = token_from_string_id(val);
-
-
-    if(tok_val == -1){
-        if(id_val == -1){
-            return NULL; // Neither a Identifier token or of any other type.
-        }
-        else{
-            n->val->token_type->id = id_val;
-        }
-    }
-    else{
-        n->val->token_type->tok = tok_val;
-    }
-
-    strcpy(n->val->lexeme, val);
-    n->next = NULL;
-    return n;
-}
 
 /**
  * @brief Returns a head pointer for the Linked List in the Symbol Table
@@ -297,15 +141,16 @@ struct head* new_head_symbol_table(void){
     return h;
 }
 
+
 /**
  * @brief Given the head pointer and Lexeme, it inserts a node for the Lexeme into the linked list pointed to by head.
  * 
  * @param h The head pointer
  * @param val The Lexeme
  */
-void ll_insert(struct head* h, char* val){
+void ll_insert(struct head* h, char* val, ENUM_TOKENS tk){
     assert(h != NULL);
-    struct node* n = new_node_symbol_table_without_tok(val);
+    struct node* n = new_node_symbol_table_with_tok(tk, val);
     if(n == NULL){
         printf("Invalid Token : %s\n", val);
         return;
@@ -314,6 +159,8 @@ void ll_insert(struct head* h, char* val){
     h->first_node = n;
     return;
 }
+
+
 
 /**
  * @brief Given the head pointer to a Linked List, free all the memory it uses dynamically.
@@ -331,21 +178,29 @@ void ll_free(struct head* h){
     while(temp != NULL){
         prev = temp;
         temp = temp->next;
-        free(prev->val->lexeme);
-        free(prev->val);
-        free(prev);
+        if(prev->val.token_type == TK_NUM || prev->val.token_type == TK_RNUM) free(prev);
+        else {
+            free(prev->val.lexeme.lexeme);
+            free(prev);
+        }
     }
     free(h);
 }
 
+
+
 /**
  * @brief The Hash function used to hash into the Symbol Table
  * 
+ * @param tok the token
  * @param key The Lexeme
  * @param size The current size of the array of the Symbol Table
  * @return index for the symbol table
  */
-int hash_function(char* key, int size){
+int hash_function(ENUM_TOKENS tok, char* key, int size){
+    if(tok == TK_NUM || tok == TK_RNUM) {
+        return (1LL * atoi(key) * 23) % size;
+    }
     return (1LL * strlen(key) * 23) % size;
 }
 
@@ -371,24 +226,40 @@ struct symbol_table* symbol_table_new(int size){
  * @param p_hm Pointer to the Symbol Table pointer
  * @param key The Lexeme
  */
-void symbol_table_insert(struct symbol_table** p_hm, char* key){ // Double pointer as we may need to resize it
+void symbol_table_insert(struct symbol_table** p_hm, char* key, ENUM_TOKENS tk){ // Double pointer as we may need to resize it
     assert(p_hm != NULL);
     assert(*p_hm != NULL);
 
     struct symbol_table *hm = *p_hm;
 
-    if (symbol_table_search(hm, key))
+    if (symbol_table_search(hm, key, tk))
         return;
 
-    int index = hash_function(key, hm->size);
-    ll_insert(hm->map[index], key);
+    int index = hash_function(tk, key, hm->size);
+    
+    ll_insert(hm->map[index], key, tk);
     hm->capacity++;
+
     if(hm->capacity == hm->size){
         struct symbol_table* new_hm = symbol_table_new(hm->size * 2);
         for(int i=0; i<hm->size; i++){
             struct node* temp = hm->map[i]->first_node;
             while(temp != NULL) {
-                symbol_table_insert(&new_hm, temp->val->lexeme);
+                if(temp->val.token_type == TK_NUM){
+                    int len = snprintf(NULL, 0, "%d",  temp->val.lexeme.intVal);
+                    char buffer[len+1];
+                    snprintf(buffer, len + 1, "%d",  temp->val.lexeme.intVal);
+                    symbol_table_insert(&new_hm, buffer, TK_NUM);
+                }
+                else if(temp->val.token_type == TK_RNUM) {
+                    int len = snprintf(NULL, 0, "%f",  temp->val.lexeme.floatVal);
+                    char buffer[len+1];
+                    snprintf(buffer, len + 1, "%f",  temp->val.lexeme.floatVal);
+                    symbol_table_insert(&new_hm, buffer, TK_RNUM);
+                }
+                else{
+                    symbol_table_insert(&new_hm, temp->val.lexeme.lexeme, temp->val.token_type);
+                }
                 temp = temp->next;
             }
         }
@@ -405,13 +276,15 @@ void symbol_table_insert(struct symbol_table** p_hm, char* key){ // Double point
  * @param key The Lexeme
  * @return Return 0 if it isn't present in the Symbol Table, else return 1
  */
-int symbol_table_search(struct symbol_table* hm, char* key){
+int symbol_table_search(struct symbol_table* hm, char* key, ENUM_TOKENS tk){
     assert(hm != NULL);
-    int index = hash_function(key, hm->size);
+    int index = hash_function(tk, key, hm->size);
     if(hm->map[index]->first_node == NULL) return 0;
     struct node* temp = hm->map[index]->first_node;
     while(temp != NULL){
-        if(!strcmp(key, temp->val->lexeme)) return 1;
+        if(temp->val.token_type == tk && tk == TK_NUM && (temp->val.lexeme.intVal == atoi(key))) return 1;
+        else if(temp->val.token_type == tk && tk == TK_RNUM && (temp->val.lexeme.floatVal == atof(key))) return 1;
+        else if(temp->val.token_type == tk && !strcmp(temp->val.lexeme.lexeme, key)) return 1;
         temp = temp->next;
     }
     return 0;
@@ -425,7 +298,7 @@ int symbol_table_search(struct symbol_table* hm, char* key){
 struct symbol_table* symbol_table_init(void){
     struct symbol_table* st = symbol_table_new(50);
     for(int i=0; i<50; i++){
-        symbol_table_insert(&st, token_list[i]);
+        symbol_table_insert(&st, token_list[i], i);
     }
     return st;
 }
