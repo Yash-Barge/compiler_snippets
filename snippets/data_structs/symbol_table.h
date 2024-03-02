@@ -66,7 +66,7 @@ struct symbol_table;
 
 struct symbol_table_lib {
     struct symbol_table* (*const new)(int);
-    void (*const insert)(struct symbol_table **, char*, ENUM_TOKENS);
+    void (*const insert)(struct symbol_table *, char*, ENUM_TOKENS);
     int (*const search)(struct symbol_table *, char*, ENUM_TOKENS);
     struct symbol_table* (*const init)();
     void (*const free)(struct symbol_table **);
