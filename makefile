@@ -2,22 +2,22 @@ CC = gcc
 CFLAGS = -Wall -Wextra # -Werror -O2
 INC_DIR = -I ./headers
 
-stage1exe: main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
-	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symboltable.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
+stage1exe: main.o symbol_table.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
+	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symbol_table.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
 	rm -f *.o
 	./stage1exe testcases/f1.txt
 # all executions of ./stage1exe should be removed for final submission
-main.o: main.c headers/dfa.h headers/symboltable.h headers/errors.h headers/first_follow_sets.h headers/parser.h
+main.o: main.c headers/dfa.h headers/symbol_table.h headers/errors.h headers/first_follow_sets.h headers/parser.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c main.c
 parser.o: source/parser.c headers/parser.h headers/dfa.h headers/first_follow_sets.h headers/stack.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/parser.c
 first_follow_sets.o: source/first_follow_sets.c headers/first_follow_sets.h headers/set.h headers/vector.h headers/enums.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/first_follow_sets.c
-symboltable.o: source/symboltable.c headers/symboltable.h headers/enums.h
-	$(CC) $(CFLAGS) $(INC_DIR) -c source/symboltable.c
+symbol_table.o: source/symbol_table.c headers/symbol_table.h headers/enums.h
+	$(CC) $(CFLAGS) $(INC_DIR) -c source/symbol_table.c
 enums.o: source/enums.c headers/enums.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/enums.c
-dfa.o: source/dfa.c headers/dfa.h headers/buffer.h headers/symboltable.h headers/enums.h
+dfa.o: source/dfa.c headers/dfa.h headers/buffer.h headers/symbol_table.h headers/enums.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/dfa.c
 errors.o: source/errors.c headers/errors.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c source/errors.c

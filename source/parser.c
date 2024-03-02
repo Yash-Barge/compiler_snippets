@@ -122,34 +122,47 @@ struct tree_node *parse(char *file_name, struct grammar *g) {
     // TODO: lexer vs parser errors need to be re-thought
     IOHandler *io = createIOHandler(file_name);
 
-    Table symboltable = createtable();
-    populate(symboltable);
+    struct symbol_table *st = SymbolTable.init();
 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
     while (!io->inputFin) {
-        TOKEN *tok = runDFA(io, symboltable);
+        TOKEN *tok = runDFA(io, st);
 
         if (tok == NULL)
             continue;
         
 
-        while (tok->token != Stack.top(parse_stack)) {
+        while (tok->data->token_type != Stack.top(parse_stack)) {
             int nt = Stack.pop(parse_stack);
 
             if (nt == TK_EPSILON)
                 continue;
 
             if (nt < TK_COUNT) {
-                fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d (expected %s)\n", tok->lexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                // TODO:
+                if (tok->data->token_type == TK_NUM)
+                    ;
+                else if (tok->data->token_type == TK_RNUM)
+                    ;
+                else
+                    fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d (expected %s)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+
                 exit(1);
             }
 
-            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->token];
+            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->data->token_type];
 
             if (rhs == NULL) {
-                fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d\n(non-terminal %s; no parse table entry)\n", tok->lexeme, tok->lineNumber, t_or_nt_string(g, nt));
+                // TODO:
+                if (tok->data->token_type == TK_NUM)
+                    ;
+                else if (tok->data->token_type == TK_RNUM)
+                    ;
+                else
+                    fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d\n(non-terminal %s; no parse table entry)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt));
+
                 exit(1);
             }
 
@@ -182,10 +195,10 @@ struct tree_node *parse(char *file_name, struct grammar *g) {
             }
         }
 
-        assert(tok->token == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
+        assert(tok->data->token_type == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
         Stack.pop(parse_stack);
 
-        free_token(&tok);
+        free(tok);
     }
 
     assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary

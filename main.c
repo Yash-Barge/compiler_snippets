@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "dfa.h"
-#include "symboltable.h"
+#include "symbol_table.h"
 #include "errors.h"
 #include "first_follow_sets.h"
 #include "parser.h"
@@ -31,14 +31,13 @@ void print_source_without_comments(char *file_name) {
 void lexer(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
 
-    Table symboltable = createtable();
-    populate(symboltable);
+    struct symbol_table *st = SymbolTable.init();
 
     while (!io->inputFin) {
-        TOKEN *tok = runDFA(io, symboltable);
+        TOKEN *tok = runDFA(io, st);
         if (tok != NULL) {
             printToken(tok);
-            free_token(&tok);
+            free(tok);
         }
     }
 

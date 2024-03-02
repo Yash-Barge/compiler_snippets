@@ -6,44 +6,24 @@
 
 #include "dfa.h"
 
-TOKEN *createToken() {
-    TOKEN *token = calloc(sizeof(TOKEN), 1);
-
-    if (token == NULL) {
-        printf("Error in alloting memory for token!\n");
-        return NULL;
-    }
-
-    token->isError = false;
-
-    return token;
-}
-
 void printToken(TOKEN *token) {
-    printf("%4d\t%15s\t%32s\n", token->lineNumber, token->token == -1 ? "$": TOK_STRING[token->token], token->lexeme);
+    if (token->data->token_type == TK_NUM)
+        printf("%4d\t%15s\t%32lld\n", token->lineNumber, TOK_STRING[token->data->token_type], token->data->lexeme.intVal);
+    else if (token->data->token_type == TK_RNUM)
+        printf("%4d\t%15s\t%32.2lf\n", token->lineNumber, TOK_STRING[token->data->token_type], token->data->lexeme.floatVal);
+    else
+        printf("%4d\t%15s\t%32s\n", token->lineNumber, token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->lexeme.lexeme);
 
     return;
 }
 
-void free_token(TOKEN **p_token) {
-    assert(p_token != NULL);
-    assert(*p_token != NULL);
-
-    TOKEN *token = *p_token;
-
-    free(token->lexeme);
-    free(token);
-    *p_token = NULL;
-
-    return;
-}
-
-// state 32 and 33 are the exact same
-TOKEN *runDFA(IOHandler *io, Table symboltable) {
-    TOKEN *token = createToken();
+TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
+    TOKEN *token = calloc(sizeof(TOKEN), 1);
     int state = 0;
     bool fin = false;
     char ch;
+
+    char *temp = NULL;
 
     while (!fin) {
         switch (state) {
@@ -132,89 +112,104 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 34;
                 break;
             case '\0':
-                // free(token);
-                // return NULL;
-                token->token = -1;
-                // done so that free-ing the string won't cause segfault
-                token->lexeme = calloc(2, sizeof(char));
-                token->lexeme[0] = '$';
+                token->data = SymbolTable.insert(st, "$", -1);
                 token->lineNumber = io->lineNumber;
                 fin = true;
+
                 break;
             default:
-                // printf("unknown character (%c)!\n", ch);
-                // exit(1);
-                // retract(io);
                 lexical_error(io);
                 state = 0;
                 break;
             }
             break;
         case 14:
-            token->token = TK_COMMA;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_COMMA);
             fin = true;
+
             break;
         case 15:
-            token->token = TK_SEM;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_SEM);
             fin = true;
+
             break;
         case 16:
-            token->token = TK_COLON;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_COLON);
             fin = true;
+
             break;
         case 17:
-            token->token = TK_DOT;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_DOT);
             fin = true;
+
             break;
         case 18:
-            token->token = TK_OP;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_OP);
             fin = true;
+
             break;
         case 19:
-            token->token = TK_CL;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_CL);
             fin = true;
+
             break;
         case 20:
-            token->token = TK_PLUS;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_PLUS);
             fin = true;
+
             break;
         case 21:
-            token->token = TK_MINUS;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_MINUS);
             fin = true;
+
             break;
-        case 22:
-            token->token = TK_MUL;
-            token->lexeme = getLexeme(io);
+
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_MUL);
             fin = true;
+
             break;
         case 23:
-            token->token = TK_DIV;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_DIV);
             fin = true;
+
             break;
         case 26:
-            token->token = TK_NOT;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+            
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_NOT);
             fin = true;
+
             break;
         case 51:
             ch = getChar(io, state == 0);
@@ -232,16 +227,20 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 10:
             retract(io);
-            token->token = TK_LT;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_LT);
             fin = true;
+
             break;
         case 8:
-            token->token = TK_LE;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_LE);
             fin = true;
+
             break;
         case 52:
             ch = getChar(io, state == 0);
@@ -257,10 +256,12 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
         case 11:
             retract(io);
             retract(io);
-            token->token = TK_LT;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_LT);
             fin = true;
+
             break;
         case 53:
             ch = getChar(io, state == 0);
@@ -269,20 +270,17 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 9;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR 
             }
             break;
         case 9:
-            token->token = TK_ASSIGNOP;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+    
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_ASSIGNOP);
             fin = true;
+
             break;
         case 54:
             ch = getChar(io, state == 0);
@@ -296,17 +294,21 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             }
             break;
         case 12:
-            token->token = TK_GE;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_GE);
             fin = true;
+
             break;
         case 13:
             retract(io);
-            token->token = TK_GT;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_GT);
             fin = true;
+
             break;
         case 58:
             ch = getChar(io, state == 0);
@@ -315,11 +317,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 59;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR 
             }
@@ -331,11 +328,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 25;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR 
             }
@@ -347,11 +339,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 57;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR 
             }
@@ -363,43 +350,37 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 24;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR   
             }
             break;
         case 24:
-            token->token = TK_AND;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_AND);
             fin = true;
+
             break;
         case 25:
-            token->token = TK_OR;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_OR);
             fin = true;
+
             break;
         case 34:
-            // ignore_read_characters(io);
             ch = getChar(io, state == 0);
             switch (ch) {
             case '\n':
                 state = 33;
                 break;
             case '\0': // reached EOF, and no newline character after end of comment
-                // free(token);
-                // return NULL;
-                token->token = -1;
-                // done so that free-ing the string won't cause segfault
-                token->lexeme = calloc(2, sizeof(char));
-                token->lexeme[0] = '$';
+                token->data = SymbolTable.insert(st, "$", -1);
                 token->lineNumber = io->lineNumber;
                 fin = true;
+
                 break;
             default:
                 state = 34;
@@ -407,7 +388,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             }
             break;
         case 33:
-            // ignore_read_characters(io);
             io->lineNumber++;
             state = 0;
             break;
@@ -418,11 +398,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 27;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -434,26 +409,25 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 28;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
             break;
         case 27:
-            token->token = TK_NE;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_NE);
             fin = true;
+
             break;
         case 28:
-            token->token = TK_EQ;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_EQ);
             fin = true;
+
             break;
         case 35:
             ch = getChar(io, state == 0);
@@ -471,11 +445,13 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 1:
             retract(io);
-            //CALCULATE VALUE?
-            token->token = TK_NUM;
-            token->lexeme = getLexeme(io);
+
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_NUM);
             fin = true;
+
             break;
         case 45:
             ch = getChar(io, state == 0);
@@ -490,15 +466,17 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 5:
             retract(io);
-            token->lexeme = getLexeme(io);
-            Node mynode = lookup(token->lexeme, symboltable);
-            if (mynode != NULL) {
-                token->token = mynode->entry->token_type;
-            } else {
-                token->token = TK_FIELDID;
-            }
+
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            if (SymbolTable.search_keyword(st, temp))
+                token->data = SymbolTable.search_keyword(st, temp);
+            else
+                token->data = SymbolTable.insert(st, temp, TK_FIELDID);
+
             fin = true;
+
             break;
         case 49:
             ch = getChar(io, state == 0);
@@ -507,11 +485,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 50;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -534,11 +507,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 47;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -570,13 +538,15 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 7:
             retract(io);
-            token->token = TK_RUID;
-            token->lexeme = getLexeme(io);
+
             token->lineNumber = io->lineNumber;
+            
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_RUID);
             fin = true;
+
             break;
         case 55:
-            // ignore_read_characters(io);
             ch = getChar(io, state == 0);
             switch (ch) {
             case '\t': case ' ': case '\r':
@@ -595,22 +565,22 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             state = 0;
             break;
         case 32:
-            // ignore_read_characters(io);
             io->lineNumber++;
             state = 0;
             break;
         case 6:
             retract(io);
-            // token->token="TK_";
-            //IF CONDITION LOOKUP
-            token->lexeme = getLexeme(io);
-            if (strcmp(token->lexeme, "_main") == 0) {
-                token->token = TK_MAIN;
-            } else {
-                token->token = TK_FUNID;
-            }
+
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            if (SymbolTable.search_keyword(st, temp))
+                token->data = SymbolTable.search_keyword(st, temp);
+            else
+                token->data = SymbolTable.insert(st, temp, TK_FUNID);
+
             fin = true;
+
             break;
         case 42:
             ch = getChar(io, state == 0);
@@ -622,11 +592,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 45;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -658,11 +623,13 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 4:
             retract(io);
-            token->token = TK_ID;
-            token->lexeme = getLexeme(io);
             //check length                
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_ID);
             fin = true;
+
             break;
         case 36:
             ch = getChar(io, state == 0);
@@ -671,11 +638,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 37;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 62;
                 break; ///ERROR
             }
@@ -687,11 +649,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 38;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -709,11 +666,12 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
             break;
         case 2:
             retract(io);
-            token->token = TK_RNUM;
-            //CALCULATE VALUE
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_RNUM);
             fin = true;
+
             break;
         case 39:
             ch = getChar(io, state == 0);
@@ -725,11 +683,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 41;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -741,11 +694,6 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 40;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
@@ -757,59 +705,60 @@ TOKEN *runDFA(IOHandler *io, Table symboltable) {
                 state = 3;
                 break;
             default:
-                // printf("ERROR! state = %d\n", state);
-                // exit(1);
-                // retract(io);
-                // lexical_error(io);
-                // state = 0;
                 state = 69;
                 break; ///ERROR
             }
             break;
         case 3:
-            token->token = TK_RNUM;
-            //CALCULATE VALUE
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_RNUM);
             fin = true;
+
             break;
         case 69:
             retract(io);
             lexical_error(io);
             state = 0;
-            // token->isError = true;
-            // token->lexeme = getLexeme(io);
-            // fin = true;
+
             break;
         case 29:
-            token->token = TK_SQL;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_SQL);
             fin = true;
+
             break;
         case 30:
-            token->token = TK_SQR;
-            token->lexeme = getLexeme(io);
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_SQR);
             fin = true;
+
             break;
         case 62:
             retract(io);
             retract(io);
-            token->token = TK_NUM;
-            token->lexeme = getLexeme(io);
+
             token->lineNumber = io->lineNumber;
+
+            temp = getLexeme(io);
+            token->data = SymbolTable.insert(st, temp, TK_NUM);
             fin = true;
+
             break;
         default:
-            // printf("ERROR: state not handled!\nstate = %d\n", state);
-            // exit(1);
-            // retract(io);
-            // lexical_error(io);
-            // state = 0;
             state = 69;
             break; ///ERROR (?)
         }
+    }
+
+    if (temp) {
+        free(temp);
+        temp = NULL;
     }
 
     return token;

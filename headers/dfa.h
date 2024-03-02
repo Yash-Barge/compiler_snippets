@@ -4,21 +4,17 @@
 #include <stdbool.h>
 
 #include "buffer.h"
-#include "symboltable.h"
+#include "symbol_table.h"
 #include "enums.h"
 
 typedef struct token TOKEN;
 
-struct token{
-    enum terminals token;
-    char *lexeme;
+struct token {
+    struct st_data *data;
     int lineNumber;
-    bool isError;
 };
 
-TOKEN* createToken();
-TOKEN* runDFA(IOHandler *io, Table symboltable);
-void printToken(TOKEN * token);
-void free_token(TOKEN **p_token);
+TOKEN* runDFA(IOHandler *io, struct symbol_table *st);
+void printToken(TOKEN *token);
 
 #endif
