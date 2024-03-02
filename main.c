@@ -42,6 +42,7 @@ void lexer(char *file_name) {
     }
 
     closeHandler(io);
+    SymbolTable.free(&st);
 
     if (get_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mLexing of file %s failed with \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_error_count());
@@ -90,6 +91,7 @@ void pre_order_print(struct grammar *g, struct tree_node *t) {
     return;
 }
 
+// TODO: remove the first/follow, parse_table stuff from here for final submission
 void parser(char *file_name) {    
     struct grammar *g = make_grammar("nalanda_grammar.txt");
     struct set **first = generate_first(g);
@@ -101,13 +103,15 @@ void parser(char *file_name) {
 
     // print_parse_table(g, parse_table);
 
-    struct tree_node *tree = parse(file_name, g);
+    struct symbol_table *st = SymbolTable.init();
+    struct tree_node *tree = parse(file_name, g, st);
     pre_order_print(g, tree);
 
     Tree.free(&tree);
     free_first_and_follow(&first, g);
     free_first_and_follow(&follow, g);
     free_parse_table(&parse_table, g);
+    SymbolTable.free(&st);
     free_grammar(&g);
 
     return;

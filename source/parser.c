@@ -108,7 +108,7 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
-struct tree_node *parse(char *file_name, struct grammar *g) {
+struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table *st) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
@@ -121,8 +121,6 @@ struct tree_node *parse(char *file_name, struct grammar *g) {
 
     // TODO: lexer vs parser errors need to be re-thought
     IOHandler *io = createIOHandler(file_name);
-
-    struct symbol_table *st = SymbolTable.init();
 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
