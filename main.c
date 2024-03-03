@@ -109,7 +109,7 @@ void parser(char *file_name) {
     if (get_lexer_error_count()) {
         fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was aborted due to \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_lexer_error_count());
         if (get_parser_error_count())
-            fprintf(stderr, "\033[1;31merror: %d parser error(s)\033[0m detected before parsing was aborted\n", file_name, get_parser_error_count());
+            fprintf(stderr, "\033[1;31merror: %d parser error(s)\033[0m detected before parsing was aborted\n", get_parser_error_count());
     } else if (get_parser_error_count()) {
         fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was failed due to \033[1;31m%d parser error(s)\033[0m\n", file_name, get_parser_error_count());
     } else
@@ -117,7 +117,9 @@ void parser(char *file_name) {
 
     reset_error_count();
 
-    Tree.free(&tree);
+    if (tree)
+        Tree.free(&tree);
+
     free_first_and_follow(&first, g);
     free_first_and_follow(&follow, g);
     free_parse_table(&parse_table, g);

@@ -109,12 +109,14 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
+// TODO: if error, cancel parse tree generation
 struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table *st) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
     struct vector_int ***parse_table = make_parse_table(g, first, follow);
-    free_first_and_follow(&first, g);
-    free_first_and_follow(&follow, g);
+    // TODO: uncomment if inserting syn/null in parse table
+    // free_first_and_follow(&first, g);
+    // free_first_and_follow(&follow, g);
 
     struct stack *parse_stack = Stack.new();
     Stack.push(parse_stack, -1); // `$`, end-of-file marker
@@ -146,7 +148,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             int nt = Stack.pop(parse_stack);
 
             if (nt == TK_EPSILON)
-                continue;
+                continue; // pop stack
 
             if (nt < TK_COUNT) {
                 // TODO:
@@ -154,13 +156,17 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                     ;
                 else if (tok->data->token_type == TK_RNUM)
                     ;
-                else
-                    fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d (expected %s)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                else {
+                    if (tok->data->token_type != -1)
+                        parser_error("Unexpected token `%s` at line %d (expected %s)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                    else
+                        parser_error("End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
+                }
 
-                exit(1);
+                continue; // pop stack, and continue derivation for token
             }
 
-            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->data->token_type];
+            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->data->token_type == -1 ? TK_EPSILON : tok->data->token_type];
 
             if (rhs == NULL) {
                 // TODO:
@@ -168,43 +174,56 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                     ;
                 else if (tok->data->token_type == TK_RNUM)
                     ;
-                else
-                    fprintf(stderr, "\033[1;31merror: \033[0mUnexpected token `%s` at line %d\n(non-terminal %s; no parse table entry)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt));
+                else {
+                    if (tok->data->token_type != -1)
+                        parser_error("Unexpected token `%s` at line %d (on stack %s)\n", tok->data->lexeme.lexeme, tok->lineNumber, t_or_nt_string(g, nt));
+                    else {
+                        parser_error("End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
+                        continue; // pop stack
+                    }
+                }
 
-                exit(1);
+                if (Set.search(follow[nt - TK_COUNT], tok->data->token_type)) {
+                    continue; // pop stack, and continue derivation for token
+                } else {
+                    Stack.push(parse_stack, nt); // re-insert in parsing stack
+                    break; // skip token
+                }
             }
 
             for (int i = VectorInt.size(rhs) - 1; i >= 0; i--)
                 Stack.push(parse_stack, VectorInt.at(rhs, i));
             
-            // tree.insert nt, rhs
-            assert(tracker->data == nt); // data in it IS nt
-            Tree.insert(tracker, rhs);
+            if (!get_parser_error_count()) {
+                // tree.insert nt, rhs
+                Tree.insert(tracker, rhs);
 
-            // in-order traversal to next non-terminal
-            while (1) {
-                int exit_loop = 0;
+                // in-order traversal to next non-terminal
+                while (1) {
+                    int exit_loop = 0;
 
-                for (int i = 0; i < tracker->children_count; i++) {
-                    if (tracker->children[i].children_count == 0 && tracker->children[i].data > TK_COUNT) {
-                        tracker = &(tracker->children[i]);
-                        exit_loop = 1;
-                        break;
+                    for (int i = 0; i < tracker->children_count; i++) {
+                        if (tracker->children[i].children_count == 0 && tracker->children[i].data > TK_COUNT) {
+                            tracker = &(tracker->children[i]);
+                            exit_loop = 1;
+                            break;
+                        }
                     }
-                }
 
-                if (exit_loop)
-                    break;
-                
-                tracker = tracker->parent;
+                    if (exit_loop)
+                        break;
+                    
+                    tracker = tracker->parent;
 
-                if (tracker == NULL) // I'm guessing this is the end of parsing?
-                    break;
+                    if (tracker == NULL) // I'm guessing this is the end of parsing?
+                        break;
+            }
             }
         }
 
-        assert(tok->data->token_type == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
-        Stack.pop(parse_stack);
+        // assert(tok->data->token_type == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
+        if (tok->data->token_type == Stack.top(parse_stack))
+            Stack.pop(parse_stack);
 
         free(tok);
     }
@@ -213,10 +232,15 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
         printf("Parsing of %s completed successfully!\n", file_name);
     } else {
-        // TODO: Maybe free parse tree here and return null?
+        Tree.free(&root);
     }
 
+    Stack.free(&parse_stack);
     closeHandler(io);
+    // TODO: these two lines, should we just insert syn/null in parse table instead?
+    free_first_and_follow(&first, g);
+    free_first_and_follow(&follow, g);
+
     free_parse_table(&parse_table, g);
 
     return root;
