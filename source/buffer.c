@@ -48,7 +48,7 @@ IOHandler* createIOHandler(char* fileName){
 
     if (io->file_ptr == NULL) {
         error("Cannot open file %s (%s)\n", fileName, strerror(errno));
-        exit(0);
+        exit(1);
     }
 
     io->buf = createBuffers();
@@ -228,9 +228,10 @@ void ignore_read_characters(IOHandler *io) {
     return;
 }
 
+// Maybe rename this to `throw_lexer_error` or something
 void lexical_error(IOHandler *io) {
     char *invalid_lexeme = getLexeme(io);
-    error("line %d: Invalid lexeme `%s`\n", io->lineNumber, invalid_lexeme);
+    lexer_error("line %d: Invalid lexeme `%s`\n", io->lineNumber, invalid_lexeme);
     free(invalid_lexeme);
 
     return;

@@ -1,10 +1,8 @@
-#ifndef H_ERRORS
-#define H_ERRORS
+#pragma once
 
-void warn(const char *fmt, ...);
 void error(const char *fmt, ...);
-int get_error_count(void);
-int get_warning_count(void);
+void lexer_error(const char *fmt, ...);
+void parser_error(const char *fmt, ...);
+int get_lexer_error_count(void);
+int get_parser_error_count(void);
 void reset_error_count(void);
-
-#endif

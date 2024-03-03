@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "dfa.h"
 #include "stack.h"
+#include "errors.h"
 
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
@@ -119,14 +120,23 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     Stack.push(parse_stack, -1); // `$`, end-of-file marker
     Stack.push(parse_stack, TK_COUNT);
 
-    // TODO: lexer vs parser errors need to be re-thought
     IOHandler *io = createIOHandler(file_name);
 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
+    int lexical_error_detected = 0;
+
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
+
+        if (get_lexer_error_count() && !lexical_error_detected) {
+            fprintf(stderr, "\033[1;35mnote: \033[0mLexical error detected, parsing will not continue\n");
+            lexical_error_detected++;
+        }
+
+        if (get_lexer_error_count()) // stop parsing, only continue lexing
+            continue;
 
         if (tok == NULL)
             continue;
@@ -199,8 +209,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         free(tok);
     }
 
-    assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
-    printf("Parsing of %s completed successfully!\n", file_name);
+    if (!get_lexer_error_count() && !get_parser_error_count()) {
+        assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
+        printf("Parsing of %s completed successfully!\n", file_name);
+    } else {
+        // TODO: Maybe free parse tree here and return null?
+    }
 
     closeHandler(io);
     free_parse_table(&parse_table, g);
