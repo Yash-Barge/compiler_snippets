@@ -140,10 +140,14 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         if (get_lexer_error_count()) // stop parsing, only continue lexing
             continue;
 
+        if (Stack.top(parse_stack) == -1 && tok->data->token_type != -1) {
+            parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->lexeme.lexeme, tok->lineNumber);
+            continue;
+        }
+
         if (tok == NULL)
             continue;
         
-
         while (tok->data->token_type != Stack.top(parse_stack)) {
             int nt = Stack.pop(parse_stack);
 
