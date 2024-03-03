@@ -320,12 +320,16 @@ struct st_data *symbol_table_search(struct symbol_table* hm, char* key, enum ter
     struct st_node* temp = hm->map[index]->first_node;
 
     while (temp != NULL) {
-        if (temp->val.token_type == tk && tk == TK_NUM && (temp->val.lexeme.intVal == atoll(key)))
-            return &(temp->val);
-        else if (temp->val.token_type == tk && tk == TK_RNUM && (temp->val.lexeme.floatVal == atof(key)))
-            return &(temp->val);
-        else if (temp->val.token_type == tk && !strcmp(temp->val.lexeme.lexeme, key))
-            return &(temp->val);
+        if (temp->val.token_type == tk) {
+            if (tk == TK_NUM) {
+                if (temp->val.lexeme.intVal == atoll(key))
+                    return &(temp->val);
+            } else if (tk == TK_RNUM) {
+                if (temp->val.lexeme.floatVal == atof(key))
+                    return &(temp->val);
+            } else if (!strcmp(temp->val.lexeme.lexeme, key))
+                return &(temp->val);
+        }
 
         temp = temp->next;
     }

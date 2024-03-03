@@ -187,7 +187,7 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             fin = true;
 
             break;
-
+        case 22:
             token->lineNumber = io->lineNumber;
 
             temp = getLexeme(io);

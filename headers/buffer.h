@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define BUF_SIZE 32
+#define BUF_SIZE 256
 
 typedef struct buffer BUFFER;
 typedef struct IOHandler IOHandler;
