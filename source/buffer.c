@@ -7,6 +7,11 @@
 #include "buffer.h"
 #include "errors.h"
 
+/**
+ * @brief Create a Buffer instance and initializes all its members
+ * 
+ * @return pointer to the created buffer instance 
+ */
 BUFFER * createBuffers(){
     BUFFER *buf = (BUFFER *)malloc(sizeof(BUFFER));
 
@@ -36,6 +41,12 @@ BUFFER * createBuffers(){
     return buf;
 }
 
+/**
+ * @brief creates an IOHandler instance and initializes all its members
+ * 
+ * @param fileName path of file to be read
+ * @return IOHandler* pointer to instance
+ */
 IOHandler* createIOHandler(char* fileName){
     IOHandler* io= (IOHandler *)malloc(sizeof(IOHandler));
 
@@ -59,8 +70,15 @@ IOHandler* createIOHandler(char* fileName){
     return io;
 }
 
+/**
+ * @brief reads file stream
+ * 
+ * @param io IOHandler instance
+ * @return int 0 for normal operation, -1 for IO error and 1 if EOF reached
+ */
 int readFile(IOHandler* io) {
 
+    // Check if the buffer has advanced read
     if (io->buf->advanceRead) {
         io->buf->old_size = io->buf->size;
         io->buf->size = io->buf->advancedSize;
@@ -72,6 +90,7 @@ int readFile(IOHandler* io) {
         return 0;
     }
 
+    // Initialize buffer if not done yet
     if (!io->buf->init) {
         io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
@@ -82,24 +101,29 @@ int readFile(IOHandler* io) {
         return 0;
     }
 
+    // Read into buffer 1 if current buffer is 1
     if (io->buf->init && io->buf->currentBuffer == 1) {
         io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf2, sizeof(char), BUF_SIZE, io->file_ptr);
     }
 
+    // Read into buffer 2 if current buffer is 2
     if (io->buf->init && io->buf->currentBuffer == 2) {
         io->buf->old_size = io->buf->size;
         io->buf->size = fread(io->buf->buf1, sizeof(char), BUF_SIZE, io->file_ptr);
     }
 
+    // Check for end of file
     if (io->buf->init && !io->buf->size) {
         io->EOFReached = true;
         return 1;
     }
 
+    // Switch buffer and reset forward position
     io->buf->currentBuffer = io->buf->currentBuffer == 2 ? 1 : 2;
     io->buf->forward = 0;
 
+    // Check for file IO error
     if (ferror(io->file_ptr)) {
         printf("File IO Error!\n");
         return -1;
@@ -108,8 +132,17 @@ int readFile(IOHandler* io) {
     return 0;    
 }
 
+/**
+ * @brief calls readFile in different ways depending on 
+ * state of buffer and file
+ * 
+ * @param io IOHandler instance
+ * @param isStart sttart of a new lxeme read
+ * @return char 
+ */
 char getChar(IOHandler* io, bool isStart) {
 
+    // Check if the buffer is initialized
     if (!io->buf->init) {
         int read = readFile(io);
         if (read < 0) {
@@ -118,11 +151,13 @@ char getChar(IOHandler* io, bool isStart) {
         }
     }
 
+    // Check if the buffer size is zero
     if (!io->buf->size) { // After reaching EOF, io->buf->size would be set to 0 from the fread, cause below pointer checks to fail
         io->inputFin = true;
         return '\0';
     }
 
+     // Check if forward pointer has reached the end of the buffer
     if (io->buf->forward == io->buf->size) {
         if (!io->EOFReached) {
             int read = readFile(io);
@@ -140,11 +175,13 @@ char getChar(IOHandler* io, bool isStart) {
 
     char ret;
 
+    // Bring forward and start pointer together if isStart is true
     if (isStart) {
         io->buf->startBuffer = io->buf->currentBuffer;
         io->buf->start = io->buf->forward;
     }
 
+    // Read character from the appropriate buffer
     if (io->buf->currentBuffer == 1)
         ret = io->buf->buf1[io->buf->forward++];
     else
@@ -153,6 +190,12 @@ char getChar(IOHandler* io, bool isStart) {
     return ret;
 }
 
+/**
+ * @brief performs retract operation
+ * 
+ * @param io IOhandler instance
+ * @return returns 0
+ */
 int retract(IOHandler* io) {
 
     // reading at the EOF does not increment the forward pointer, and returns a null character.
@@ -177,6 +220,12 @@ int retract(IOHandler* io) {
     return 0;
 }
 
+/**
+ * @brief frees all parts of IOHandler instance
+ * 
+ * @param io 
+ * @return int 
+ */
 int closeHandler(IOHandler* io){
     free(io->buf->buf1);
     free(io->buf->buf2);
@@ -201,6 +250,12 @@ char *getCurrentBuffer(IOHandler *io){
         return io->buf->buf2;
 }
 
+/**
+ * @brief Gets the lexeme based on positions of start and forward pointer
+ * 
+ * @param io 
+ * @return char* String containing lexeme
+ */
 char *getLexeme(IOHandler *io){
     int lexemeSize = 0;
 

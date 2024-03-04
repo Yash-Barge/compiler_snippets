@@ -4,11 +4,21 @@
 
 #define GENERATE_STRINGS(STR) #STR,
 
+/**
+ * @brief Array that contains string-versions of the token types, generated
+ * maintaining sychronization using FOREACH_TOK macro  
+ * 
+ */
 const char *const TOK_STRING[] = {
     FOREACH_TOK(GENERATE_STRINGS)
 };
 
-
+/**
+ * @brief Takes a string and converts it to an enum 
+ * 
+ * @param tok token
+ * @return enum terminals 
+ */
 enum terminals tok_enumify(const char *restrict const tok) {
     int index = -1;
 
