@@ -3,6 +3,8 @@
 #include "stack.h"
 #include "errors.h"
 
+#define NO_ERRORS (!get_lexer_error_count() && !get_parser_error_count())
+
 // TODO: replace all asserts in this function with proper error handling
 struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
     struct vector_int ***ret = calloc(g->rule_count, sizeof(*ret));
@@ -124,18 +126,9 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
-    // int lexical_error_detected = 0;
 
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
-
-        // if (get_lexer_error_count() && !lexical_error_detected) {
-        //     fprintf(stderr, "\033[1;35mnote: \033[0mLexical error detected, parsing will not continue\n");
-        //     lexical_error_detected++;
-        // }
-
-        // if (get_lexer_error_count()) // stop parsing, only continue lexing
-        //     continue;
 
         if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
             parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->stringLexeme, tok->lineNumber);
@@ -149,15 +142,15 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             int nt = Stack.pop(parse_stack);
 
             if (nt == TK_EPSILON)
-                continue; // pop stack
+                continue; // pop stack (syn)
 
             if (nt < TK_COUNT) {
                 if ((int) tok->data->token_type != -1)
-                    parser_error("Unexpected token `%s` at line %d (expected %s)\n", tok->data->stringLexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                    parser_error("Unexpected token `%s` (type %s) at line %d (expected %s)\n", tok->data->stringLexeme, t_or_nt_string(g, tok->data->token_type), tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
                 else
                     parser_error("End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
 
-                continue; // pop stack, and continue derivation for token
+                continue; // pop stack (syn), and continue derivation for token
             }
 
             struct vector_int *rhs = parse_table[nt - TK_COUNT][(int) tok->data->token_type == -1 ? TK_EPSILON : tok->data->token_type];
@@ -166,33 +159,33 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 // EPS transitions
                 if (Set.search(first[nt - TK_COUNT], TK_EPSILON)) {
                     // maybe comment out this error?
-                    parser_error("Unexpected token `%s` at line %d, stack symbol %s undergoing epsilon transition\n", t_or_nt_string(g, tok->data->token_type), tok->lineNumber, t_or_nt_string(g, nt));
-                    continue; // pop stack
+                    parser_error("Unexpected token `%s` (type %s) at line %d, stack symbol `%s` undergoing epsilon transition\n", tok->data->stringLexeme, t_or_nt_string(g, tok->data->token_type), tok->lineNumber, t_or_nt_string(g, nt));
+                    continue; // pop stack (syn)
                 }
 
                 if ((int) tok->data->token_type != -1)
-                    parser_error("Unexpected token `%s` at line %d (on stack %s)\n", tok->data->stringLexeme, tok->lineNumber, t_or_nt_string(g, nt));
+                    parser_error("Unexpected token `%s` (type %s) at line %d (on stack %s)\n", tok->data->stringLexeme, t_or_nt_string(g, tok->data->token_type), tok->lineNumber, t_or_nt_string(g, nt));
                 else {
                     parser_error("End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
                     continue; // pop stack
                 }
 
                 if (Set.search(follow[nt - TK_COUNT], tok->data->token_type)) {
-                    continue; // pop stack, and continue derivation for token
+                    continue; // pop stack (syn), and continue derivation for token
                 } else {
                     Stack.push(parse_stack, nt); // re-insert in parsing stack
-                    break; // skip token
+                    break; // skip token (err)
                 }
             }
 
             for (int i = VectorInt.size(rhs) - 1; i >= 0; i--)
                 Stack.push(parse_stack, VectorInt.at(rhs, i));
 
-            if (!get_parser_error_count()) {
+            if (NO_ERRORS) {
                 // tree.insert nt, rhs
                 Tree.insert(tracker, rhs);
 
-                // in-order traversal to next non-terminal
+                // next leaf node
                 while (1) {
                     int exit_loop = 0;
 
@@ -209,20 +202,19 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
 
                     tracker = tracker->parent;
 
-                    if (tracker == NULL) // I'm guessing this is the end of parsing?
+                    if (tracker == NULL) // end of parsing
                         break;
                 }
             }
         }
 
-        // assert(tok->data->token_type == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
         if ((int) tok->data->token_type == Stack.top(parse_stack))
             Stack.pop(parse_stack);
 
         free(tok);
     }
 
-    if (!get_lexer_error_count() && !get_parser_error_count()) {
+    if (NO_ERRORS) {
         assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
         printf("Parsing of %s completed successfully!\n", file_name);
     } else {
