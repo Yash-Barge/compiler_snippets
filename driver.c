@@ -85,10 +85,13 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
             fprintf(fp, " %21.15s ", dummy);
         }
 
-        fprintf(fp, "%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL");
+        fprintf(fp, "%30.25s %10.8s %30.25s\n", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL", "Yes", dummy);
 
-    } else {
-        fprintf(fp, "%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
+    } else if(t->parent){
+        fprintf(fp, "%32.15s %6.3s %26.14s %21.15s %30.25s %10.8s %30.25s\n", dummy, dummy, dummy, dummy, t_or_nt_string(g, t->parent->data), "No", t_or_nt_string(g, t->data));
+    }
+    else {
+        fprintf(fp, "%32.15s %6.3s %26.14s %21.15s %30.25s %10.8s %30.25s\n", dummy, dummy, dummy, dummy, "ROOT","No", t_or_nt_string(g, t->data));
     }
 
     for (int i = 1; i < t->children_count; i++) {
@@ -99,7 +102,7 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
 void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
     FILE* fp = fopen(file_path, "w+");
 
-    fprintf(fp, "%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
+    fprintf(fp, "%32.15s %6.5s %26s %21.15s %30.25s %10.8s %30.25s\n", "Lexeme", "Line", "Token Type", "Value", "Parent Node Symbol", "IsLeaf", "Node Symbol");
 
     in_order_print(g, root, fp);
     fclose(fp);
@@ -152,7 +155,7 @@ int main(int argc, char *argv[]) {
     }
 
     int input = -1;
-    printf("STATUS: All requirements satisified and tested!");
+    printf("STATUS: All requirements satisified and tested!\n");
     while (input != 0) {
         printf("Enter a number from 0-4: ");
         scanf("%d", &input);
