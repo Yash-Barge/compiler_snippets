@@ -106,13 +106,19 @@ void parser(char *file_name) {
     struct symbol_table *st = SymbolTable.init();
     struct tree_node *tree = parse(file_name, g, st);
 
-    if (get_lexer_error_count()) {
-        fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was aborted due to \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_lexer_error_count());
-        if (get_parser_error_count())
-            fprintf(stderr, "\033[1;31merror: %d parser error(s)\033[0m detected before parsing was aborted\n", get_parser_error_count());
-    } else if (get_parser_error_count()) {
-        fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was failed due to \033[1;31m%d parser error(s)\033[0m\n", file_name, get_parser_error_count());
-    } else
+    // if (get_lexer_error_count()) {
+    //     fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was aborted due to \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_lexer_error_count());
+    //     if (get_parser_error_count())
+    //         fprintf(stderr, "\033[1;31merror: %d parser error(s)\033[0m detected before parsing was aborted\n", get_parser_error_count());
+    // }
+    // else if (get_parser_error_count()) {
+    //     fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was failed due to \033[1;31m%d parser error(s)\033[0m\n", file_name, get_parser_error_count());
+    // } else
+    //     pre_order_print(g, tree);
+
+    if (get_lexer_error_count() || get_parser_error_count())
+        fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
+    else
         pre_order_print(g, tree);
 
     reset_error_count();

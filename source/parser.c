@@ -127,18 +127,18 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
-    int lexical_error_detected = 0;
+    // int lexical_error_detected = 0;
 
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
 
-        if (get_lexer_error_count() && !lexical_error_detected) {
-            fprintf(stderr, "\033[1;35mnote: \033[0mLexical error detected, parsing will not continue\n");
-            lexical_error_detected++;
-        }
+        // if (get_lexer_error_count() && !lexical_error_detected) {
+        //     fprintf(stderr, "\033[1;35mnote: \033[0mLexical error detected, parsing will not continue\n");
+        //     lexical_error_detected++;
+        // }
 
-        if (get_lexer_error_count()) // stop parsing, only continue lexing
-            continue;
+        // if (get_lexer_error_count()) // stop parsing, only continue lexing
+        //     continue;
 
         if (Stack.top(parse_stack) == -1 && tok->data->token_type != -1) {
             parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->lexeme.lexeme, tok->lineNumber);
