@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "dfa.h"
 #include "symbol_table.h"
@@ -146,6 +147,8 @@ int main(int argc, char *argv[]) {
     while (input != 0) {
         printf("Enter a number from 0-4: ");
         scanf("%d", &input);
+        clock_t start, end;
+        double time;
 
         switch (input) {
         case 0:
@@ -161,8 +164,13 @@ int main(int argc, char *argv[]) {
             parser(argv[1]);
             break;
         case 4:
+            start = clock();
             printf("TODO...\n");
+            end = clock();
+            time = ((double)(end - start)) / CLOCKS_PER_SEC;
+            printf("\nTime taken to complete execution = %lf\n", time);
             break;
+        
         default:
             printf("Unrecognized input %d!\n", input);
             continue;
