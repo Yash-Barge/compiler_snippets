@@ -58,7 +58,16 @@ void lexer(char *file_name) {
 void in_order_print(struct grammar *g, struct tree_node *t, char* file_name) {
     if(t == NULL) return;
     in_order_print(g, &(t->children[0]), file_name);
-    FILE *fp = fopen(file_name, "a");
+    static int does_file_exist_already = 0;
+    FILE *fp = fopen(file_name, "r+");
+    if(fp != NULL && !does_file_exist_already) {
+        fclose(fp);
+        fp = fopen(file_name, "w+");
+        does_file_exist_already = 1;
+        fclose(fp);
+        fp = fopen(file_name, "r+");
+    }
+    fseek(fp, 0, SEEK_END);
     printf("%s\n", t_or_nt_string(g, t->data));
     fprintf(fp, "%s\n", t_or_nt_string(g, t->data));
     fclose(fp);

@@ -619,7 +619,7 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             retract(io);
             //check length                
             token->lineNumber = io->lineNumber;
-
+            if(io->buf->forward - io->buf->start)
             temp = getLexeme(io);
             token->data = SymbolTable.insert(st, temp, TK_ID);
             fin = true;
