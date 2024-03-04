@@ -31,7 +31,7 @@ int set_size(struct set* st){
 int set_search(struct set *st, int searchVal){
     assert(st != NULL);
     for(int i=0; i<st->size; i++)
-        if(st->term[i] == searchVal) return 1;
+        if((int) st->term[i] == searchVal) return 1;
     return 0;
 }
 

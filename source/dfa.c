@@ -7,7 +7,7 @@
 #include "dfa.h"
 
 void printToken(TOKEN *token) {
-    printf("%4d\t%15s\t%32s\n", token->lineNumber, token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->stringLexeme);
+    printf("%4d\t%15s\t%32s\n", token->lineNumber, (int) token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->stringLexeme);
     return;
 }
 

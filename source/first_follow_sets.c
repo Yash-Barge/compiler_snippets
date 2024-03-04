@@ -32,7 +32,7 @@ int substring(const char *restrict const str, const char *restrict const substr)
  */
 int substring_count(const char *restrict const str, const char *restrict const substr) {
     int ret = 0;
-    int offset = 0;
+    unsigned int offset = 0;
 
     while (offset < strlen(str)) {
         int temp = substring(str + offset, substr);
@@ -52,7 +52,7 @@ int substring_count(const char *restrict const str, const char *restrict const s
  * @param index Pointer to index, starts locating next terminal from that index
  * @return 
  */
-char *get_next_t_or_nt(const char *restrict const raw_prod_rule, int *index) {
+char *get_next_t_or_nt(const char *restrict const raw_prod_rule, unsigned int *index) {
     while (*index < strlen(raw_prod_rule) && raw_prod_rule[*index] == ' ') {
         if (raw_prod_rule[*index] == ' ')
             (*index)++;
@@ -159,7 +159,7 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
     for (int i = 0; i < ret->rule_count; i++) {
         const char *const temp = VectorString.at(prod_rules_raw, i);
 
-        int end_of_lhs = 0;
+        unsigned int end_of_lhs = 0;
         ret->rules[i].lhs = get_next_t_or_nt(temp, &end_of_lhs);
         ret->rules[i].rhs_count = 1 + substring_count(temp, "|");
     }
@@ -174,8 +174,8 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
             ret->rules[i].rhs[j] = VectorInt.new();
         
         int j = 0;
-        while (index < strlen(temp)) {
-            char *t_or_nt = get_next_t_or_nt(temp, &index);
+        while (index < (int) strlen(temp)) {
+            char *t_or_nt = get_next_t_or_nt(temp, (unsigned int *) &index);
 
             if (t_or_nt == NULL)
                 continue;

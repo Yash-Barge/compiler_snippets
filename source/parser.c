@@ -140,7 +140,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         // if (get_lexer_error_count()) // stop parsing, only continue lexing
         //     continue;
 
-        if (Stack.top(parse_stack) == -1 && tok->data->token_type != -1) {
+        if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
             parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->stringLexeme, tok->lineNumber);
             continue;
         }
@@ -148,7 +148,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         if (tok == NULL)
             continue;
         
-        while (tok->data->token_type != Stack.top(parse_stack)) {
+        while ((int) tok->data->token_type != Stack.top(parse_stack)) {
             int nt = Stack.pop(parse_stack);
 
             if (nt == TK_EPSILON)
@@ -161,7 +161,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 else if (tok->data->token_type == TK_RNUM)
                     ;
                 else {
-                    if (tok->data->token_type != -1)
+                    if ((int) tok->data->token_type != -1)
                         parser_error("Unexpected token `%s` at line %d (expected %s)\n", tok->data->stringLexeme, tok->lineNumber, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
                     else
                         parser_error("End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
@@ -170,7 +170,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 continue; // pop stack, and continue derivation for token
             }
 
-            struct vector_int *rhs = parse_table[nt - TK_COUNT][tok->data->token_type == -1 ? TK_EPSILON : tok->data->token_type];
+            struct vector_int *rhs = parse_table[nt - TK_COUNT][(int) tok->data->token_type == -1 ? TK_EPSILON : tok->data->token_type];
 
             if (rhs == NULL) {
                 // TODO:
@@ -179,7 +179,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 else if (tok->data->token_type == TK_RNUM)
                     ;
                 else {
-                    if (tok->data->token_type != -1)
+                    if ((int) tok->data->token_type != -1)
                         parser_error("Unexpected token `%s` at line %d (on stack %s)\n", tok->data->stringLexeme, tok->lineNumber, t_or_nt_string(g, nt));
                     else {
                         parser_error("End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
@@ -226,7 +226,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         }
 
         // assert(tok->data->token_type == Stack.top(parse_stack)); // should pretty much always be true, remove this later if not necessary
-        if (tok->data->token_type == Stack.top(parse_stack))
+        if ((int) tok->data->token_type == Stack.top(parse_stack))
             Stack.pop(parse_stack);
 
         free(tok);
