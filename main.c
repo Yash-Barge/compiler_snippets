@@ -134,6 +134,9 @@ void parser_timer(char* file_name, char *parse_file_name) {
     printf("Total CPU Time in Seconds= %lf\n", total_CPU_time_in_seconds);
 }
 
+
+// TEST COMMIT
+
 int main(int argc, char *argv[]) {
     if (argc != 3) { 
         error("Invalid number of arguments! Execute program followed by source file!\n");
