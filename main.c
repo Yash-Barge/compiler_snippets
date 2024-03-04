@@ -136,6 +136,16 @@ void parser(char *file_name) {
     return;
 }
 
+void parser_timer(char* file_name) {
+    clock_t start, end;
+    double time;
+    start = clock();
+    parser(file_name);
+    end = clock();
+    time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("\nTime taken to complete execution = %lf\n", time);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) { // should eventually change to 3, to put parser output in a file
         error("Invalid number of arguments! Execute program followed by source file!\n");
@@ -147,8 +157,6 @@ int main(int argc, char *argv[]) {
     while (input != 0) {
         printf("Enter a number from 0-4: ");
         scanf("%d", &input);
-        clock_t start, end;
-        double time;
 
         switch (input) {
         case 0:
@@ -164,11 +172,7 @@ int main(int argc, char *argv[]) {
             parser(argv[1]);
             break;
         case 4:
-            start = clock();
-            printf("TODO...\n");
-            end = clock();
-            time = ((double)(end - start)) / CLOCKS_PER_SEC;
-            printf("\nTime taken to complete execution = %lf\n", time);
+            parser_timer(argv[1]);
             break;
         
         default:
