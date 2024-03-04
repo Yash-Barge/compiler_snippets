@@ -1,7 +1,16 @@
+/*
+    GROUP NUMBER - 27
+    Shubham Gupta - 2021A7PS0468P
+    Yash Sangram Barge - 2021A7PS0006P
+    Venkatavihan Devaki - 2021A7PS0429P
+    Priyank Shethia - 2021A7PS0657P
+    Aditya Khandelwal - 2021A7PS2422P
+*/
+
+
 #pragma once
 
-#include "vector.h"
-#include "set.h"
+#include "others.h"
 
 struct grammar_rule {
     // `lhs` is the string `"ADS"`, if the production rule is `<ADS> ===> <B> | <C>`
