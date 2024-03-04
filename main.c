@@ -56,53 +56,52 @@ void lexer(char *file_name) {
 }
 
 void in_order_print(struct grammar *g, struct tree_node *t) {
-    if(t == NULL) return;
-    in_order_print(g, &(t->children[0]));
-    printf("%s\n", t_or_nt_string(g, t->data));
-    for(int i=1; i<t->children_count; i++) {
-        in_order_print(g, &(t->children[i]));
+    const char dummy[] = "----------------------------------------------------------------";
+
+    if (t == NULL)
+        return;
+
+    if (t->children_count)
+        in_order_print(g, t->children[0]);
+
+    if (t->data < TK_EPSILON) {
+        printf("%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data)); // Lexeme, Line no., Token Type
+        t->data == TK_NUM ? printf("%22lld ", t->lex_data.intVal) : t->data == TK_RNUM ? printf("%22lf ", t->lex_data.floatVal) : printf(" %21.15s ", dummy); // valueIfNumber
+        printf("%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL"); // isLeaf, parentTkType
+
+    } else {
+        printf("%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
+    }
+
+    for (int i = 1; i < t->children_count; i++) {
+        in_order_print(g, t->children[i]);
     }
 }
 
+void print_tree(struct grammar *g, struct tree_node *root) {
+    printf("%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
+    in_order_print(g, root);
+
+    return;
+}
 
 // TODO: remove the first/follow, parse_table stuff from here for final submission
 void parser(char *file_name) {    
     struct grammar *g = make_grammar("nalanda_grammar.txt");
-    struct set **first = generate_first(g);
-    struct set **follow = generate_follow(g, first);
-
-    // print_first_follow(g, first, follow);
-
-    struct vector_int ***parse_table = make_parse_table(g, first, follow);
-
-    // print_parse_table(g, parse_table);
 
     struct symbol_table *st = SymbolTable.init();
     struct tree_node *tree = parse(file_name, g, st);
 
-    // if (get_lexer_error_count()) {
-    //     fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was aborted due to \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_lexer_error_count());
-    //     if (get_parser_error_count())
-    //         fprintf(stderr, "\033[1;31merror: %d parser error(s)\033[0m detected before parsing was aborted\n", get_parser_error_count());
-    // }
-    // else if (get_parser_error_count()) {
-    //     fprintf(stderr, "\033[1;31merror: \033[0mParsing of file %s was failed due to \033[1;31m%d parser error(s)\033[0m\n", file_name, get_parser_error_count());
-    // } else
-    //     pre_order_print(g, tree);
-
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
     else
-        in_order_print(g, tree);
+        print_tree(g, tree);
 
     reset_error_count();
 
     if (tree)
         Tree.free(&tree);
 
-    free_first_and_follow(&first, g);
-    free_first_and_follow(&follow, g);
-    free_parse_table(&parse_table, g);
     SymbolTable.free(&st);
     free_grammar(&g);
 

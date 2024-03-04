@@ -21,7 +21,7 @@ struct symbol_table_lib {
     struct st_data *(*const insert)(struct symbol_table *, char *, enum terminals);
     struct st_data *(*const search)(struct symbol_table *, char *, enum terminals);
     struct st_data *(*const search_keyword)(struct symbol_table *, char *);
-    struct symbol_table* (*const init)();
+    struct symbol_table* (*const init)(void);
     void (*const free)(struct symbol_table **);
 };
 

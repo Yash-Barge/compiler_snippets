@@ -2,6 +2,7 @@
 #include "dfa.h"
 #include "stack.h"
 #include "errors.h"
+#include "symbol_table.h" //temp
 
 #define NO_ERRORS (!get_lexer_error_count() && !get_parser_error_count())
 
@@ -111,7 +112,6 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
-// TODO: if error, cancel parse tree generation
 struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table *st) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
@@ -120,6 +120,10 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct stack *parse_stack = Stack.new();
     Stack.push(parse_stack, -1); // `$`, end-of-file marker
     Stack.push(parse_stack, TK_COUNT);
+
+    struct stack *tree_indices = Stack.new();
+    Stack.push(tree_indices, -1);
+    int current_tree_index = 0;
 
     IOHandler *io = createIOHandler(file_name);
 
@@ -181,35 +185,84 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             for (int i = VectorInt.size(rhs) - 1; i >= 0; i--)
                 Stack.push(parse_stack, VectorInt.at(rhs, i));
 
-            if (NO_ERRORS) {
+            if (NO_ERRORS && current_tree_index != -1) {
                 // tree.insert nt, rhs
-                Tree.insert(tracker, rhs);
+                assert(tracker->data == nt);
+                Tree.insert_children(tracker, rhs);
 
-                // next leaf node
+                // go to child
+                assert(current_tree_index == 0);
+
                 while (1) {
-                    int exit_loop = 0;
+                    assert(tracker->children_count);
 
-                    for (int i = 0; i < tracker->children_count; i++) {
-                        if (tracker->children[i].children_count == 0 && tracker->children[i].data > TK_COUNT) {
-                            tracker = &(tracker->children[i]);
-                            exit_loop = 1;
+                    if (current_tree_index != tracker->children_count) {
+                        Stack.push(tree_indices, current_tree_index + 1);
+                        tracker = tracker->children[current_tree_index];
+                        current_tree_index = 0;
+                    } else {
+                        tracker = tracker->parent;
+                        current_tree_index = Stack.pop(tree_indices);
+
+                        if (tracker == NULL)
                             break;
-                        }
+
+                        continue;
                     }
 
-                    if (exit_loop)
-                        break;
+                    if (tracker->data == TK_EPSILON) {
+                        tracker = tracker->parent;
+                        current_tree_index = Stack.pop(tree_indices);
 
-                    tracker = tracker->parent;
+                        if (tracker == NULL)
+                            break;
 
-                    if (tracker == NULL) // end of parsing
+                        continue;
+                    } else 
                         break;
                 }
             }
         }
 
-        if ((int) tok->data->token_type == Stack.top(parse_stack))
+        if ((int) tok->data->token_type == Stack.top(parse_stack)) {
             Stack.pop(parse_stack);
+
+            // next leaf node
+            if (NO_ERRORS && current_tree_index != -1) {
+                tracker->line_number = tok->lineNumber;
+                tracker->lex_data = tok->data->lexeme;
+                tracker->lexeme = calloc(strlen(tok->data->stringLexeme) + 1, sizeof(char));
+                strcpy(tracker->lexeme, tok->data->stringLexeme);
+
+                while (1) {
+                    assert(tracker->children_count == 0);
+
+                    tracker = tracker->parent;
+                    current_tree_index = Stack.pop(tree_indices);
+
+                    if (tracker == NULL)
+                        break;
+
+                    while (current_tree_index == tracker->children_count) {
+                        tracker = tracker->parent;
+                        current_tree_index = Stack.pop(tree_indices);
+
+                        if (tracker == NULL)
+                            break;
+                    }
+
+                    if (tracker == NULL)
+                        break;
+
+                    Stack.push(tree_indices, current_tree_index + 1);
+                    tracker = tracker->children[current_tree_index];
+                    current_tree_index = 0;
+
+                    if (tracker->data != TK_EPSILON)
+                        break;
+                }
+            }
+        }
 
         free(tok);
     }
@@ -221,7 +274,10 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         Tree.free(&root);
     }
 
+    assert(Stack.is_empty(tree_indices));
+
     Stack.free(&parse_stack);
+    Stack.free(&tree_indices);
     closeHandler(io);
     free_first_and_follow(&first, g);
     free_first_and_follow(&follow, g);
