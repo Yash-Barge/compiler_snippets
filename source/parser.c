@@ -134,13 +134,13 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
 
+        if (tok == NULL || tok->data->token_type == TK_COMMENT)
+            continue;
+
         if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
             parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->stringLexeme, tok->lineNumber);
             continue;
         }
-
-        if (tok == NULL)
-            continue;
         
         while ((int) tok->data->token_type != Stack.top(parse_stack)) {
             int nt = Stack.pop(parse_stack);

@@ -8,6 +8,11 @@ struct set {
     int capacity;
 };
 
+/**
+ * @brief Initializes a new set
+ * 
+ * @return struct set* The pointer to the newly allocated Set ADT
+ */
 struct set *new_set(void) {
     struct set *st = malloc(sizeof(struct set));
     *st = (struct set) { .size = 0, .capacity = 1 };
@@ -16,6 +21,11 @@ struct set *new_set(void) {
     return st;
 }
 
+/**
+ * @brief Increases the size of the set
+ * 
+ * @param st The pointer to the set
+ */
 void grow_set(struct set *st) {
     st->term = realloc(st->term, sizeof(enum terminals) * st->capacity * 2);
     st->capacity *= 2;
@@ -23,11 +33,24 @@ void grow_set(struct set *st) {
     return;
 } 
 
+/**
+ * @brief Return the size of the set
+ * 
+ * @param st The pointer to the set
+ * @return int The size of the set
+ */
 int set_size(struct set* st){
     assert(st != NULL);
     return st->size;
 }
 
+/**
+ * @brief Searches the set for the searchVal
+ * 
+ * @param st The pointer to the set
+ * @param searchVal The value to be searched
+ * @return int Return 1 if the element is found, and 0 if not
+ */
 int set_search(struct set *st, int searchVal){
     assert(st != NULL);
     for(int i=0; i<st->size; i++)
@@ -35,6 +58,12 @@ int set_search(struct set *st, int searchVal){
     return 0;
 }
 
+/**
+ * @brief Insert a terminal into the set
+ * 
+ * @param st Pointer to the set
+ * @param term The terminal that we want to add to the set
+ */
 void set_insert(struct set *st, enum terminals term) {
     assert(st != NULL);
 
@@ -49,6 +78,13 @@ void set_insert(struct set *st, enum terminals term) {
     return;
 }
 
+/**
+ * @brief Get the element at a particular index of the set
+ * 
+ * @param st The pointer of the set
+ * @param i The index, whose element we want to find
+ * @return int The terminal at the i'th index of the set
+ */
 int set_at(struct set *st, int i){
     assert(st != NULL);
     assert(i < st->size);
@@ -57,7 +93,11 @@ int set_at(struct set *st, int i){
     return st->term[i];
 }
 
-
+/**
+ * @brief Print the elements of the set
+ * 
+ * @param st Pointer to the set
+ */
 void set_print(struct set *st) {
     assert(st != NULL);
 
@@ -68,6 +108,11 @@ void set_print(struct set *st) {
     return;
 }
 
+/**
+ * @brief Free the memory allocated to the set
+ * 
+ * @param p_set Pointer to pointer of the set
+ */
 void set_free(struct set **p_set) {
     assert(p_set != NULL);
     assert(*p_set != NULL);

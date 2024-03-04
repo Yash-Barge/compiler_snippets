@@ -109,13 +109,15 @@ void parser(char *file_name) {
 }
 
 void parser_timer(char* file_name) {
-    clock_t start, end;
-    double time;
-    start = clock();
+    clock_t start_time, end_time;
+    double total_CPU_time, total_CPU_time_in_seconds;
+    start_time = clock();
     parser(file_name);
-    end = clock();
-    time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("\nTime taken to complete execution = %lf\n", time);
+    end_time = clock();
+    total_CPU_time = (double) (end_time - start_time);
+    total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
+    printf("Total CPU Time = %lf\n", total_CPU_time);
+    printf("Total CPU Time in Seconds= %lf\n", total_CPU_time_in_seconds);
 }
 
 int main(int argc, char *argv[]) {
