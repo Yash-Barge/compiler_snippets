@@ -6,6 +6,7 @@
 #include "buffer.h"
 #include "symbol_table.h"
 #include "enums.h"
+#include "errors.h"
 
 typedef struct token TOKEN;
 

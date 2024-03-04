@@ -7,7 +7,8 @@
 #include "dfa.h"
 
 void printToken(TOKEN *token) {
-    printf("%4d\t%15s\t%32s\n", token->lineNumber, (int) token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->stringLexeme);
+    if((int) token->data->token_type == -1) ;
+    else printf("%4d\t%15s\t%32s\n", token->lineNumber, (int) token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->stringLexeme);
     return;
 }
 
@@ -371,10 +372,7 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
                 state = 33;
                 break;
             case '\0': // reached EOF, and no newline character after end of comment
-                token->data = SymbolTable.insert(st, "$", -1);
-                token->lineNumber = io->lineNumber;
-                fin = true;
-
+                state = 73;
                 break;
             default:
                 state = 34;
@@ -382,8 +380,11 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             }
             break;
         case 33:
+            token->lineNumber=io->lineNumber;
+            token->data = SymbolTable.insert(st, "", TK_COMMENT);
             io->lineNumber++;
-            state = 0;
+            fin = true;
+
             break;
         case 60:
             ch = getChar(io, state == 0);
@@ -570,8 +571,14 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             temp = getLexeme(io);
             if (SymbolTable.search_keyword(st, temp))
                 token->data = SymbolTable.search_keyword(st, temp);
-            else
+            else {
+                int length=strlen(temp);
+                if(length > 30) {
+                    state = 71;
+                    break;
+                }
                 token->data = SymbolTable.insert(st, temp, TK_FUNID);
+            }
 
             fin = true;
 
@@ -619,8 +626,12 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             retract(io);
             //check length                
             token->lineNumber = io->lineNumber;
-            if(io->buf->forward - io->buf->start)
             temp = getLexeme(io);
+            int length=strlen(temp);
+            if(length > 20 || length < 2) {
+                state = 70;
+                break;
+            }
             token->data = SymbolTable.insert(st, temp, TK_ID);
             fin = true;
 
@@ -717,6 +728,18 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
             state = 0;
 
             break;
+        case 70:
+            lexer_error("Variable Identifier is longer than prescribed length of 20 characters.\n");
+            state = 0;
+            temp = NULL;
+            
+            break;
+        case 71:
+            lexer_error("Function Identifier is longer than prescribed length of 30 characters.\n");
+            state = 0;
+            temp = NULL;
+            
+            break;
         case 29:
             token->lineNumber = io->lineNumber;
 
@@ -741,6 +764,13 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
 
             temp = getLexeme(io);
             token->data = SymbolTable.insert(st, temp, TK_NUM);
+            fin = true;
+
+            break;
+        case 73:
+            retract(io);
+            token->lineNumber = io->lineNumber;
+            token->data = SymbolTable.insert(st, "", TK_COMMENT);
             fin = true;
 
             break;
