@@ -3,27 +3,46 @@
 
 #include "stack.h"
 
+//defining node in stack
 struct node {
     int data;
     struct node *next;
 };
 
+/**
+ * @brief creates new node
+ * 
+ * @param data 
+ * @return struct node* 
+ */
 struct node *new_node(int data) {
     struct node *n = malloc(sizeof(struct node));
     *n = (struct node) { .data = data, .next = NULL };
     return n;
 }
 
+//defines stack 
 struct stack {
     struct node *top;
 };
 
+/**
+ * @brief creates new stack
+ * 
+ * @return struct stack* 
+ */
 struct stack *new_stack(void) {
     struct stack *s = malloc(sizeof(struct stack));
     *s = (struct stack) { .top = NULL };
     return s;
 }
 
+/**
+ * @brief pushes data onto stack
+ * 
+ * @param s 
+ * @param data 
+ */
 void stack_push(struct stack *s, int data) {
     struct node *n = new_node(data);
 
@@ -33,6 +52,12 @@ void stack_push(struct stack *s, int data) {
     return;
 }
 
+/**
+ * @brief pops data from stack
+ * 
+ * @param s 
+ * @return int 
+ */
 int stack_pop(struct stack *s) {
     assert(s != NULL);
 

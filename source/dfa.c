@@ -6,12 +6,25 @@
 
 #include "dfa.h"
 
+/**
+ * @brief Prints token line number, token type and lexeme 
+ * 
+ * @param token token to be printed
+ */
 void printToken(TOKEN *token) {
     if((int) token->data->token_type == -1) ;
     else printf("%4d\t%15s\t%32s\n", token->lineNumber, (int) token->data->token_type == -1 ? "$": TOK_STRING[token->data->token_type], token->data->stringLexeme);
     return;
 }
 
+/**
+ * @brief Consumes characters via IOHandler and checks them using 
+ * DFA logic until it either runs into a lexical error or tokenizes the accepted input
+ * 
+ * @param io Pointer to the IOHandler instance 
+ * @param st pointer to the symbol table
+ * @return TOKEN* returns pointer to token struct that has been created
+ */
 TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
     TOKEN *token = calloc(sizeof(TOKEN), 1);
     int state = 0;

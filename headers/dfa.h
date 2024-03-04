@@ -9,9 +9,12 @@
 #include "errors.h"
 
 typedef struct token TOKEN;
-
+/**
+ * @brief defines token
+ * 
+ */
 struct token {
-    struct st_data *data;
+    struct st_data *data; //token data
     int lineNumber;
 };
 
