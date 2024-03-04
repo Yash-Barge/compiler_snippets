@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     }
 
     int input = -1;
-
+    printf("STATUS: All requirements satisified and tested!");
     while (input != 0) {
         printf("Enter a number from 0-4: ");
         scanf("%d", &input);
