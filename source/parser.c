@@ -2,7 +2,8 @@
 #include "dfa.h"
 #include "stack.h"
 #include "errors.h"
-#include "symbol_table.h" //temp
+
+#define IS_DELIM(tok_type) (tok_type == TK_SEM || tok_type == TK_ENDUNION || tok_type == TK_ENDWHILE || tok_type == TK_ENDIF || tok_type == TK_END || tok_type == TK_ENDRECORD)
 
 #define NO_ERRORS (!get_lexer_error_count() && !get_parser_error_count())
 
@@ -130,15 +131,17 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
-
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
+        int err_reported_flag = 0;
 
         if (tok == NULL || tok->data->token_type == TK_COMMENT)
             continue;
 
         if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
-            parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+            if (!err_reported_flag++)
+                parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+                
             continue;
         }
         
@@ -146,7 +149,8 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             int nt = Stack.pop(parse_stack);
 
             if (nt == -1 && (int) tok->data->token_type != -1) {
-                parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+                if (!err_reported_flag++)
+                    parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
                 Stack.push(parse_stack, -1);
                 break;
             }
@@ -155,10 +159,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 continue; // pop stack (syn)
 
             if (nt < TK_COUNT) {
-                if ((int) tok->data->token_type != -1)
-                    parser_error("Line %4d: Unexpected token type %s with value `%s`; (expected %s)\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
-                else
-                    parser_error("Error: End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
+                if (!err_reported_flag++) {
+                    if ((int) tok->data->token_type != -1)
+                        parser_error("Line %4d: Unexpected token type %s with value `%s`; (expected %s)\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt)); // this is a non-terminal, should print it out better
+                    else
+                        parser_error("End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
+                }
 
                 continue; // pop stack (syn), and continue derivation for token
             }
@@ -169,18 +175,21 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 // EPS transitions
                 if (Set.search(first[nt - TK_COUNT], TK_EPSILON)) {
                     // maybe comment out this error?
-                    parser_error("Line %4d: Unexpected token type %s with value `%s`; stack symbol `%s` undergoing epsilon transition\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
+                    if (!err_reported_flag++)
+                        parser_error("Line %4d: Unexpected token type %s with value `%s`; stack symbol `%s` undergoing epsilon transition\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
                     continue; // pop stack (syn)
                 }
 
-                if ((int) tok->data->token_type != -1)
-                    parser_error("Line %4d: Unexpected token type %s with value `%s`; (expected %s)\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
-                else {
-                    parser_error("Error: End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
+                if ((int) tok->data->token_type != -1) {
+                    if (!err_reported_flag++)
+                        parser_error("Line %4d: Unexpected token type %s with value `%s`; (expected %s)\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
+                } else {
+                    if (!err_reported_flag++)
+                        parser_error("End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
                     continue; // pop stack
                 }
 
-                if (Set.search(follow[nt - TK_COUNT], tok->data->token_type)) {
+                if (Set.search(follow[nt - TK_COUNT], tok->data->token_type) || IS_DELIM(tok->data->token_type)) {
                     continue; // pop stack (syn), and continue derivation for token
                 } else {
                     Stack.push(parse_stack, nt); // re-insert in parsing stack
