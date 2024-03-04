@@ -145,6 +145,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         while ((int) tok->data->token_type != Stack.top(parse_stack)) {
             int nt = Stack.pop(parse_stack);
 
+            if (nt == -1 && (int) tok->data->token_type != -1) {
+                parser_error("Unexpected token `%s` at line %d, but stack configuration is empty!\n", tok->data->stringLexeme, tok->lineNumber);
+                Stack.push(parse_stack, -1);
+                break;
+            }
+
             if (nt == TK_EPSILON)
                 continue; // pop stack (syn)
 
@@ -273,8 +279,6 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     } else {
         Tree.free(&root);
     }
-
-    assert(Stack.is_empty(tree_indices));
 
     Stack.free(&parse_stack);
     Stack.free(&tree_indices);
