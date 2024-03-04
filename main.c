@@ -90,11 +90,8 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
 
 void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
     FILE* fp = fopen(file_path, "w+");
-    fclose(fp);
-    fp = fopen(file_path, "r+");
 
     fprintf(fp, "%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
-    printf("%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
 
     in_order_print(g, root, fp);
     fclose(fp);
@@ -138,7 +135,7 @@ void parser_timer(char* file_name, char *parse_file_name) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) { // should eventually change to 3, to put parser output in a file
+    if (argc != 3) { 
         error("Invalid number of arguments! Execute program followed by source file!\n");
         return 1;
     }
