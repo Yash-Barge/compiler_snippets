@@ -134,21 +134,23 @@ struct st_node* new_node_symbol_table_with_tok(enum terminals tok, char* val) {
     struct st_node* n = malloc(sizeof(struct st_node));
 
     if (tok == TK_NUM) {
+        n->val.stringLexeme = malloc((strlen(val) + 1) * sizeof(char));
+        strcpy(n->val.stringLexeme, val);
         long long temp = atoi(val);
         n->val.lexeme.intVal= temp;
         n->val.token_type = TK_NUM;
     } else if (tok == TK_RNUM) {
+        n->val.stringLexeme = malloc((strlen(val) + 1) * sizeof(char));
+        strcpy(n->val.stringLexeme, val);
         double temp = atof(val);
         n->val.lexeme.floatVal = temp;
         n->val.token_type = TK_RNUM;
     } else {
-        n->val.lexeme.lexeme = malloc(sizeof(char) * (strlen(val) + 1));
-        strcpy(n->val.lexeme.lexeme, val);
+        n->val.stringLexeme = malloc(sizeof(char) * (strlen(val) + 1));
+        strcpy(n->val.stringLexeme, val);
         n->val.token_type = tok;
     }
-
     n->next = NULL;
-    
     return n;
 }
 
@@ -174,10 +176,7 @@ void ll_insert(struct st_head* h, char* val, enum terminals tk) {
 
     struct st_node* n = new_node_symbol_table_with_tok(tk, val);
 
-    if (n == NULL) {
-        printf("Invalid Token : %s\n", val);
-        return;
-    }
+    assert(n != NULL);
 
     n->next = h->first_node;
     h->first_node = n;
@@ -205,16 +204,18 @@ void ll_free(struct st_head* h) {
         prev = temp;
         temp = temp->next;
 
-        if(prev->val.token_type == TK_NUM || prev->val.token_type == TK_RNUM)
+        if(prev->val.token_type == TK_NUM || prev->val.token_type == TK_RNUM) {
+            free(prev->val.stringLexeme);
             free(prev);
+        }
+
         else {
-            free(prev->val.lexeme.lexeme);
+            free(prev->val.stringLexeme);
             free(prev);
         }
     }
 
     free(h);
-
     return;
 }
 
@@ -273,17 +274,17 @@ struct st_data *symbol_table_insert(struct symbol_table* hm, char* key, enum ter
 
             while(temp != NULL) {
                 if (temp->val.token_type == TK_NUM) {
-                    int len = snprintf(NULL, 0, "%lld",  temp->val.lexeme.intVal);
-                    char buffer[len+1];
-                    snprintf(buffer, len + 1, "%lld",  temp->val.lexeme.intVal);
-                    symbol_table_insert(new_hm, buffer, TK_NUM);
+                    // int len = snprintf(NULL, 0, "%lld",  temp->val.lexeme.intVal);
+                    // char buffer[len+1];
+                    // snprintf(buffer, len + 1, "%lld",  temp->val.lexeme.intVal);
+                    symbol_table_insert(new_hm, temp->val.stringLexeme, TK_NUM);
                 } else if (temp->val.token_type == TK_RNUM) {
-                    int len = snprintf(NULL, 0, "%lf",  temp->val.lexeme.floatVal);
-                    char buffer[len+1];
-                    snprintf(buffer, len + 1, "%lf",  temp->val.lexeme.floatVal);
-                    symbol_table_insert(new_hm, buffer, TK_RNUM);
+                    // int len = snprintf(NULL, 0, "%lf",  temp->val.lexeme.floatVal);
+                    // char buffer[len+1];
+                    // snprintf(buffer, len + 1, "%lf",  temp->val.lexeme.floatVal);
+                    symbol_table_insert(new_hm, temp->val.stringLexeme, TK_RNUM);
                 } else {
-                    symbol_table_insert(new_hm, temp->val.lexeme.lexeme, temp->val.token_type);
+                    symbol_table_insert(new_hm, temp->val.stringLexeme, temp->val.token_type);
                 }
 
                 temp = temp->next;
@@ -321,13 +322,7 @@ struct st_data *symbol_table_search(struct symbol_table* hm, char* key, enum ter
 
     while (temp != NULL) {
         if (temp->val.token_type == tk) {
-            if (tk == TK_NUM) {
-                if (temp->val.lexeme.intVal == atoll(key))
-                    return &(temp->val);
-            } else if (tk == TK_RNUM) {
-                if (temp->val.lexeme.floatVal == atof(key))
-                    return &(temp->val);
-            } else if (!strcmp(temp->val.lexeme.lexeme, key))
+            if (!(strcmp(temp->val.stringLexeme, key)))
                 return &(temp->val);
         }
 

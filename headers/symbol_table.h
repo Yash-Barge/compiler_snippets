@@ -5,13 +5,13 @@
 struct symbol_table;
 
 typedef union {
-    char* lexeme;
     long long intVal;
     double floatVal;
 } dataElements;
 
 // Data of the lexeme, which includes the lexeme's name and the type of token
 struct st_data {
+    char* stringLexeme;
     dataElements lexeme;
     enum terminals token_type;
 };
