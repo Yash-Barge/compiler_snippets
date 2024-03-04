@@ -55,12 +55,15 @@ void lexer(char *file_name) {
     return;
 }
 
-void in_order_print(struct grammar *g, struct tree_node *t) {
+void in_order_print(struct grammar *g, struct tree_node *t, char* file_name) {
     if(t == NULL) return;
-    in_order_print(g, &(t->children[0]));
+    in_order_print(g, &(t->children[0]), file_name);
+    FILE *fp = fopen(file_name, "a");
     printf("%s\n", t_or_nt_string(g, t->data));
+    fprintf(fp, "%s\n", t_or_nt_string(g, t->data));
+    fclose(fp);
     for(int i=1; i<t->children_count; i++) {
-        in_order_print(g, &(t->children[i]));
+        in_order_print(g, &(t->children[i]), file_name);
     }
 }
 
@@ -93,7 +96,7 @@ void parser(char *file_name) {
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
     else
-        in_order_print(g, tree);
+        in_order_print(g, tree, "parse_tree.txt");
 
     reset_error_count();
 
