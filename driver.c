@@ -41,7 +41,7 @@ void lexer(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
 
     struct symbol_table *st = SymbolTable.init();
-
+    printf("Line Number\tToken\t\t\t\tLexeme\n");
     while (!io->inputFin) {
         TOKEN *tok = runDFA(io, st);
         if (tok != NULL) {

@@ -325,7 +325,7 @@ void ignore_read_characters(IOHandler *io) {
 // Maybe rename this to `throw_lexer_error` or something
 void lexical_error(IOHandler *io) {
     char *invalid_lexeme = getLexeme(io);
-    lexer_error("line %4d Error: Invalid lexeme `%s`\n", io->lineNumber, invalid_lexeme);
+    lexer_error("Line %4d Error: Invalid lexeme `%s`\n", io->lineNumber, invalid_lexeme);
     free(invalid_lexeme);
 
     return;
@@ -1068,13 +1068,13 @@ TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
 
             break;
         case 70:
-            lexer_error("Variable Identifier is longer than prescribed length of 20 characters.\n");
+            lexer_error("Line %4d: Variable Identifier is longer than prescribed length of 20 characters.\n", token->lineNumber);
             state = 0;
             temp = NULL;
             
             break;
         case 71:
-            lexer_error("Function Identifier is longer than prescribed length of 30 characters.\n");
+            lexer_error("Line %4d: Function Identifier is longer than prescribed length of 30 characters.\n", token->lineNumber);
             state = 0;
             temp = NULL;
             
