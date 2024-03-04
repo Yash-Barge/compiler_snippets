@@ -55,38 +55,67 @@ void lexer(char *file_name) {
     return;
 }
 
-void in_order_print(struct grammar *g, struct tree_node *t) {
+void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
     const char dummy[] = "----------------------------------------------------------------";
 
     if (t == NULL)
         return;
 
     if (t->children_count)
-        in_order_print(g, t->children[0]);
+        in_order_print(g, t->children[0], fp);
 
     if (t->data < TK_EPSILON) {
+        fseek(fp, 0, SEEK_END);
+        fprintf(fp, "%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data));
         printf("%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data)); // Lexeme, Line no., Token Type
-        t->data == TK_NUM ? printf("%22lld ", t->lex_data.intVal) : t->data == TK_RNUM ? printf("%22lf ", t->lex_data.floatVal) : printf(" %21.15s ", dummy); // valueIfNumber
+
+        if(t->data == TK_NUM) {
+            fprintf(fp, "%22lld ", t->lex_data.intVal);
+            printf("%22lld ", t->lex_data.intVal);
+        }
+        else if(t->data == TK_RNUM) {
+            fprintf(fp, "%22lf ", t->lex_data.floatVal);
+            printf("%22lf ", t->lex_data.floatVal);
+        }
+        else {
+            fprintf(fp, " %21.15s ", dummy);
+            printf(" %21.15s ", dummy);
+        }
+
+        fprintf(fp, "%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL");
         printf("%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL"); // isLeaf, parentTkType
 
+        // fclose(fp);
     } else {
+        fseek(fp, 0, SEEK_END);
+        fprintf(fp, "%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
         printf("%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
+
+        // fclose(fp);
     }
 
     for (int i = 1; i < t->children_count; i++) {
-        in_order_print(g, t->children[i]);
+        in_order_print(g, t->children[i], fp);
     }
 }
 
-void print_tree(struct grammar *g, struct tree_node *root) {
+void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
+    file_path = "parse.txt";
+    FILE* fp = fopen(file_path, "w+");
+    fclose(fp);
+    fp = fopen(file_path, "r+");
+
+    fprintf(fp, "%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
     printf("%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
-    in_order_print(g, root);
+
+    // fclose(fp);
+    in_order_print(g, root, fp);
 
     return;
 }
 
 // TODO: remove the first/follow, parse_table stuff from here for final submission
-void parser(char *file_name) {    
+void parser(char *file_name, char *parse_tree_file) {    
     struct grammar *g = make_grammar("nalanda_grammar.txt");
 
     struct symbol_table *st = SymbolTable.init();
@@ -95,7 +124,7 @@ void parser(char *file_name) {
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
     else
-        print_tree(g, tree);
+        print_tree(g, tree, parse_tree_file);
 
     reset_error_count();
 
@@ -108,11 +137,11 @@ void parser(char *file_name) {
     return;
 }
 
-void parser_timer(char* file_name) {
+void parser_timer(char* file_name, char *parse_file_name) {
     clock_t start_time, end_time;
     double total_CPU_time, total_CPU_time_in_seconds;
     start_time = clock();
-    parser(file_name);
+    parser(file_name, parse_file_name);
     end_time = clock();
     total_CPU_time = (double) (end_time - start_time);
     total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
@@ -121,7 +150,7 @@ void parser_timer(char* file_name) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) { // should eventually change to 3, to put parser output in a file
+    if (argc != 3) { // should eventually change to 3, to put parser output in a file
         error("Invalid number of arguments! Execute program followed by source file!\n");
         return 1;
     }
@@ -143,10 +172,10 @@ int main(int argc, char *argv[]) {
             lexer(argv[1]);
             break;
         case 3:
-            parser(argv[1]);
+            parser(argv[1], argv[2]);
             break;
         case 4:
-            parser_timer(argv[1]);
+            parser_timer(argv[1], argv[2]);
             break;
         
         default:

@@ -5,7 +5,7 @@ INC_DIR = -I ./headers
 stage1exe: main.o symbol_table.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
 	$(CC) $(CFLAGS) $(INC_DIR) -o stage1exe main.o symbol_table.o dfa.o buffer.o errors.o first_follow_sets.o set.o enums.o vector.o parser.o stack.o tree.o
 	rm -f *.o
-	./stage1exe testcases/f1.txt
+	./stage1exe testcases/f1.txt parse.txt
 # all executions of ./stage1exe should be removed for final submission
 main.o: main.c headers/dfa.h headers/symbol_table.h headers/errors.h headers/first_follow_sets.h headers/parser.h
 	$(CC) $(CFLAGS) $(INC_DIR) -c main.c
