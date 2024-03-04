@@ -55,42 +55,15 @@ void lexer(char *file_name) {
     return;
 }
 
-void pre_order_print(struct grammar *g, struct tree_node *t) {
-    printf("\n%s", t_or_nt_string(g, t->data));
-
-    struct tree_node *tracker = t->parent;
-
-    while (tracker) {
-        printf(" <=== %s", t_or_nt_string(g, tracker->data));
-        tracker = tracker->parent;
+void in_order_print(struct grammar *g, struct tree_node *t) {
+    if(t == NULL) return;
+    in_order_print(g, &(t->children[0]));
+    printf("%s\n", t_or_nt_string(g, t->data));
+    for(int i=1; i<t->children_count; i++) {
+        in_order_print(g, &(t->children[i]));
     }
-    printf("\n");
-
-    if (t->children_count) {
-        printf("number of children, %d: ", t->children_count);
-        for (int i = 0; i < t->children_count; i++)
-            printf("%s ", t_or_nt_string(g, t->children[i].data));
-        printf("\n");
-    }
-    printf("\n");
-
-    for (int i = 0; i < t->children_count; i++)
-        pre_order_print(g, &(t->children[i]));
-
-    if (t->children_count) {
-        printf("done: %s", t_or_nt_string(g, t->data));
-
-        struct tree_node *tracker = t->parent;
-
-        while (tracker) {
-            printf(" <=== %s", t_or_nt_string(g, tracker->data));
-            tracker = tracker->parent;
-        }
-        printf("\n");
-    }
-
-    return;
 }
+
 
 // TODO: remove the first/follow, parse_table stuff from here for final submission
 void parser(char *file_name) {    
@@ -120,7 +93,7 @@ void parser(char *file_name) {
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
     else
-        pre_order_print(g, tree);
+        in_order_print(g, tree);
 
     reset_error_count();
 
