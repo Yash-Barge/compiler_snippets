@@ -332,3 +332,4 @@
                  ---------------    ---                 TK_EPSILON       ---------------         No       --------------
                  ---------------    ---             optionalReturn       ---------------         No       --------------
                                ;     44                     TK_SEM       ---------------        Yes           returnStmt
+                             end     45                     TK_END       ---------------        Yes         mainFunction

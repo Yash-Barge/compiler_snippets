@@ -65,33 +65,22 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
         in_order_print(g, t->children[0], fp);
 
     if (t->data < TK_EPSILON) {
-        fseek(fp, 0, SEEK_END);
         fprintf(fp, "%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data));
-        printf("%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data)); // Lexeme, Line no., Token Type
 
         if(t->data == TK_NUM) {
             fprintf(fp, "%22lld ", t->lex_data.intVal);
-            printf("%22lld ", t->lex_data.intVal);
         }
         else if(t->data == TK_RNUM) {
             fprintf(fp, "%22lf ", t->lex_data.floatVal);
-            printf("%22lf ", t->lex_data.floatVal);
         }
         else {
             fprintf(fp, " %21.15s ", dummy);
-            printf(" %21.15s ", dummy);
         }
 
         fprintf(fp, "%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL");
-        printf("%10s %20s\n", "Yes", t->parent ? t_or_nt_string(g, t->parent->data) : "NULL"); // isLeaf, parentTkType
 
-        // fclose(fp);
     } else {
-        fseek(fp, 0, SEEK_END);
         fprintf(fp, "%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
-        printf("%32.15s %6.3s %26s %21.15s %10.8s %20.14s\n", dummy, dummy, t_or_nt_string(g, t->data), dummy, "No", dummy);
-
-        // fclose(fp);
     }
 
     for (int i = 1; i < t->children_count; i++) {
@@ -100,7 +89,6 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
 }
 
 void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
-    file_path = "parse.txt";
     FILE* fp = fopen(file_path, "w+");
     fclose(fp);
     fp = fopen(file_path, "r+");
@@ -108,8 +96,8 @@ void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
     fprintf(fp, "%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
     printf("%32.15s %6.5s %26s %21.15s %10.8s %20.14s\n", "Lexeme", "Line", "Token Type", "Value", "IsLeaf", "Parent Token");
 
-    // fclose(fp);
     in_order_print(g, root, fp);
+    fclose(fp);
 
     return;
 }
