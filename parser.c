@@ -741,12 +741,21 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct tree_node *root = Tree.new(TK_COUNT);
     struct tree_node *tracker = root;
 
+    int err_stack_emptied_flag = 0;
+
     while (!io->inputFin) {
         TOKEN *tok = getNextToken(io, st);
         int err_reported_flag = 0;
 
-        if (tok == NULL || tok->data->token_type == TK_COMMENT)
+        if (tok == NULL || tok->data->token_type == TK_COMMENT) {
+            free(tok);
             continue;
+        }
+
+        if (err_stack_emptied_flag) {
+            free(tok);
+            continue;
+        }
 
         if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
             if (!err_reported_flag++) {
@@ -754,6 +763,8 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                     Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
                 */
                 parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+                parser_error("Stack is empty, nothing to parse!\n");
+                err_stack_emptied_flag++;
             } 
                 
             continue;
@@ -768,6 +779,8 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                         Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
                     */
                     parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+                    parser_error("Stack is empty, nothing to parse!\n");
+                    err_stack_emptied_flag++;
                 }
                 Stack.push(parse_stack, -1);
                 break;
