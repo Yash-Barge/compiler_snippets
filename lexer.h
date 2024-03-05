@@ -25,6 +25,6 @@ char * getCurrentBuffer(IOHandler *io);
 char* getLexeme(IOHandler *io);
 void ignore_read_characters(IOHandler *io); // seems to be redundant, check if needed before final submission
 void lexical_error(IOHandler *io);
-
+void removeComments(char *file_name);
 TOKEN* getNextToken(IOHandler *io, struct symbol_table *st);
 void printToken(TOKEN *token);
