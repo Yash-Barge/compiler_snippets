@@ -203,8 +203,6 @@ int set_at(struct set *st, int i){
  * @param st Pointer to the set
  */
 void set_print(struct set *st) {
-    (st != NULL);
-
     for(int i = 0; i < st->size; i++)
         printf("%d ", st->term[i]);
     printf("\n");

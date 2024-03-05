@@ -18,7 +18,7 @@
 #include "parser.h"
 #include "others.h"
 
-#define IS_DELIM(tok_type) (tok_type == TK_SEM || tok_type == TK_ENDUNION || tok_type == TK_ENDWHILE || tok_type == TK_ENDIF || tok_type == TK_END || tok_type == TK_ENDRECORD)
+#define IS_DELIM(tok_type) (tok_type == TK_SEM || tok_type == TK_ENDUNION || tok_type == TK_ENDWHILE || tok_type == TK_ENDIF || tok_type == TK_END || tok_type == TK_ENDRECORD || tok_type == TK_CL || tok_type == TK_SQR || tok_type == TK_ELSE)
 #define NO_ERRORS (!get_lexer_error_count() && !get_parser_error_count())
 #define MAXSIZE 512
 
@@ -791,15 +791,6 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             struct vector_int *rhs = parse_table[nt - TK_COUNT][(int) tok->data->token_type == -1 ? TK_EPSILON : tok->data->token_type];
 
             if (rhs == NULL) {
-                // EPS transitions
-                if (Set.search(first[nt - TK_COUNT], TK_EPSILON)) {
-                    if (!err_reported_flag++)
-                        parser_error("Line %4d: Unexpected token type %s with value `%s`; stack symbol `%s` undergoing epsilon transition\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
-
-                    TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
-                    continue; // pop stack (syn)
-                }
-
                 if ((int) tok->data->token_type != -1) {
                     if (!err_reported_flag++)
                         parser_error("Line %4d: Unexpected token type %s with value `%s`; (expected %s)\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
@@ -819,6 +810,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 } else {
                     Stack.push(parse_stack, nt); // re-insert in parsing stack
                     break; // skip token (err)
+                }
+
+                // EPS transitions
+                if (Set.search(first[nt - TK_COUNT], TK_EPSILON)) {
+                    TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
+                    continue; // pop stack (syn)
                 }
             }
 
