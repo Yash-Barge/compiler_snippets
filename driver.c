@@ -72,7 +72,12 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
     if (t->children_count)
         in_order_print(g, t->children[0], fp);
 
-    if (t->data < TK_EPSILON) {
+    // TODO: the two error checkers should print properly (line count not there?)
+    if (t->data >= TK_COUNT && t->children_count == 0) { // two error checkers
+        fprintf(fp, "Parsing error: %s could not be generated from token stream\n", t_or_nt_string(g, t->data));
+    } else if (t->data < TK_EPSILON && t->lexeme == NULL) {
+        fprintf(fp, "Parsing error: %s not in token stream\n", t_or_nt_string(g, t->data));
+    } else if (t->data < TK_EPSILON) { // normal parse printing from this point
         fprintf(fp, "%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data));
 
         if(t->data == TK_NUM) {
@@ -119,13 +124,12 @@ void parseInputSourceCode(char *file_name, char *parse_tree_file) {
 
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
-    else
-        printParseTree(g, tree, parse_tree_file);
+    
+    printParseTree(g, tree, parse_tree_file);
 
     reset_error_count();
 
-    if (tree)
-        Tree.free(&tree);
+    Tree.free(&tree);
 
     SymbolTable.free(&st);
     free_grammar(&g);
