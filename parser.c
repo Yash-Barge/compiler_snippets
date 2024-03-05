@@ -881,7 +881,6 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
 
     if (NO_ERRORS) {
         assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
-        printf("Parsing of %s completed successfully! Input source code is syntactically correct!\n", file_name);
     }
 
     Stack.free(&parse_stack);

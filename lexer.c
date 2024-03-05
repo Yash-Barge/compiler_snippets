@@ -311,6 +311,8 @@ void removeComments(char *file_name) {
 
     closeHandler(io);
 
+    printf("\n\033[1;32msuccess:\033[0m Comments removed successfully!\n");
+
     return;
 }
 

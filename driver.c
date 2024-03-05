@@ -36,7 +36,7 @@ void lexer(char *file_name) {
     if (get_lexer_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mLexing of file %s failed with \033[1;31m%d lexer error(s)\033[0m\n", file_name, get_lexer_error_count());
     else
-        printf("Lexing of file %s successful!\n", file_name);
+        printf("\n\033[1;32msuccess:\033[0m Lexing of file %s successful!\n", file_name);
     
     reset_error_count();
 
@@ -104,6 +104,8 @@ void parseInputSourceCode(char *file_name, char *parse_tree_file) {
 
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
+    else
+        printf("\n\033[1;32msuccess:\033[0m Parsing of %s completed successfully! Input source code is syntactically correct!\n", file_name);
     
     printParseTree(g, tree, parse_tree_file);
 
@@ -125,7 +127,7 @@ void parser_timer(char* file_name, char *parse_file_name) {
     end_time = clock();
     total_CPU_time = (double) (end_time - start_time);
     total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
-    printf("Total CPU Time (in microseconds) = %lf\n", total_CPU_time);
+    printf("\nTotal CPU Time (in microseconds) = %lf\n", total_CPU_time);
     printf("Total CPU Time (in seconds) = %lf\n", total_CPU_time_in_seconds);
 
     return;
@@ -137,14 +139,25 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    printf("\n\033[1;35mnote: \033[0mFor the Synchronization Sets, we have incorporated 3 major techniques:\n\t1. If the top of the stack is a non terminal, and it does not have the current token in it’s First set but has it in it’s Follow Set, then we pop the non terminal\n\t2. If case 1 fails, and the non terminal has an epsilon transition, we take the epsilon transition\n\t3. If both case 1 and 2 fail, then we discard the token.\n");
+
+    printf("\n\033[1;33minfo: \033[0m FIRST and FOLLOW set automated\n");
+    printf("\033[1;33minfo: \033[0m Both lexical and syntax analysis modules implemented\n");
+    printf("\033[1;33minfo: \033[0m No known segmentation faults\n");
+    printf("\033[1;33minfo: \033[0m Works with all testcases\n");
+    printf("\033[1;33minfo: \033[0m Parse tree construction functional\n");
+
+    printf("\n\033[1;32mstatus: \033[0m All requirements satisified and tested!\n");
+
+
     int input = -1;
-    printf("STATUS: All requirements satisified and tested!\n");
+
     while (input != 0) {
-        printf("\n\n\n\033[1;34mInput 0 : \033[0mExit\n");
-        printf("\033[1;34mInput 1 : \033[0mPrint testcase without comments\n");
-        printf("\033[1;34mInput 2 : \033[0mPrint Testcase After Lexing Step\n");
-        printf("\033[1;34mInput 3 : \033[0mPrint testcase After Parsing\n");
-        printf("\033[1;34mInput 4 : \033[0mTime Testcase for Parsing\n");
+        printf("\n\033[1;36mInput 0: \033[0mExit\n");
+        printf("\033[1;36mInput 1: \033[0mPrint testcase without comments\n");
+        printf("\033[1;36mInput 2: \033[0mPrint Testcase After Lexing Step\n");
+        printf("\033[1;36mInput 3: \033[0mPrint testcase After Parsing\n");
+        printf("\033[1;36mInput 4: \033[0mTime Testcase for Parsing\n");
         printf("Enter a number from 0-4: ");
 
         if (!scanf("%d", &input)) { // clear stdin, in case of string
