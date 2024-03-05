@@ -31,7 +31,7 @@
                           output      7                  TK_OUTPUT       ---------------                     output_par        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                       function         No                     output_par
                        parameter      7               TK_PARAMETER       ---------------                     output_par        Yes      -------------------------
-Parsing error: TK_LIST not in token stream
+			Parsing error on line number 7: TK_LIST not in token stream
                                [      7                     TK_SQL       ---------------                     output_par        Yes      -------------------------
                             real      7                    TK_REAL       ---------------              primitiveDatatype        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                       dataType         No              primitiveDatatype
@@ -51,7 +51,7 @@ Parsing error: TK_LIST not in token stream
                  ---------------    ---             --------------       ---------------                       dataType         No              primitiveDatatype
                  ---------------    ---             --------------       ---------------                    declaration         No                       dataType
                                :      8                   TK_COLON       ---------------                    declaration        Yes      -------------------------
-Parsing error: TK_ID not in token stream
+			Parsing error on line number 8: TK_ID not in token stream
                  ---------------    ---             --------------       ---------------                  global_or_not         No                     TK_EPSILON
                  ---------------    ---             --------------       ---------------                    declaration         No                  global_or_not
                                ;      8                     TK_SEM       ---------------                    declaration        Yes      -------------------------
@@ -75,7 +75,7 @@ Parsing error: TK_ID not in token stream
                  ---------------    ---             --------------       ---------------                  singleOrRecId         No      option_single_constructed
                  ---------------    ---             --------------       ---------------                           stmt         No                 assignmentStmt
                             <---     10                TK_ASSIGNOP       ---------------                 assignmentStmt        Yes      -------------------------
-Parsing error: arithmeticExpression could not be generated from token stream
+			Parsing error on line number 10: arithmeticExpression could not be generated from token stream
                                ;     10                     TK_SEM       ---------------                 assignmentStmt        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                     otherStmts         No                           stmt
                  ---------------    ---             --------------       ---------------                          stmts         No                     otherStmts
@@ -162,7 +162,7 @@ Parsing error: arithmeticExpression could not be generated from token stream
                  ---------------    ---             --------------       ---------------                         factor         No           arithmeticExpression
                  ---------------    ---             --------------       ---------------                       expPrime         No                     TK_EPSILON
                  ---------------    ---             --------------       ---------------           arithmeticExpression         No                       expPrime
-Parsing error: TK_CL not in token stream
+			Parsing error on line number 11: TK_CL not in token stream
                  ---------------    ---             --------------       ---------------           arithmeticExpression         No                           term
                  ---------------    ---             --------------       ---------------                      termPrime         No                     TK_EPSILON
                  ---------------    ---             --------------       ---------------                           term         No                      termPrime
@@ -288,7 +288,7 @@ Parsing error: TK_CL not in token stream
                  ---------------    ---             --------------       ---------------              booleanExpression         No                            var
                                )     13                      TK_CL       ---------------              booleanExpression        Yes      -------------------------
                                )     13                      TK_CL       ---------------              booleanExpression        Yes      -------------------------
-Parsing error: logicalOp could not be generated from token stream
+			Parsing error on line number 13: logicalOp could not be generated from token stream
                                (     13                      TK_OP       ---------------              booleanExpression        Yes      -------------------------
                            c4bbb     13                      TK_ID       ---------------                  singleOrRecId        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                            var         No                  singleOrRecId
@@ -321,13 +321,13 @@ Parsing error: logicalOp could not be generated from token stream
                  ---------------    ---             --------------       ---------------                           term         No                      termPrime
                            c4bbb     15                      TK_ID       ---------------                  singleOrRecId        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                            var         No                  singleOrRecId
-Parsing error: option_single_constructed could not be generated from token stream
+			Parsing error on line number 16: option_single_constructed could not be generated from token stream
                  ---------------    ---             --------------       ---------------                         factor         No                            var
                  ---------------    ---             --------------       ---------------                      termPrime         No                         factor
-Parsing error: termPrime could not be generated from token stream
+			Parsing error on line number 16: termPrime could not be generated from token stream
                  ---------------    ---             --------------       ---------------                 assignmentStmt         No           arithmeticExpression
-Parsing error: expPrime could not be generated from token stream
-Parsing error: TK_SEM not in token stream
+			Parsing error on line number 16: expPrime could not be generated from token stream
+			Parsing error on line number 16: TK_SEM not in token stream
                  ---------------    ---             --------------       ---------------                conditionalStmt         No                           stmt
                  ---------------    ---             --------------       ---------------                     otherStmts         No                     TK_EPSILON
                  ---------------    ---             --------------       ---------------                conditionalStmt         No                     otherStmts
@@ -349,8 +349,8 @@ Parsing error: TK_SEM not in token stream
                            endif     18                   TK_ENDIF       ---------------                       elsePart        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                     otherStmts         No                           stmt
                  ---------------    ---             --------------       ---------------                     otherStmts         No                     otherStmts
-Parsing error: otherStmts could not be generated from token stream
-Parsing error: returnStmt could not be generated from token stream
+			Parsing error on line number 20: otherStmts could not be generated from token stream
+			Parsing error on line number 20: returnStmt could not be generated from token stream
                              end     20                     TK_END       ---------------                       function        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                        program         No                 otherFunctions
                  ---------------    ---             --------------       ---------------                 otherFunctions         No                     TK_EPSILON
@@ -366,7 +366,7 @@ Parsing error: returnStmt could not be generated from token stream
                              int     25                     TK_INT       ---------------              primitiveDatatype        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                       dataType         No              primitiveDatatype
                  ---------------    ---             --------------       ---------------                    declaration         No                       dataType
-Parsing error: TK_COLON not in token stream
+			Parsing error on line number 25: TK_COLON not in token stream
                               b5     25                      TK_ID       ---------------                    declaration        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                  global_or_not         No                     TK_EPSILON
                  ---------------    ---             --------------       ---------------                    declaration         No                  global_or_not
@@ -410,9 +410,9 @@ Parsing error: TK_COLON not in token stream
                  ---------------    ---             --------------       ---------------                   declarations         No                   declarations
                               b5     29                      TK_ID       ---------------                  singleOrRecId        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                 assignmentStmt         No                  singleOrRecId
-Parsing error: option_single_constructed could not be generated from token stream
+			Parsing error on line number 29: option_single_constructed could not be generated from token stream
                  ---------------    ---             --------------       ---------------                           stmt         No                 assignmentStmt
-Parsing error: TK_ASSIGNOP not in token stream
+			Parsing error on line number 29: TK_ASSIGNOP not in token stream
                                1     29                     TK_NUM                     1                            var        Yes      -------------------------
                  ---------------    ---             --------------       ---------------                         factor         No                            var
                  ---------------    ---             --------------       ---------------                           term         No                         factor

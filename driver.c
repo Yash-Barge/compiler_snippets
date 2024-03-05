@@ -74,9 +74,9 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
 
     // TODO: the two error checkers should print properly (line count not there?)
     if (t->data >= TK_COUNT && t->children_count == 0) { // two error checkers
-        fprintf(fp, "Parsing error: %s could not be generated from token stream\n", t_or_nt_string(g, t->data));
+        fprintf(fp, "\t\t\tParsing error on line number %d: %s could not be generated from token stream\n", t->line_number, t_or_nt_string(g, t->data));
     } else if (t->data < TK_EPSILON && t->lexeme == NULL) {
-        fprintf(fp, "Parsing error: %s not in token stream\n", t_or_nt_string(g, t->data));
+        fprintf(fp, "\t\t\tParsing error on line number %d: %s not in token stream\n", t->line_number, t_or_nt_string(g, t->data));
     } else if (t->data < TK_EPSILON) { // normal parse printing from this point
         fprintf(fp, "%32.32s %6d %26s", t->lexeme, t->line_number, t_or_nt_string(g, t->data));
 
