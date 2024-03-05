@@ -649,7 +649,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
     struct tree_node *tracker = root;
 
     while (!io->inputFin) {
-        TOKEN *tok = runDFA(io, st);
+        TOKEN *tok = getNextToken(io, st);
         int err_reported_flag = 0;
 
         if (tok == NULL || tok->data->token_type == TK_COMMENT)
