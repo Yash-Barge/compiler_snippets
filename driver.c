@@ -157,6 +157,11 @@ int main(int argc, char *argv[]) {
     int input = -1;
     printf("STATUS: All requirements satisified and tested!\n");
     while (input != 0) {
+        printf("\n\n\n\033[1;34mInput 0 : \033[0mExit\n");
+        printf("\033[1;34mInput 1 : \033[0mPrint testcase without comments\n");
+        printf("\033[1;34mInput 2 : \033[0mPrint Testcase After Lexing Step\n");
+        printf("\033[1;34mInput 3 : \033[0mPrint testcase After Parsing\n");
+        printf("\033[1;34mInput 4 : \033[0mTime Testcase for Parsing\n");
         printf("Enter a number from 0-4: ");
         scanf("%d", &input);
 
@@ -179,7 +184,7 @@ int main(int argc, char *argv[]) {
         
         default:
             printf("Unrecognized input %d!\n", input);
-            continue;
+            break;
         }
 
     }

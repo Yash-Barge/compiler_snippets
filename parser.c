@@ -145,6 +145,12 @@ int enumify_t_or_nt(struct grammar *g, const char *restrict const t_or_nt) {
     exit(1);
 }
 
+/**
+ * @brief Generate a grammar array form a file
+ * 
+ * @param grammar_file_path The path to the file that has the grammar rules
+ * @return struct grammar* A pointer to the memory allocated to the grammar struct
+ */
 struct grammar *make_grammar(const char *restrict const grammar_file_path) {
     FILE *grammar_file = fopen(grammar_file_path, "r");
 
@@ -211,6 +217,11 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
     return ret;
 }
 
+/**
+ * @brief Free the memory allocated to the grammar struct
+ * 
+ * @param p_g Pointer to the pointer to the Grammar Struct
+ */
 void free_grammar(struct grammar **p_g) {
     assert(p_g != NULL);
     assert(*p_g != NULL);
@@ -239,7 +250,7 @@ const char *t_or_nt_string(struct grammar *g, int enumified_t_or_nt) {
 }
 
 /**
- * @brief 
+ * @brief Helper Function for generation of First Sets
  * 
  * @param g The grammar 
  * @param st A pointer to the array of sets, used for recursion
@@ -293,6 +304,12 @@ struct set *first_helper(struct grammar* g, struct set** st, int index){
     return st[index];
 }
 
+/**
+ * @brief Used to generate the First Sets
+ * 
+ * @param g The grammar rules
+ * @return struct set** An Array of Set ADT's, each corresponding to the first set of a certain non terminal
+ */
 struct set** generate_first(struct grammar* g) {
     struct set** first = malloc(sizeof(struct set*) * g->rule_count);
     for(int i=0; i<g->rule_count; i++){
@@ -310,7 +327,7 @@ struct set** generate_first(struct grammar* g) {
 }
 
 /**
- * @brief 
+ * @brief Used to preprocess data before passing it for Follow Set Generation
  * 
  * @param g The grammar 
  * @return struct set** An array of sets, where the i'th index of the array has a set of all grammar rules which have that non terminal in the RHS 
@@ -337,7 +354,7 @@ struct set** follow_preprocess(struct grammar* g){
 }
 
 /**
- * @brief 
+ * @brief Helper funciton used for calculation of Follow Sets
  * 
  * @param g The grammar 
  * @param st A pointer to the array of sets, used for recursion
@@ -466,6 +483,13 @@ struct set *follow_helper(struct grammar* g, struct set** st, int index, struct 
     return st[index];
 }
 
+/**
+ * @brief Used to generate the Follow Sets
+ * 
+ * @param g The Grammar Rules
+ * @param first An array of sets, which are the First sets 
+ * @return struct set** An array of sets, which is the Follow Sets
+ */
 struct set** generate_follow(struct grammar* g, struct set** first) {
     struct set** follow = malloc(sizeof(struct set*) * g->rule_count);
     for(int i=0; i<g->rule_count; i++){
@@ -491,6 +515,14 @@ struct set** generate_follow(struct grammar* g, struct set** first) {
     return follow;
 }
 
+
+/**
+ * @brief Prints the First and Follow Sets
+ * 
+ * @param g The Grammar Rules
+ * @param first The First Set (An Array of Sets)
+ * @param follow The Follow Sets (An Array of Sets)
+ */
 void print_first_follow(struct grammar *g, struct set **first, struct set **follow) {
     for (int i = 0; i < g->rule_count; i++) {
         printf("%s:\n", t_or_nt_string(g, i + TK_COUNT));
@@ -509,6 +541,12 @@ void print_first_follow(struct grammar *g, struct set **first, struct set **foll
     return;
 }
 
+/**
+ * @brief Free the memory allocated to the first/follow sets
+ * 
+ * @param p_first_or_follow Pointer to the pointer to the memory allocated to the set
+ * @param g The grammar rule
+ */
 void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
     assert(p_first_or_follow != NULL);
     assert(*p_first_or_follow != NULL);
@@ -525,6 +563,14 @@ void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
     return;
 }
 
+/**
+ * @brief Generate the Parse Table
+ * 
+ * @param g The grammar rules
+ * @param first The First set
+ * @param follow The follow Set
+ * @return struct vector_int*** The Parse table 
+ */
 struct vector_int ***createParseTable(struct grammar *g, struct set **first, struct set **follow) {
     struct vector_int ***ret = calloc(g->rule_count, sizeof(*ret));
 
@@ -594,6 +640,12 @@ struct vector_int ***createParseTable(struct grammar *g, struct set **first, str
     return ret;
 }
 
+/**
+ * @brief Used to print the parse table
+ * 
+ * @param g The grammar
+ * @param parse_table The parse table
+ */
 void print_parse_table(struct grammar *g, struct vector_int ***parse_table) {
     int count = 0;
     for (int i = 0; i < g->rule_count; i++) {
@@ -615,6 +667,12 @@ void print_parse_table(struct grammar *g, struct vector_int ***parse_table) {
     return;
 }
 
+/**
+ * @brief Used to free the memory allocated to the parse table
+ * 
+ * @param p_parse_table Pointer to the pointer to the memory allocated to the parse table
+ * @param g The grammar
+ */
 void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     assert(p_parse_table != NULL);
     assert(*p_parse_table != NULL);
@@ -630,6 +688,14 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
+/**
+ * @brief Used to parse in the file
+ * 
+ * @param file_name Path to the file
+ * @param g The grammar
+ * @param st The symbol table
+ * @return struct tree_node* The parse tree generated from parsing the file
+ */
 struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table *st) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);

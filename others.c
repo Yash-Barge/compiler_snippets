@@ -250,10 +250,10 @@ struct stack_node {
 };
 
 /**
- * @brief creates new stack_node
+ * @brief creates new stack_node with a given data
  * 
- * @param data 
- * @return struct stack_node* 
+ * @param data The value of node->data
+ * @return struct stack_node* The pointer to the node
  */
 struct stack_node *new_node(int data) {
     struct stack_node *n = malloc(sizeof(struct stack_node));
@@ -267,9 +267,9 @@ struct stack {
 };
 
 /**
- * @brief creates new stack
+ * @brief Allocates a new stack
  * 
- * @return struct stack* 
+ * @return struct stack* The pointer to the stack
  */
 struct stack *new_stack(void) {
     struct stack *s = malloc(sizeof(struct stack));
@@ -280,8 +280,8 @@ struct stack *new_stack(void) {
 /**
  * @brief pushes data onto stack
  * 
- * @param s 
- * @param data 
+ * @param s The pointer to the stack
+ * @param data The data we want to push
  */
 void stack_push(struct stack *s, int data) {
     struct stack_node *n = new_node(data);
@@ -295,8 +295,8 @@ void stack_push(struct stack *s, int data) {
 /**
  * @brief pops data from stack
  * 
- * @param s 
- * @return int 
+ * @param s The pointer to the stack
+ * @return int The value that was on top of the stack before the pop
  */
 int stack_pop(struct stack *s) {
     assert(s != NULL);
@@ -310,15 +310,32 @@ int stack_pop(struct stack *s) {
     return temp_data;
 }
 
+/**
+ * @brief Checks if the stack is empty
+ * 
+ * @param s The pointer to the stack
+ * @return int Returns 1 if the stack is empty, else returns 0
+ */
 int stack_is_empty(struct stack *s) {
     return s->top == NULL;
 }
 
+/**
+ * @brief Returns the top of the stack
+ * 
+ * @param s The pointer to the stack
+ * @return int The value at the top of the stack
+ */
 int stack_top(struct stack *s) {
     assert(s != NULL);
     return s->top->data;
 }
 
+/**
+ * @brief Frees the memory allocated to the stack
+ * 
+ * @param p_s The pointer to the pointer of the stack
+ */
 void stack_free(struct stack **p_s) {
     assert(p_s != NULL);
     assert(*p_s != NULL);
@@ -1031,7 +1048,12 @@ const struct vector_string_lib VectorString = { .new = vstring_new, .size = vstr
 
 
 
-
+/**
+ * @brief Creates a new tree_node
+ * 
+ * @param data The value of tree_node->data
+ * @return struct tree_node* The pointer to the tree_node
+ */
 struct tree_node *tree_node_new(int data) {
     struct tree_node *temp = malloc(sizeof(*temp));
     temp->data = data;
@@ -1045,6 +1067,12 @@ struct tree_node *tree_node_new(int data) {
     return temp;
 }
 
+/**
+ * @brief Used for inserting the children of node
+ * 
+ * @param parent The pointer to the parent node
+ * @param rhs_prod_rule The right hand side of the production rule of the parent that generates that sequence of tokens
+ */
 void tree_node_insert_children(struct tree_node *parent, struct vector_int *rhs_prod_rule) {
     parent->children_count = VectorInt.size(rhs_prod_rule);
     parent->children = malloc(sizeof(struct tree_node *) * parent->children_count);
@@ -1063,6 +1091,11 @@ void tree_node_insert_children(struct tree_node *parent, struct vector_int *rhs_
     return;
 }
 
+/**
+ * @brief Free the memory allocated to the parse tree
+ * 
+ * @param p_tree The pointer to the pointer to the parse tree
+ */
 void tree_free(struct tree_node** p_tree) {
     assert(p_tree != NULL);
     assert(*p_tree != NULL);
