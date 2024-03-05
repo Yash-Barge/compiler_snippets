@@ -688,30 +688,32 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
     return;
 }
 
-#define tree_next_leaf while (1) { \
-                    if (current_tree_index != tracker->children_count) { \
-                        Stack.push(tree_indices, current_tree_index + 1); \
-                        tracker->line_number = tok->lineNumber ; \
-                        tracker = tracker->children[current_tree_index]; \
-                        current_tree_index = 0; \
-                    } else { \
-                        tracker->line_number = tok->lineNumber ; \
-                        tracker = tracker->parent; \
-                        current_tree_index = Stack.pop(tree_indices); \
-                        if (tracker == NULL) \
-                            break; \
-                        continue; \
-                    } \
-                    if (tracker->data == TK_EPSILON) { \
-                        tracker->line_number = tok->lineNumber ; \
-                        tracker = tracker->parent; \
-                        current_tree_index = Stack.pop(tree_indices); \
-                        if (tracker == NULL) \
-                            break; \
-                        continue; \
-                    } else  \
-                        break; \
-                }
+#define TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok) do { \
+    while (1) { \
+        if (current_tree_index != tracker->children_count) { \
+            Stack.push(tree_indices, current_tree_index + 1); \
+                tracker->line_number = tok->lineNumber ; \
+                tracker = tracker->children[current_tree_index]; \
+                current_tree_index = 0; \
+        } else { \
+            tracker->line_number = tok->lineNumber ; \
+            tracker = tracker->parent; \
+            current_tree_index = Stack.pop(tree_indices); \
+            if (tracker == NULL) \
+                break; \
+            continue; \
+        } \
+        if (tracker->data == TK_EPSILON) { \
+            tracker->line_number = tok->lineNumber ; \
+            tracker = tracker->parent; \
+            current_tree_index = Stack.pop(tree_indices); \
+            if (tracker == NULL) \
+                break; \
+            continue; \
+        } else  \
+            break; \
+        } \
+} while (0)
 
 /**
  * @brief Used to parse in the file
@@ -782,7 +784,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                         parser_error("End of token stream, but expected `%s`\n", t_or_nt_string(g, nt));
                 }
 
-                tree_next_leaf
+                TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
                 continue; // pop stack (syn), and continue derivation for token
             }
 
@@ -794,7 +796,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                     if (!err_reported_flag++)
                         parser_error("Line %4d: Unexpected token type %s with value `%s`; stack symbol `%s` undergoing epsilon transition\n", tok->lineNumber, t_or_nt_string(g, tok->data->token_type), tok->data->stringLexeme, t_or_nt_string(g, nt));
 
-                    tree_next_leaf
+                    TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
                     continue; // pop stack (syn)
                 }
 
@@ -806,13 +808,13 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                         parser_error("End of token stream, but stack symbol `%s` present\n", t_or_nt_string(g, nt));
 
                     if ((int) tok->data->token_type != -1) {
-                        tree_next_leaf
+                        TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
                     }
                     continue; // pop stack
                 }
 
                 if (Set.search(follow[nt - TK_COUNT], tok->data->token_type) || IS_DELIM(tok->data->token_type)) {
-                    tree_next_leaf
+                    TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
                     continue; // pop stack (syn), and continue derivation for token
                 } else {
                     Stack.push(parse_stack, nt); // re-insert in parsing stack
@@ -831,7 +833,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 // go to child
                 assert(current_tree_index == 0);
 
-                tree_next_leaf
+                TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
             }
         }
 
