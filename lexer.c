@@ -290,6 +290,31 @@ char *getCurrentBuffer(IOHandler *io){
 }
 
 /**
+ * @brief Remove the Comments of a file
+ * 
+ * @param file_name The path to the source file
+ */
+void removeComments(char *file_name) {
+    IOHandler *io = createIOHandler(file_name);
+
+    while (!io->inputFin) {
+        char c = getChar(io, true);
+
+        if (c == '%')
+            while (c != '\n' && c != '\0')
+                c = getChar(io, true);
+
+        printf("%c", c);
+    }
+
+    printf("\n");
+
+    closeHandler(io);
+
+    return;
+}
+
+/**
  * @brief Gets the lexeme based on positions of start and forward pointer
  * 
  * @param io 

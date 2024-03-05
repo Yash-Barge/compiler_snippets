@@ -17,26 +17,6 @@
 #include "parser.h"
 #include "others.h"
 
-void removeComments(char *file_name) {
-    IOHandler *io = createIOHandler(file_name);
-
-    while (!io->inputFin) {
-        char c = getChar(io, true);
-
-        if (c == '%')
-            while (c != '\n' && c != '\0')
-                c = getChar(io, true);
-
-        printf("%c", c);
-    }
-
-    printf("\n");
-
-    closeHandler(io);
-
-    return;
-}
-
 void lexer(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
 
