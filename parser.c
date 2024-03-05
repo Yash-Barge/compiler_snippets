@@ -763,7 +763,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                     Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
                 */
                 parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
-                parser_error("Stack is empty, nothing to parse!\n");
+                parser_error("Stack is empty, parsing cannot continue\n");
                 err_stack_emptied_flag++;
             } 
                 
@@ -779,7 +779,7 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                         Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
                     */
                     parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
-                    parser_error("Stack is empty, nothing to parse!\n");
+                    parser_error("Stack is empty, parsing cannot continue\n");
                     err_stack_emptied_flag++;
                 }
                 Stack.push(parse_stack, -1);

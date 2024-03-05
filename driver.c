@@ -88,6 +88,9 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
 void printParseTree(struct grammar *g, struct tree_node *root, char *file_path) {
     FILE* fp = fopen(file_path, "w+");
 
+    if (get_lexer_error_count() || get_parser_error_count())
+        fprintf(fp, "NOTE: Parsing failed, output is partial parse tree\n\n");
+
     fprintf(fp, "%32.15s %6.5s %26s %21.15s %30.25s %10.8s %30.25s\n", "Lexeme", "Line", "Token Type", "Value", "Parent Node Symbol", "IsLeaf", "Node Symbol");
 
     in_order_print(g, root, fp);
