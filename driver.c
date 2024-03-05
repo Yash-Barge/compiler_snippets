@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("\n\033[1;35mnote: \033[0mFor the Synchronization Sets, we have incorporated 3 major techniques:\n\t1. If the top of the stack is a non terminal, and it does not have the current token in it’s First set but has it in it’s Follow Set, then we pop the non terminal\n\t2. If case 1 fails, and the non terminal has an epsilon transition, we take the epsilon transition\n\t3. If both case 1 and 2 fail, then we discard the token.\n");
+    printf("\n\033[1;35mnote: \033[0mFor the Synchronization Sets:\n\t1. If the top of the stack is a non terminal, and it does not have the current token in it’s First set but has it in it’s Follow Set, then we pop the non terminal\n\t2. If case 1 fails, and the non terminal has an epsilon transition, we take the epsilon transition\n\t3. If both case 1 and 2 fail, then we discard the token.\n\t4. If there is a terminal on the top of the stack and there is a mismatch, we pop the top of the stack.\n");
 
     printf("\n\033[1;33minfo: \033[0m FIRST and FOLLOW set automated\n");
     printf("\033[1;33minfo: \033[0m Both lexical and syntax analysis modules implemented\n");
