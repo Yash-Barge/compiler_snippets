@@ -20,8 +20,34 @@
 
 #define IS_DELIM(tok_type) (tok_type == TK_SEM || tok_type == TK_ENDUNION || tok_type == TK_ENDWHILE || tok_type == TK_ENDIF || tok_type == TK_END || tok_type == TK_ENDRECORD)
 #define NO_ERRORS (!get_lexer_error_count() && !get_parser_error_count())
-
 #define MAXSIZE 512
+
+#define TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok) do { \
+    while (1) { \
+        if (current_tree_index != tracker->children_count) { \
+            Stack.push(tree_indices, current_tree_index + 1); \
+                tracker->line_number = tok->lineNumber ; \
+                tracker = tracker->children[current_tree_index]; \
+                current_tree_index = 0; \
+        } else { \
+            tracker->line_number = tok->lineNumber ; \
+            tracker = tracker->parent; \
+            current_tree_index = Stack.pop(tree_indices); \
+            if (tracker == NULL) \
+                break; \
+            continue; \
+        } \
+        if (tracker->data == TK_EPSILON) { \
+            tracker->line_number = tok->lineNumber ; \
+            tracker = tracker->parent; \
+            current_tree_index = Stack.pop(tree_indices); \
+            if (tracker == NULL) \
+                break; \
+            continue; \
+        } else  \
+            break; \
+        } \
+} while (0)
 
 // TODO: Add error handling to all of this
 
@@ -687,33 +713,6 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
 
     return;
 }
-
-#define TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok) do { \
-    while (1) { \
-        if (current_tree_index != tracker->children_count) { \
-            Stack.push(tree_indices, current_tree_index + 1); \
-                tracker->line_number = tok->lineNumber ; \
-                tracker = tracker->children[current_tree_index]; \
-                current_tree_index = 0; \
-        } else { \
-            tracker->line_number = tok->lineNumber ; \
-            tracker = tracker->parent; \
-            current_tree_index = Stack.pop(tree_indices); \
-            if (tracker == NULL) \
-                break; \
-            continue; \
-        } \
-        if (tracker->data == TK_EPSILON) { \
-            tracker->line_number = tok->lineNumber ; \
-            tracker = tracker->parent; \
-            current_tree_index = Stack.pop(tree_indices); \
-            if (tracker == NULL) \
-                break; \
-            continue; \
-        } else  \
-            break; \
-        } \
-} while (0)
 
 /**
  * @brief Used to parse in the file

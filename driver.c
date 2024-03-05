@@ -145,12 +145,11 @@ void parser_timer(char* file_name, char *parse_file_name) {
     end_time = clock();
     total_CPU_time = (double) (end_time - start_time);
     total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
-    printf("Total CPU Time = %lf\n", total_CPU_time);
-    printf("Total CPU Time in Seconds= %lf\n", total_CPU_time_in_seconds);
+    printf("Total CPU Time (in microseconds) = %lf\n", total_CPU_time);
+    printf("Total CPU Time (in seconds) = %lf\n", total_CPU_time_in_seconds);
+
+    return;
 }
-
-
-// TEST COMMIT
 
 int main(int argc, char *argv[]) {
     if (argc != 3) { 
@@ -167,7 +166,15 @@ int main(int argc, char *argv[]) {
         printf("\033[1;34mInput 3 : \033[0mPrint testcase After Parsing\n");
         printf("\033[1;34mInput 4 : \033[0mTime Testcase for Parsing\n");
         printf("Enter a number from 0-4: ");
-        scanf("%d", &input);
+
+        if (!scanf("%d", &input)) { // clear stdin, in case of string
+            error("Unrecognized input `");
+            char c;
+            while ((c = getc(stdin)) != '\n' && c != EOF) 
+                printf("%c", c);
+            printf("`\n");
+            continue;
+        }
 
         switch (input) {
         case 0:
@@ -187,7 +194,7 @@ int main(int argc, char *argv[]) {
             break;
         
         default:
-            printf("Unrecognized input %d!\n", input);
+            error("Unrecognized input `%d`\n", input);
             break;
         }
 

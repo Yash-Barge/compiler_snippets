@@ -525,9 +525,6 @@ void ll_free(struct st_head* h) {
  * @return index for the symbol table
  */
 int hash_function(enum terminals tok, char* key, int capacity) {
-    if (tok == TK_NUM || tok == TK_RNUM)
-        return (1LL * atoi(key) * 23) % capacity;
-
     return (1LL * strlen(key) * 23) % capacity;
 }
 
