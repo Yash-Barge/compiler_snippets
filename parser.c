@@ -249,9 +249,6 @@ struct grammar *make_grammar(const char *restrict const grammar_file_path) {
  * @param p_g Pointer to the pointer to the Grammar Struct
  */
 void free_grammar(struct grammar **p_g) {
-    assert(p_g != NULL);
-    assert(*p_g != NULL);
-
     struct grammar *g = *p_g;
 
     for (int i = 0; i < g->rule_count; i++) {
@@ -574,9 +571,6 @@ void print_first_follow(struct grammar *g, struct set **first, struct set **foll
  * @param g The grammar rule
  */
 void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
-    assert(p_first_or_follow != NULL);
-    assert(*p_first_or_follow != NULL);
-
     struct set **first_or_follow = *p_first_or_follow;
 
     for (int i = 0; i < g->rule_count; i++) {
@@ -587,6 +581,11 @@ void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
     *p_first_or_follow = NULL;
 
     return;
+}
+
+void create_parse_table_crash(void) {
+    error("grammar.txt is not LL(1)!\nExiting program...");
+    exit(1);
 }
 
 /**
@@ -614,7 +613,9 @@ struct vector_int ***createParseTable(struct grammar *g, struct set **first, str
                 int t_or_nt_enum = VectorInt.at(rhs_tokens, k);
 
                 if (t_or_nt_enum < TK_EPSILON) {
-                    assert(ret[i][t_or_nt_enum] == NULL);
+                    if (ret[i][t_or_nt_enum] != NULL)
+                        create_parse_table_crash();
+                    
                     ret[i][t_or_nt_enum] = rhs_tokens;
                     break;
                 }
@@ -626,7 +627,8 @@ struct vector_int ***createParseTable(struct grammar *g, struct set **first, str
                     for (int l = 0; l < Set.size(follow_set); l++) {
                         int t = Set.at(follow_set, l);
                         t = t == -1 ? TK_EPSILON : t; // The entry corresponding to TK_EPSILON will contain `$`
-                        assert(ret[i][t] == NULL);
+                        if (ret[i][t] != NULL)
+                            create_parse_table_crash();
                         ret[i][t] = rhs_tokens;
                     }
 
@@ -639,7 +641,8 @@ struct vector_int ***createParseTable(struct grammar *g, struct set **first, str
                 for (int l = 0; l < Set.size(first_set); l++) {
                     int t = Set.at(first_set, l);
                     if (t != TK_EPSILON) {
-                        assert(ret[i][t] == NULL);
+                        if (ret[i][t] != NULL)
+                            create_parse_table_crash();
                         ret[i][t] = rhs_tokens;
                     }
                 }
@@ -655,7 +658,8 @@ struct vector_int ***createParseTable(struct grammar *g, struct set **first, str
                 for (int l = 0; l < Set.size(follow_set); l++) {
                     int t = Set.at(follow_set, l);
                     t = t == -1 ? TK_EPSILON : t; // The entry corresponding to TK_EPSILON will contain `$`
-                    assert(ret[i][t] == NULL);
+                    if (ret[i][t] != NULL)
+                        create_parse_table_crash();
                     ret[i][t] = rhs_tokens;
                 }
 
@@ -700,9 +704,6 @@ void print_parse_table(struct grammar *g, struct vector_int ***parse_table) {
  * @param g The grammar
  */
 void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
-    assert(p_parse_table != NULL);
-    assert(*p_parse_table != NULL);
-
     struct vector_int ***parse_table = *p_parse_table;
 
     for (int i = 0; i < g->rule_count; i++)
@@ -826,11 +827,9 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
 
             if (current_tree_index != -1) {
                 // tree.insert nt, rhs
-                assert(tracker->data == nt);
                 Tree.insert_children(tracker, rhs);
 
                 // go to child
-                assert(current_tree_index == 0);
 
                 TREE_NEXT_LEAF(tree_indices, current_tree_index, tracker, tok);
             }
@@ -847,8 +846,6 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
                 strcpy(tracker->lexeme, tok->data->stringLexeme);
 
                 while (1) {
-                    assert(tracker->children_count == 0);
-
                     tracker = tracker->parent;
                     current_tree_index = Stack.pop(tree_indices);
 
@@ -879,9 +876,6 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
         free(tok);
     }
 
-    if (NO_ERRORS) {
-        assert(Stack.is_empty(parse_stack)); // should pretty much always be true, remove this later if not necessary
-    }
 
     Stack.free(&parse_stack);
     Stack.free(&tree_indices);

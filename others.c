@@ -152,7 +152,6 @@ void grow_set(struct set *st) {
  * @return int The size of the set
  */
 int set_size(struct set* st){
-    assert(st != NULL);
     return st->size;
 }
 
@@ -164,7 +163,6 @@ int set_size(struct set* st){
  * @return int Return 1 if the element is found, and 0 if not
  */
 int set_search(struct set *st, int searchVal){
-    assert(st != NULL);
     for(int i=0; i<st->size; i++)
         if((int) st->term[i] == searchVal) return 1;
     return 0;
@@ -177,8 +175,6 @@ int set_search(struct set *st, int searchVal){
  * @param term The terminal that we want to add to the set
  */
 void set_insert(struct set *st, enum terminals term) {
-    assert(st != NULL);
-
     if(!set_search(st, term)){
         if(st->size == st->capacity)
             grow_set(st);
@@ -198,10 +194,6 @@ void set_insert(struct set *st, enum terminals term) {
  * @return int The terminal at the i'th index of the set
  */
 int set_at(struct set *st, int i){
-    assert(st != NULL);
-    assert(i < st->size);
-    assert(i >= 0);
-
     return st->term[i];
 }
 
@@ -211,7 +203,7 @@ int set_at(struct set *st, int i){
  * @param st Pointer to the set
  */
 void set_print(struct set *st) {
-    assert(st != NULL);
+    (st != NULL);
 
     for(int i = 0; i < st->size; i++)
         printf("%d ", st->term[i]);
@@ -226,9 +218,6 @@ void set_print(struct set *st) {
  * @param p_set Pointer to pointer of the set
  */
 void set_free(struct set **p_set) {
-    assert(p_set != NULL);
-    assert(*p_set != NULL);
-
     struct set *st = *p_set;
     free(st->term);
     free(st);
@@ -299,8 +288,6 @@ void stack_push(struct stack *s, int data) {
  * @return int The value that was on top of the stack before the pop
  */
 int stack_pop(struct stack *s) {
-    assert(s != NULL);
-
     struct stack_node *temp = s->top;
     s->top = s->top->next;
 
@@ -327,7 +314,6 @@ int stack_is_empty(struct stack *s) {
  * @return int The value at the top of the stack
  */
 int stack_top(struct stack *s) {
-    assert(s != NULL);
     return s->top->data;
 }
 
@@ -337,9 +323,6 @@ int stack_top(struct stack *s) {
  * @param p_s The pointer to the pointer of the stack
  */
 void stack_free(struct stack **p_s) {
-    assert(p_s != NULL);
-    assert(*p_s != NULL);
-    
     struct stack *s = *p_s;
 
     while (!stack_is_empty(s))
@@ -469,12 +452,7 @@ struct st_head* new_head_symbol_table(void) {
  * @param val The Lexeme
  */
 void ll_insert(struct st_head* h, char* val, enum terminals tk) {
-    assert(h != NULL);
-
     struct st_node* n = new_node_symbol_table_with_tok(tk, val);
-
-    assert(n != NULL);
-
     n->next = h->first_node;
     h->first_node = n;
 
@@ -487,8 +465,6 @@ void ll_insert(struct st_head* h, char* val, enum terminals tk) {
  * @param h st_head pointer to the linked list.
  */
 void ll_free(struct st_head* h) {
-    assert(h != NULL);
-
     if (h->first_node == NULL) {
         free(h);
         return;
@@ -605,8 +581,6 @@ struct st_data *symbol_table_insert(struct symbol_table* hm, char* key, enum ter
  * @return Return pointer to symbol table entry if it exists, else NULL
  */
 struct st_data *symbol_table_search(struct symbol_table* hm, char* key, enum terminals tk) {
-    assert(hm != NULL);
-
     int index = hash_function(tk, key, hm->capacity);
 
     if (hm->map[index]->first_node == NULL)
@@ -634,8 +608,6 @@ struct st_data *symbol_table_search(struct symbol_table* hm, char* key, enum ter
  * @return Return pointer to symbol table entry if it exists, else NULL
  */
 struct st_data *symbol_table_search_keyword(struct symbol_table* hm, char* key) {
-    assert(hm != NULL);
-
     // TODO: replace with binary search?
     for (unsigned long i = 0; i < sizeof(token_list) / sizeof(token_list[0]); i++)
         if (!strcmp(token_list[i].keyword, key))
@@ -664,9 +636,6 @@ struct symbol_table* symbol_table_init(void) {
  * @param p_hm Pointer to the Symbol Table Pointer
  */
 void symbol_table_free(struct symbol_table **p_hm) {
-    assert(p_hm != NULL);
-    assert(*p_hm != NULL);
-
     struct symbol_table *hm = *p_hm;
 
     for(int i = 0; i < hm->capacity; i++)
@@ -725,7 +694,6 @@ void vint_grow_vector(struct vector_int *vec) {
  * @return int The size of the vector
  */
 int vint_size(struct vector_int *vec){
-    assert(vec != NULL);
     return vec->size;
 }
 
@@ -737,9 +705,6 @@ int vint_size(struct vector_int *vec){
  * @param data The data that we want to add at index
  */
 void vint_insert(struct vector_int *vec, int index, int data) {
-    assert(vec != NULL);
-    assert(index >= 0 && index <= vec->size);
-
     if(vec->size == vec->capacity)
         vint_grow_vector(vec);
 
@@ -758,7 +723,6 @@ void vint_insert(struct vector_int *vec, int index, int data) {
  * @return int The index of the first occurrence of that val. If that val does not exist in the vector, then return -1
  */
 int vint_index_of(struct vector_int *vec, int val){
-    assert(vec != NULL);
     for(int i = 0; i < vec->size; i++)
         if (vec->vector[i] == val)
             return i;
@@ -773,9 +737,6 @@ int vint_index_of(struct vector_int *vec, int val){
  * @return int The Value at that index
  */
 int vint_erase(struct vector_int *vec, int index) {
-    assert(vec != NULL);
-    assert(index >= 0 && index < vec->size);
-
     int val = vec->vector[index];
 
     memmove(vec->vector + index, vec->vector + index + 1, sizeof(*vec->vector) * (--vec->size - index));
@@ -840,8 +801,6 @@ int vint_at(struct vector_int *vec, int index) {
  * @param vec The pointer to the vector
  */
 void vint_print(struct vector_int *vec) {
-    assert(vec != NULL);
-
     for(int i = 0; i < vec->size; i++)
         printf("%d ", vec->vector[i]);
     printf("\n");
@@ -855,9 +814,6 @@ void vint_print(struct vector_int *vec) {
  * @param p_vec The pointer to the pointer to the vector
  */
 void vint_free(struct vector_int **p_vec) {
-    assert(p_vec != NULL);
-    assert(*p_vec != NULL);
-
     struct vector_int *vec = *p_vec;
 
     free(vec->vector);
@@ -908,7 +864,6 @@ void vstring_grow_vector(struct vector_string *vec) {
  * @return int The size of the vector
  */
 int vstring_size(struct vector_string *vec){
-    assert(vec != NULL);
     return vec->size;
 }
 
@@ -920,9 +875,6 @@ int vstring_size(struct vector_string *vec){
  * @param data The item we want to add to the vector
  */
 void vstring_insert(struct vector_string *vec, int index, char *data) {
-    assert(vec != NULL);
-    assert(index >= 0 && index <= vec->size);
-
     if(vec->size == vec->capacity)
         vstring_grow_vector(vec);
 
@@ -942,9 +894,6 @@ void vstring_insert(struct vector_string *vec, int index, char *data) {
  * @return char* The Value at index
  */
 char *vstring_erase(struct vector_string *vec, int index) {
-    assert(vec != NULL);
-    assert(index >= 0 && index < vec->size);
-
     char *val = vec->vector[index];
 
     memmove(vec->vector + index, vec->vector + index + 1, sizeof(*vec->vector) * (--vec->size - index));
@@ -1009,8 +958,6 @@ const char *vstring_at(struct vector_string *vec, int index) {
  * @param vec The pointer of the vector
  */
 void vstring_print(struct vector_string *vec) {
-    assert(vec != NULL);
-
     for(int i = 0; i < vec->size; i++)
         printf("%s\n", vec->vector[i]);
     printf("\n");
@@ -1024,9 +971,6 @@ void vstring_print(struct vector_string *vec) {
  * @param p_vec A pointer to the pointer of the vector
  */
 void vstring_free(struct vector_string **p_vec) {
-    assert(p_vec != NULL);
-    assert(*p_vec != NULL);
-
     struct vector_string *vec = *p_vec;
 
     for (int i = 0; i < vec->size; i++)
@@ -1094,9 +1038,6 @@ void tree_node_insert_children(struct tree_node *parent, struct vector_int *rhs_
  * @param p_tree The pointer to the pointer to the parse tree
  */
 void tree_free(struct tree_node** p_tree) {
-    assert(p_tree != NULL);
-    assert(*p_tree != NULL);
-
     struct tree_node *t = *p_tree;
 
     for (int i = 0; i < t->children_count; i++)
