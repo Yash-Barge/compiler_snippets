@@ -722,8 +722,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             continue;
 
         if (Stack.top(parse_stack) == -1 && (int) tok->data->token_type != -1) {
-            if (!err_reported_flag++)
+            if (!err_reported_flag++) {
+                /*
+                    Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
+                */
                 parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+            } 
                 
             continue;
         }
@@ -732,8 +736,12 @@ struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table 
             int nt = Stack.pop(parse_stack);
 
             if (nt == -1 && (int) tok->data->token_type != -1) {
-                if (!err_reported_flag++)
+                if (!err_reported_flag++) {
+                    /*
+                        Used in the case when the stack has been emptied (The parsing has been completed), but the input has not been completed
+                    */
                     parser_error("Line %4d: Unexpected token `%s`; stack configuration is empty!\n", tok->lineNumber, tok->data->stringLexeme);
+                }
                 Stack.push(parse_stack, -1);
                 break;
             }
