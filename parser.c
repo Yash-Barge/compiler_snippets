@@ -691,9 +691,11 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
 #define tree_next_leaf while (1) { \
                     if (current_tree_index != tracker->children_count) { \
                         Stack.push(tree_indices, current_tree_index + 1); \
+                        tracker->line_number = tok->lineNumber ; \
                         tracker = tracker->children[current_tree_index]; \
                         current_tree_index = 0; \
                     } else { \
+                        tracker->line_number = tok->lineNumber ; \
                         tracker = tracker->parent; \
                         current_tree_index = Stack.pop(tree_indices); \
                         if (tracker == NULL) \
@@ -701,6 +703,7 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
                         continue; \
                     } \
                     if (tracker->data == TK_EPSILON) { \
+                        tracker->line_number = tok->lineNumber ; \
                         tracker = tracker->parent; \
                         current_tree_index = Stack.pop(tree_indices); \
                         if (tracker == NULL) \
