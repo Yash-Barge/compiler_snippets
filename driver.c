@@ -99,7 +99,7 @@ void in_order_print(struct grammar *g, struct tree_node *t, FILE* fp) {
     }
 }
 
-void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
+void printParseTree(struct grammar *g, struct tree_node *root, char *file_path) {
     FILE* fp = fopen(file_path, "w+");
 
     fprintf(fp, "%32.15s %6.5s %26s %21.15s %30.25s %10.8s %30.25s\n", "Lexeme", "Line", "Token Type", "Value", "Parent Node Symbol", "IsLeaf", "Node Symbol");
@@ -111,7 +111,7 @@ void print_tree(struct grammar *g, struct tree_node *root, char *file_path) {
 }
 
 // TODO: remove the first/follow, parse_table stuff from here for final submission
-void parser(char *file_name, char *parse_tree_file) {    
+void parseInputSourceCode(char *file_name, char *parse_tree_file) {    
     struct grammar *g = make_grammar("grammar.txt");
 
     struct symbol_table *st = SymbolTable.init();
@@ -120,7 +120,7 @@ void parser(char *file_name, char *parse_tree_file) {
     if (get_lexer_error_count() || get_parser_error_count())
         fprintf(stderr, "\033[1;31merror: \033[0mParsing failed with \033[1;31m%d lexer error(s)\033[0m and \033[1;31m%d parser error(s)\033[0m\n", get_lexer_error_count(), get_parser_error_count());
     else
-        print_tree(g, tree, parse_tree_file);
+        printParseTree(g, tree, parse_tree_file);
 
     reset_error_count();
 
@@ -137,7 +137,7 @@ void parser_timer(char* file_name, char *parse_file_name) {
     clock_t start_time, end_time;
     double total_CPU_time, total_CPU_time_in_seconds;
     start_time = clock();
-    parser(file_name, parse_file_name);
+    parseInputSourceCode(file_name, parse_file_name);
     end_time = clock();
     total_CPU_time = (double) (end_time - start_time);
     total_CPU_time_in_seconds = total_CPU_time / CLOCKS_PER_SEC;
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
             lexer(argv[1]);
             break;
         case 3:
-            parser(argv[1], argv[2]);
+            parseInputSourceCode(argv[1], argv[2]);
             break;
         case 4:
             parser_timer(argv[1], argv[2]);

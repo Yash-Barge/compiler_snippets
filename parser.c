@@ -525,7 +525,7 @@ void free_first_and_follow(struct set ***p_first_or_follow, struct grammar *g) {
     return;
 }
 
-struct vector_int ***make_parse_table(struct grammar *g, struct set **first, struct set **follow) {
+struct vector_int ***createParseTable(struct grammar *g, struct set **first, struct set **follow) {
     struct vector_int ***ret = calloc(g->rule_count, sizeof(*ret));
 
     for (int i = 0; i < g->rule_count; i++)
@@ -633,7 +633,7 @@ void free_parse_table(struct vector_int ****p_parse_table, struct grammar *g) {
 struct tree_node *parse(char *file_name, struct grammar *g, struct symbol_table *st) {
     struct set **first = generate_first(g);
     struct set **follow = generate_follow(g, first);
-    struct vector_int ***parse_table = make_parse_table(g, first, follow);
+    struct vector_int ***parse_table = createParseTable(g, first, follow);
 
     struct stack *parse_stack = Stack.new();
     Stack.push(parse_stack, -1); // `$`, end-of-file marker
