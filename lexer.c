@@ -351,7 +351,7 @@ void printToken(TOKEN *token) {
  * @param st pointer to the symbol table
  * @return TOKEN* returns pointer to token struct that has been created
  */
-TOKEN *runDFA(IOHandler *io, struct symbol_table *st) {
+TOKEN *getNextToken(IOHandler *io, struct symbol_table *st) {
     TOKEN *token = calloc(sizeof(TOKEN), 1);
     int state = 0;
     bool fin = false;

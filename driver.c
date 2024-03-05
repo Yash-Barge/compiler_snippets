@@ -17,7 +17,7 @@
 #include "parser.h"
 #include "others.h"
 
-void print_source_without_comments(char *file_name) {
+void removeComments(char *file_name) {
     IOHandler *io = createIOHandler(file_name);
 
     while (!io->inputFin) {
@@ -43,7 +43,7 @@ void lexer(char *file_name) {
     struct symbol_table *st = SymbolTable.init();
     printf("Line Number\tToken\t\t\t\tLexeme\n");
     while (!io->inputFin) {
-        TOKEN *tok = runDFA(io, st);
+        TOKEN *tok = getNextToken(io, st);
         if (tok != NULL) {
             printToken(tok);
             free(tok);
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
             printf("Exiting program...\n");
             break;
         case 1:
-            print_source_without_comments(argv[1]);
+            removeComments(argv[1]);
             break;
         case 2:
             lexer(argv[1]);
